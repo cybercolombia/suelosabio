@@ -1,5 +1,5 @@
-# agrocracks
-This project is the official repository for challenge data ecosystem 2026
+# rAIz
+Plataforma para analírica de datos climáticos e inteligencia de suelos para ayudar al campo colombiano a anticipar riesgos, reducir pérdidas y mejorar la productividad agrícola.
 
 ## Descripción del proyecto
 
