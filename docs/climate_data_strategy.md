@@ -125,12 +125,18 @@ todo el pais o todos los anos en memoria.
 
 ## Regla operativa para exploraciones
 
-Para evitar consultas pesadas sobre Socrata, las exploraciones iniciales deben
-filtrar por:
+La API de datos.gov.co/Socrata debe usarse principalmente para diagnosticos
+pequenos. Para evitar consultas pesadas, cualquier exploracion directa contra la
+API debe filtrar por:
 
 - Departamento.
 - Estacion meteorologica.
 - Ventanas cortas de tiempo, idealmente cinco dias o menos.
+
+Incluso con filtros por departamento, algunas consultas siguen siendo inviables
+si requieren agregados sobre muchos registros, por ejemplo `distinct`, `count(*)`
+o agrupaciones amplias. Esas consultas pueden generar timeouts o tiempos poco
+confiables.
 
 Los departamentos priorizados para el proyecto son:
 
@@ -138,8 +144,19 @@ Los departamentos priorizados para el proyecto son:
 - Boyaca.
 - Antioquia.
 
-Si se decide descargar datos, hacerlo por particiones controladas, por ejemplo
-departamento + ano o departamento + mes.
+Decision operativa: para analisis exploratorios serios se deben descargar los
+datos de los tres departamentos priorizados a Parquet y auditar localmente sobre
+esos archivos. La descarga debe hacerse por particiones controladas, por ejemplo
+departamento + ano + mes.
+
+Las primeras auditorias sobre Parquet deben revisar:
+
+- Rango temporal descargado.
+- Numero de archivos y filas por particion.
+- Estaciones y sensores presentes.
+- Duplicados por estacion, sensor y fecha de observacion.
+- Frecuencia temporal entre observaciones.
+- Distribucion de valores observados.
 
 ## Nota preliminar sobre precipitacion
 
