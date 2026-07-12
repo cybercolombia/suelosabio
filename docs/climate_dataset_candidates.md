@@ -23,9 +23,10 @@ primera variable explicativa del rendimiento. No se encontró en datos.gov.co un
 serie nacional operativa de humedad del suelo o radiación solar comparable con
 las fuentes IDEAM por estación.
 
-Con dos días disponibles, la alternativa más práctica es evaluar **NASA POWER**
-como fuente climática unificada y conservar IDEAM/Socrata para contraste,
-trazabilidad o trabajo futuro.
+Con dos días disponibles, se recomienda escoger **una sola familia climática** y
+trabajarla con IDEAM si la cobertura y el tiempo de procesamiento lo permiten.
+NASA POWER se conserva como contingencia por su facilidad de acceso, pero no como
+primera opción para un modelo municipal en una región montañosa.
 
 ## Fuentes IDEAM en datos.gov.co
 
@@ -84,6 +85,41 @@ variables conceptuales independientes. Permiten construir:
 Para papa, las mínimas y máximas pueden tener más interpretación que una media
 aislada, debido al riesgo de frío, heladas y estrés térmico.
 
+## Selección según el cultivo candidato
+
+La variable no debe escogerse de forma aislada. Esta matriz combina los cultivos
+con mejor cobertura EVA y la historia climática más fácil de defender:
+
+| Cultivo candidato | Familia climática principal | Features candidatas | Segunda opción | Lectura para el MVP |
+|---|---|---|---|---|
+| Papa | Temperatura | Media, mínimas, máximas, amplitud térmica, días fríos o calientes | Precipitación | Mejor combinación provisional por impacto productivo y sensibilidad térmica |
+| Maíz | Precipitación | Total del periodo, días con lluvia, máxima diaria, racha seca | Temperatura | Mejor alternativa si se prioriza cobertura municipal |
+| Arveja | Precipitación | Total, distribución temporal y rachas secas | Temperatura | Buena cobertura territorial, menor impacto productivo que papa |
+| Frijol | Precipitación | Total, días con lluvia y rachas secas | Temperatura | Similar a arveja; requiere revisar periodos de cultivo |
+| Caña | Precipitación | Total y distribución anual | Temperatura | Alto volumen, pero su consolidación productiva es más compleja |
+| Tomate | Temperatura | Media, mínimas y máximas | Humedad relativa | El manejo, riego e invernaderos pueden dominar la señal climática disponible |
+
+### Decisión provisional
+
+Si el cultivo del MVP es **papa**, la primera familia a evaluar debe ser
+**temperatura**. Temperatura ambiente, mínima y máxima cuentan como una sola
+familia física y pueden generar varias features sin ampliar conceptualmente el
+alcance.
+
+La precipitación queda como segunda opción para papa y como primera para maíz,
+arveja o frijol. Humedad relativa solo debería entrar si reemplaza a las
+anteriores por mejor cobertura o si aporta una hipótesis concreta; no se propone
+sumarla automáticamente al modelo.
+
+Esta recomendación sigue siendo condicional a la cobertura efectiva por estación
+durante 2019–2025. La mejor variable agronómica no sirve si deja demasiados
+municipios o periodos sin representación.
+
+Sustento agronómico consultado:
+
+- [Efecto de temperaturas elevadas sobre la tuberización de papa](https://pubmed.ncbi.nlm.nih.gov/39688842/).
+- [Efecto del estrés hídrico sobre crecimiento y rendimiento de papa](https://doi.org/10.1017/S0021859600072713).
+
 ### Viento y presión
 
 Ambas fuentes tienen registros actuales en los dos departamentos, pero no se
@@ -105,7 +141,7 @@ Es un dataset valioso como línea base climática o contexto territorial, pero n
 es una serie 2019–2025. Al ser prácticamente estático, no explica la variación de
 rendimiento entre años del MVP.
 
-## Alternativa recomendada: NASA POWER
+## Alternativa de contingencia: NASA POWER
 
 - [Documentación oficial Daily API](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)
 - [Documentación oficial Monthly API](https://power.larc.nasa.gov/docs/services/api/temporal/monthly/)
@@ -113,6 +149,9 @@ rendimiento entre años del MVP.
 NASA POWER entrega datos solares y meteorológicos listos para análisis mediante
 coordenadas. La API diaria ofrece datos desde 1981 hasta casi tiempo real y
 permite solicitar hasta 20 parámetros para un punto.
+
+Esta es la misma fuente de rejilla de baja resolución conocida por versiones
+anteriores de POWER; la facilidad de descarga no elimina esa limitación espacial.
 
 Parámetros útiles para RAIZ:
 
@@ -151,45 +190,33 @@ mes IDEAM.
 
 - No son mediciones directas de una estación municipal; son productos de rejilla
   derivados de fuentes como MERRA-2 y CERES.
-- La documentación advierte que la rejilla global es aproximadamente de 0,5° y
-  que no deben repetirse solicitudes para la misma celda.
+- La documentación advierte que la rejilla global es aproximadamente de 0,5°:
+  los puntos pueden quedar separados por decenas de kilómetros y no deben
+  repetirse solicitudes para la misma celda.
 - En Boyacá y Cundinamarca, la topografía montañosa puede generar diferencias
   importantes dentro de una celda.
 - Varios municipios pueden compartir el mismo valor climático de rejilla.
 - Debe documentarse como aproximación espacial y no presentarse como observación
   exacta en cada cultivo.
 
+Por estas razones, NASA POWER puede servir para un prototipo departamental, una
+comparación de sensibilidad o un plan de respaldo. Es menos defendible como
+representación climática municipal fina del altiplano cundiboyacense.
+
 Para evitar solicitudes repetidas, conviene descargar por región o identificar
 celdas únicas y luego asignar cada municipio a la celda más cercana.
 
-## Qué escoger para el MVP
-
-### Si se escoge papa
-
-Comparar primero:
-
-1. Familia de temperatura: `T2M`, `T2M_MIN`, `T2M_MAX`.
-2. Precipitación: `PRECTOTCORR`.
-3. Humedad relativa: `RH2M`, solo si mejora el baseline y puede explicarse.
-
-### Si se escoge maíz
-
-Comparar primero:
-
-1. Precipitación.
-2. Familia de temperatura.
-3. Radiación solar como candidata secundaria.
-
 ## Ruta sugerida para los dos días restantes
 
-1. Usar EVA UPRA 2019–2025 para seleccionar papa o maíz.
-2. Probar NASA POWER mensual o diario para el mismo periodo.
+1. Adoptar papa como candidato principal y maíz como alternativa.
+2. Perfilar temperatura ambiente, mínima y máxima de IDEAM para 2019–2025.
 3. Construir agregados por semestre o año, según `Periodo` y ciclo del cultivo.
-4. Entrenar modelos mínimos por familia climática y compararlos contra el mismo
+4. Si temperatura resulta inviable por cobertura o descarga, evaluar
+   precipitación como reemplazo, no como suma automática de variables.
+5. Usar NASA POWER solo si las fuentes IDEAM no permiten construir el piloto a
+   tiempo y documentar explícitamente su resolución espacial.
+6. Entrenar el modelo con una sola familia climática y compararlo contra el
    baseline.
-5. Escoger una sola familia para la narrativa final.
-6. Conservar las APIs IDEAM como fuente oficial nacional y como trabajo de
-   validación futura, sin descargar ahora todo el histórico subdiario.
 
 ## Fuentes que no se priorizan
 
