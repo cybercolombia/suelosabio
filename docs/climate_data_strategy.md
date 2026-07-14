@@ -102,11 +102,13 @@ Ejemplo de estructura:
 
 ```text
 eco2026_processed/
-  precipitacion/
-    dataset_id=s54a-sgyg/
-      departamento=ANTIOQUIA/
-        anio=2026/
-          part-001.parquet
+  clima_crudo/
+    variable=precipitacion/
+      fuente=s54a-sgyg/
+        departamento=CUNDINAMARCA/
+          anio=2026/
+            mes=01/
+              part-00000.parquet
 ```
 
 Esta estructura permite trabajar en Colab con subconjuntos manejables sin cargar
@@ -142,10 +144,9 @@ Los departamentos priorizados para el proyecto son:
 
 - Cundinamarca.
 - Boyaca.
-- Antioquia.
 
 Decision operativa: para analisis exploratorios serios se deben descargar los
-datos de los tres departamentos priorizados a Parquet y auditar localmente sobre
+datos de los dos departamentos priorizados a Parquet y auditar localmente sobre
 esos archivos. La descarga debe hacerse por particiones controladas, por ejemplo
 departamento + ano + mes.
 
@@ -158,13 +159,44 @@ Las primeras auditorias sobre Parquet deben revisar:
 - Frecuencia temporal entre observaciones.
 - Distribucion de valores observados.
 
+## Auditoria diagnostica y secuencia de limpieza
+
+La auditoria de datos climaticos crudos debe ser de solo lectura. Su objetivo es
+producir evidencia y recomendaciones para el procesamiento, no corregir los
+Parquet originales. Los hallazgos deben distinguir entre problemas criticos,
+advertencias e informacion descriptiva.
+
+La frecuencia no se debe inferir solamente a partir del numero de registros por
+estacion. Debe calcularse con las diferencias entre timestamps consecutivos para
+cada combinacion de `codigoestacion` y `codigosensor`, porque una misma estacion
+puede contener sensores con cadencias diferentes.
+
+Antes de construir registros diarios se debe diagnosticar y definir reglas para:
+
+- Tipos de datos, unidades y fechas no interpretables.
+- Nulos y valores fisicamente sospechosos.
+- Duplicados exactos.
+- Duplicados de clave con el mismo valor.
+- Conflictos con igual estacion, sensor y fecha pero valores diferentes.
+- Cambios de municipio, coordenadas o unidad dentro de una estacion o sensor.
+- Frecuencia observada y cobertura minima necesaria para considerar valido un dia.
+
+Las reglas de agregacion diaria dependen de la variable y no pertenecen a la
+auditoria generica. Tampoco se deben imputar observaciones subdiarias antes de
+agregar sin una justificacion especifica: esto podria fabricar precipitacion,
+alterar promedios o esconder fallas de cobertura. Los dias faltantes y la
+continuidad se evaluan de nuevo despues de construir la capa diaria. Cualquier
+imputacion posterior debe conservar una bandera de calidad y evitar fuga temporal
+durante el modelado.
+
 ## Nota preliminar sobre precipitacion
 
 Los datasets `s54a-sgyg` y `m84s-22dd` tienen columnas muy similares para
 precipitacion. En consultas exploratorias pequenas, filtradas por estacion y
 ventanas de cinco dias entre 2017 y 2026, ambos datasets mostraron datos
-practicamente equivalentes en los departamentos priorizados para el proyecto:
-Cundinamarca, Boyaca y Antioquia.
+practicamente equivalentes en las muestras historicas consultadas de Cundinamarca,
+Boyaca y Antioquia. El alcance actual del proyecto se limita a Cundinamarca y
+Boyaca.
 
 La principal diferencia observada hasta ahora es temporal:
 
@@ -204,6 +236,7 @@ Antes de construir agregaciones climaticas se debe auditar:
 - Interpretacion correcta de `valorobservado` para precipitacion.
 
 Para precipitacion, la hipotesis de trabajo es construir primero una capa diaria
-por estacion, con suma diaria y conteo de observaciones validas. Esta hipotesis
-debe validarse con la documentacion de la fuente y con patrones observados en los
-datos.
+por estacion y conservar conteos y metricas de cobertura. La suma diaria solo es
+valida si se confirma que `valorobservado` representa incrementos comparables y
+no un acumulado del sensor. Esta semantica debe validarse con la documentacion de
+la fuente, las unidades y los patrones observados en los datos.
