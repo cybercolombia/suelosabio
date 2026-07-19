@@ -240,3 +240,8 @@ por estacion y conservar conteos y metricas de cobertura. La suma diaria solo es
 valida si se confirma que `valorobservado` representa incrementos comparables y
 no un acumulado del sensor. Esta semantica debe validarse con la documentacion de
 la fuente, las unidades y los patrones observados en los datos.
+
+El contrato preliminar y la operacion segura del piloto se detallan en
+[`climate_daily_processing.md`](climate_daily_processing.md). Mientras no se
+apruebe un umbral de cobertura, la capa diaria conserva por separado la suma
+observada y deja en `NaN` la precipitacion diaria aceptada.
