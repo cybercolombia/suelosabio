@@ -84,6 +84,14 @@ lluvia. El procesador hizo lo correcto al conservarlo sin borrarlo; la auditoria
 diaria debe marcarlo y definir una regla trazable. Otros maximos, como 174 mm en
 Medina, tambien requieren contexto, pero no muestran el mismo patron constante.
 
+Una consulta pequena a la
+[API oficial de precipitacion](https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Precipitaci-n/s54a-sgyg)
+confirmo que la fuente publica cada timestamp dos veces para esta estacion y
+repite cada hora valores de 19,2 o 25,6 mm. La fuente identifica la estacion como
+`PISBA` y el municipio como `PISVA`. Esto fortalece la hipotesis de patron
+instrumental y justifica una cuarentena trazable del sensor, no una regla global
+que elimine toda precipitacion alta.
+
 ## Validaciones superadas
 
 - Las cuatro llaves `estacion + sensor + fecha` son unicas en la salida diaria.
@@ -94,16 +102,55 @@ Medina, tambien requieren contexto, pero no muestran el mismo patron constante.
 - Una particion completa puede identificarse y reanudarse por manifiesto.
 - La reduccion de filas supera 99,4 % en las cuatro particiones.
 
+## Ejecucion de `03_01_ClimateDailyAudit.ipynb`
+
+La auditoria diaria se ejecuto con el commit `8b63e88` y termino en 1,79
+segundos. El manifiesto quedo en estado `COMPLETA`.
+
+- 2.987 filas diarias de entrada.
+- 5.316 filas en el calendario estacion-sensor.
+- 2.329 ausencias estacion-sensor; no todas representan un hueco departamental.
+- 63 filas candidatas para revision.
+- 21 coberturas mayores a 100 %, todas inferiores a 101,40 %.
+- Dos pares de sensores paralelos y 76 comparaciones diarias.
+
+El calendario distingue correctamente dos niveles: febrero tiene 21 dias sin
+ningun registro en ambos departamentos, mientras otras ausencias corresponden a
+estaciones individuales que no reportaron durante parte del mes.
+
+Con una ventana candidata de cobertura entre 90 % y 102 %, 2.594 de 2.987 dias
+observados, equivalentes al 86,84 %, pasan la prueba de completitud. Los 393 dias
+con cobertura menor a 90 % permanecen parciales. El limite superior es una
+tolerancia preliminar para la cadencia modal, no una validacion de observaciones
+adicionales.
+
+En sensores paralelos:
+
+- Cundinamarca coincide dentro de 0,1 mm en los 38 dias compartidos.
+- Boyaca coincide dentro de 0,1 mm en 31 de 38 dias.
+- Boyaca presenta siete discrepancias; la maxima es 13,9 mm y en cinco dias un
+  sensor reporta cero mientras el otro reporta lluvia.
+
 ## Decision y siguiente compuerta
 
 El motor de deduplicacion, agregacion y trazabilidad queda validado para estos
 pilotos. Aun no se aprueba ejecutar todo el historico ni llenar
 `precipitacion_diaria_mm`.
 
-El siguiente notebook, `03_01_ClimateDailyAudit.ipynb`, debe resolver:
+La auditoria 03_01 queda validada. El contrato preliminar para disenar el
+notebook 04 es:
 
-1. Construccion del calendario y reporte de dias completamente ausentes.
-2. Umbral de cobertura para aceptar un dia.
-3. Coberturas superiores a 100 % y cambios de cadencia.
-4. Deteccion de valores constantes, saturacion y extremos sospechosos.
-5. Concordancia y seleccion posterior de sensores paralelos.
+1. Conservar dias ausentes como `NaN`; nunca convertirlos en cero.
+2. Evaluar como aceptable una cobertura entre 90 % y 102 %, conservando el valor
+   exacto de cobertura y una bandera de calidad.
+3. Poner en cuarentena sensores con patrones persistentes compatibles con fallo,
+   incluyendo `0035215030`/`0240` en el periodo piloto.
+4. Mantener extremos aislados y p99 como observaciones marcadas, no eliminadas.
+5. No promediar ni sumar sensores paralelos.
+6. Seleccionar un sensor solo cuando haya concordancia o exista un unico sensor
+   con calidad suficiente; una discrepancia material debe producir `NaN` y una
+   bandera revisable.
+
+Estas reglas se implementaran primero sobre los cuatro pilotos. El historico no
+se procesara hasta comprobar que el notebook 04 conserva trazabilidad y no
+convierte ausencias o desacuerdos en lluvia valida.
