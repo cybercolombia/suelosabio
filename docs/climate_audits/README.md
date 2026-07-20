@@ -77,6 +77,7 @@ AuditoriaClimatica_humedad_uext_mhny_cundinamarca_2025_conteo_completo.md
 
 ## Sintesis disponibles
 
+- [Piloto diario de precipitacion, enero y febrero de 2025](auditoria_piloto_diario_precipitacion_2025.md)
 - [Precipitacion, Cundinamarca, 2025](auditoria_precipitacion_cundinamarca_2025.md)
 - [Precipitacion, Cundinamarca, 2021 y 2023](auditoria_precipitacion_cundinamarca_2021_2023.md)
 - [Precipitacion, Boyaca, 2025](auditoria_precipitacion_boyaca_2025.md)
