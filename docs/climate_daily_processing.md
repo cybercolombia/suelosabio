@@ -100,6 +100,8 @@ debe activar la sobrescritura sin revisar primero por que se interrumpio.
 No se debe procesar 2021-2025 completo hasta comparar estos cuatro resultados.
 La siguiente etapa sera `03_01_ClimateDailyAudit.ipynb`, que definira cobertura
 minima, tratamiento de sensores paralelos y criterios para valores sospechosos.
+Su configuracion y productos se describen en
+[`climate_daily_audit.md`](climate_daily_audit.md).
 
 ## Verificacion local
 

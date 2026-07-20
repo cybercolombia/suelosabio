@@ -16,6 +16,7 @@ from ClimateProcessingUtils import (  # noqa: E402
     descubrir_partes_parquet,
     escribir_json_atomico,
     escribir_parquet_atomico,
+    escribir_texto_atomico,
     ruta_particion_cruda,
     ruta_particion_diaria,
 )
@@ -90,6 +91,10 @@ class ClimateProcessingUtilsTest(unittest.TestCase):
             manifiesto = root / "manifest.json"
             escribir_json_atomico({"estado": "COMPLETA"}, manifiesto)
             self.assertEqual(json.loads(manifiesto.read_text())["estado"], "COMPLETA")
+
+            reporte = root / "reporte.md"
+            escribir_texto_atomico("# Reporte\n", reporte)
+            self.assertEqual(reporte.read_text(encoding="utf-8"), "# Reporte\n")
 
 
 class PrecipitationRulesTest(unittest.TestCase):

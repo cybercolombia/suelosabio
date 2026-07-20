@@ -260,6 +260,27 @@ def escribir_json_atomico(
     return destino
 
 
+def escribir_texto_atomico(
+    contenido: str,
+    destino: Path,
+    sobrescribir: bool = False,
+) -> Path:
+    destino = Path(destino)
+    destino.parent.mkdir(parents=True, exist_ok=True)
+    if destino.exists() and not sobrescribir:
+        raise FileExistsError(f"Ya existe el archivo de texto: {destino}")
+
+    temporal = destino.with_name(f".{destino.name}.{uuid.uuid4().hex}.tmp")
+    try:
+        temporal.write_text(str(contenido), encoding="utf-8")
+        if temporal.read_text(encoding="utf-8") != str(contenido):
+            raise RuntimeError(f"Verificacion de texto fallida para {destino}.")
+        os.replace(temporal, destino)
+    finally:
+        temporal.unlink(missing_ok=True)
+    return destino
+
+
 def ahora_proyecto() -> datetime:
     return datetime.now(tz=ZONA_HORARIA_PROYECTO)
 
