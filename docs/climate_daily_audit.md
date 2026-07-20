@@ -87,3 +87,6 @@ Esta version no calcula todavia rachas secas, no resuelve geografia canonica y
 no decide si una estacion estuvo activa durante todo el mes. Tampoco llena
 `precipitacion_diaria_mm`: esa columna debe permanecer en `NaN` hasta aprobar las
 reglas que aplicara el notebook 04.
+
+La implementacion de esas reglas y su operacion segura se documentan en
+[`climate_daily_consolidation.md`](climate_daily_consolidation.md).
