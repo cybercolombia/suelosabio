@@ -14,26 +14,53 @@ de otra ni interpretar una celda ejecutada como prueba suficiente de calidad.
 Los datos cambian de significado al pasar de observaciones subdiarias a valores
 diarios. Por eso se audita antes y despues de transformar:
 
-```text
-01 descarga
-  -> clima_crudo inmutable
-02 auditoria cruda
-  -> evidencia para crear reglas por variable
-reglas + pruebas
-  -> contrato ejecutable
-03 procesamiento diario por estacion-sensor
-  -> clima_diario_sensor preliminar
-03_01 auditoria diaria
-  -> evidencia de cobertura, ausencias, extremos y sensores
-04 consolidacion por estacion
-  -> clima_diario_curado
-05 agregacion geografica y temporal
-  -> municipio-dia y municipio-periodo
+```mermaid
+flowchart TD
+    API[API Socrata por variable y particion]
+    P01[01 - Descarga]
+    RAW[(clima_crudo<br/>Parquet inmutable)]
+    P02[02 - Auditoria cruda]
+    AUDIT_RAW[(auditorias_climaticas<br/>inventario y evidencia)]
+    GATE_RULES{Contrato de variable<br/>y pruebas aprobados?}
+    BLOCKED[⚠ Variable bloqueada<br/>faltan reglas y evidencia]
+    RULES[Rules.py + pruebas<br/>contrato versionado]
+    P03[03 - Procesamiento diario<br/>todas las filas de la particion]
+    DAILY_SENSOR[(clima_diario_sensor<br/>estacion + sensor + dia)]
+    P0301[03_01 - Auditoria diaria]
+    AUDIT_DAILY[(auditorias_clima_diario<br/>calendario, cobertura y sensores)]
+    MISSING[Ausencias = NaN + calidad<br/>no imputacion silenciosa]
+    GATE_DAILY{Cobertura, extremos y<br/>sensores defendibles?}
+    P04[04 - Consolidacion con<br/>reglas propias de la variable]
+    CURATED[(clima_diario_curado<br/>estacion + dia + calidad)]
+    GEO[Catalogo esperado de estaciones<br/>y geografia canonica]
+    P05[05 - Agregacion geografica<br/>y temporal]
+    FEATURES[(municipio-dia e<br/>indicadores municipio-periodo)]
+
+    API --> P01 --> RAW --> P02 --> AUDIT_RAW --> GATE_RULES
+    GATE_RULES -- No --> BLOCKED
+    BLOCKED -. ampliar auditoria 02 .-> P02
+    GATE_RULES -- Si --> RULES --> P03 --> DAILY_SENSOR --> P0301
+    P0301 --> AUDIT_DAILY --> GATE_DAILY
+    AUDIT_DAILY -. materializa calendario .-> MISSING
+    GATE_DAILY -- Ajustar contrato --> RULES
+    GATE_DAILY -- Aprobar --> P04 --> CURATED
+    CURATED --> GEO --> P05 --> FEATURES
+
+    classDef data fill:#e8f0e8,stroke:#315a3b,color:#17351e;
+    classDef process fill:#e8eef5,stroke:#365b7d,color:#18344d;
+    classDef gate fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
+    classDef blocked fill:#f9dddd,stroke:#a33b3b,color:#5c1717;
+    class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,FEATURES data;
+    class P01,P02,RULES,P03,P0301,P04,GEO,P05 process;
+    class GATE_RULES,GATE_DAILY gate;
+    class BLOCKED,MISSING blocked;
 ```
 
 La auditoria 02 responde si la fuente puede transformarse y como debe hacerse.
 La auditoria 03_01 responde si la transformacion produjo una serie diaria
-defendible. Ninguna reemplaza a la otra.
+defendible. Ninguna reemplaza a la otra. Las flechas de retorno son
+deliberadas: un hallazgo puede exigir modificar el contrato y repetir el piloto
+antes de consolidar o escalar.
 
 ## Responsabilidad y compuerta de cada paso
 
