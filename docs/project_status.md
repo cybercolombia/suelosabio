@@ -1,7 +1,7 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 21 de julio de 2026  
-**Estado:** vigente  
+**Actualizado:** 21 de julio de 2026
+**Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
 Este documento debe leerse antes de planes anteriores, conversaciones o
@@ -55,6 +55,18 @@ departamentos, cinco anos y doce meses.
 `Completo estructuralmente` significa que existen las carpetas esperadas; no
 garantiza cobertura interna, calidad ni continuidad temporal.
 
+## Otros dominios del repositorio
+
+| Dominio | Evidencia actual | Estado vigente |
+|---|---|---|
+| Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
+| Geografia | `GeoData.ipynb` y trabajo previo con DIVIPOLA | Catalogo compartido, llaves y geografia canonica pendientes |
+| Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
+| Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
+
+La presencia de un notebook no demuestra que su salida este vigente, curada o
+lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
+
 ## Estado del pipeline climatico
 
 | Paso | Producto | Estado actual |
@@ -91,9 +103,12 @@ umbrales y criterios de calidad.
 5. Implementar el paso 05 solo cuando exista historia diaria consolidada y una
    geografia canonica defendible.
 
+El orden completo y sus compuertas se mantienen en
+[`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre
+productos se mantienen en [`data_artifacts.md`](data_artifacts.md).
+
 ## Alcances anteriores
 
 Las expresiones `una variable`, `dos dias restantes`, `entrega del martes` y
 `papa + precipitacion` pertenecen a planes de contingencia anteriores. Sirven
 como contexto, pero no son decisiones vigentes salvo que se ratifiquen aqui.
-

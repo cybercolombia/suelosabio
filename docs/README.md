@@ -9,16 +9,22 @@ estado vigente del proyecto.
 
 1. [`project_status.md`](project_status.md): alcance confirmado, decisiones
    pendientes, datos disponibles y siguiente trabajo.
-2. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura de datos,
-   responsabilidades de los notebooks y principios metodologicos.
-3. El documento operativo de la etapa que se vaya a ejecutar.
-4. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
+2. [`project_roadmap.md`](project_roadmap.md): fases, dependencias y compuertas.
+3. [`data_artifacts.md`](data_artifacts.md): entradas y salidas persistidas.
+4. [`repository_guide.md`](repository_guide.md): mapa de notebooks y modulos.
+5. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura climatica
+   y principios metodologicos.
+6. El documento operativo de la etapa que se vaya a ejecutar.
+7. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
 
 ## Documentos vigentes
 
 | Documento | Contenido | Uso |
 |---|---|---|
 | [`project_status.md`](project_status.md) | Estado y alcance actual | Leer siempre primero |
+| [`project_roadmap.md`](project_roadmap.md) | Ruta completa hasta aplicacion | Planificacion y dependencias |
+| [`data_artifacts.md`](data_artifacts.md) | Productores, consumidores, rutas y estados | Contratos entre fases |
+| [`repository_guide.md`](repository_guide.md) | Notebooks, modulos y estado de revision | Navegacion del codigo |
 | [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-05 | Referencia arquitectonica |
 | [`climate_daily_processing.md`](climate_daily_processing.md) | Paso 03 de precipitacion: estacion-sensor-dia | Operacion |
 | [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 03_01 de precipitacion | Operacion y diagnostico |
@@ -32,6 +38,9 @@ estado vigente del proyecto.
 | [`climate_dataset_candidates.md`](climate_dataset_candidates.md) | Fuentes climaticas, IDs y utilidad potencial | Catalogo vigente; alcance MVP antiguo |
 | [`eva_dataset_research.md`](eva_dataset_research.md) | Fuentes EVA, cobertura y cultivos candidatos | Evidencia vigente; seleccion final pendiente |
 | [`climate_audits/`](climate_audits/) | Resultados de corridas y hallazgos por variable | Evidencia historica reproducible |
+
+Las normas de ramas, notebooks y datos compartidos estan en
+[`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ## Regla de autoridad
 
@@ -57,4 +66,3 @@ Todo documento nuevo que contenga decisiones debe indicar:
 - Evidencia o archivos de entrada.
 - Decisiones confirmadas y pendientes.
 - Documento que lo reemplaza, si deja de estar vigente.
-

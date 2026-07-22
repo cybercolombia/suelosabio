@@ -30,3 +30,5 @@ Desarrollar una solución de IA que ayude a agricultores y actores rurales a tom
 El alcance y el estado siguen en descubrimiento. Antes de ejecutar notebooks o
 proponer cambios, consulte el [mapa de documentacion](docs/README.md) y el
 [estado vigente del proyecto](docs/project_status.md).
+
+El flujo del equipo se describe en [CONTRIBUTING.md](CONTRIBUTING.md).

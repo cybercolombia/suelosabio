@@ -1,5 +1,9 @@
 # Estrategia exploratoria para datos climaticos
 
+**Estado:** referencia metodologica vigente
+**Alcance y fases:** [`project_status.md`](project_status.md) y
+[`project_roadmap.md`](project_roadmap.md)
+
 Este documento resume una estrategia inicial para trabajar variables climaticas en el
 proyecto RAIZ. No define todavia el dataset maestro agricola ni el modelo final:
 su objetivo es ordenar la exploracion antes de reducir o integrar datos.
@@ -19,7 +23,11 @@ Antes de conectar estos datos con rendimiento agricola, conviene entender:
 - Diferencias entre datasets aparentemente similares.
 - Variables y sensores disponibles.
 
-## Capas de trabajo propuestas
+## Capas de trabajo
+
+Los nombres fisicos y contratos vigentes se detallan en
+[`data_artifacts.md`](data_artifacts.md). Las siguientes capas explican su
+proposito conceptual.
 
 ### 1. Datos crudos
 
@@ -85,6 +93,34 @@ Variables derivadas candidatas:
 - Temperatura media, minima y maxima por periodo.
 - Humedad relativa media y percentiles por periodo.
 - Indicadores de eventos extremos.
+
+### Reduccion diaria a municipio-periodo
+
+La capa diaria no se reemplaza: se conserva como fuente trazable y se construye
+otra tabla de caracteristicas. El orden correcto evita que una estacion con mayor
+frecuencia o cobertura reciba mas peso:
+
+```text
+estacion-sensor-dia -> estacion-dia -> municipio-dia -> municipio-periodo
+```
+
+| Variable | Agregaciones candidatas por semestre o periodo |
+|---|---|
+| Precipitacion | Total, dias con lluvia, intensidad media en dias lluviosos, p95/p99, maximo 1/3/5/7 dias, racha seca y racha humeda |
+| Temperatura | Media, minima, maxima, desviacion, p10/p90, dias frios/calientes, grados-dia y rachas extremas |
+| Humedad relativa | Media, minima, maxima, desviacion, p10/p90, dias bajo/sobre umbral y persistencia |
+| Presion atmosferica | Media, desviacion, rango, p05/p95 y cambios diarios; interpretar el nivel junto con altitud |
+| Velocidad del viento | Media, maxima, p90/p95/p99, dias fuertes, dias de calma y persistencia |
+
+Todas las variables deben conservar dias esperados, dias observados, porcentaje
+de cobertura, brecha consecutiva maxima, estaciones utilizadas y calidad del
+periodo. No se corrige una suma incompleta multiplicandola automaticamente por el
+inverso de la cobertura.
+
+Para no esconder la distribucion temporal dentro del semestre, se conserva un
+perfil mensual o bloques inicio-mitad-fin. El semestre calendario se usa solo si
+coincide con `Periodo` de EVA; cuando exista informacion del cultivo se deben
+evaluar tambien ventanas de siembra, desarrollo y cosecha.
 
 ## Formato recomendado para datos procesados
 
@@ -269,7 +305,7 @@ valida si se confirma que `valorobservado` representa incrementos comparables y
 no un acumulado del sensor. Esta semantica debe validarse con la documentacion de
 la fuente, las unidades y los patrones observados en los datos.
 
-El contrato preliminar y la operacion segura del piloto se detallan en
-[`climate_daily_processing.md`](climate_daily_processing.md). Mientras no se
-apruebe un umbral de cobertura, la capa diaria conserva por separado la suma
-observada y deja en `NaN` la precipitacion diaria aceptada.
+El procesamiento preliminar se detalla en
+[`climate_daily_processing.md`](climate_daily_processing.md). El contrato
+estacion-dia ya validado, incluida la ventana de cobertura, se documenta en
+[`climate_daily_consolidation.md`](climate_daily_consolidation.md).
