@@ -189,6 +189,34 @@ continuidad se evaluan de nuevo despues de construir la capa diaria. Cualquier
 imputacion posterior debe conservar una bandera de calidad y evitar fuga temporal
 durante el modelado.
 
+### Responsabilidad de cada notebook del pipeline
+
+```text
+01 descarga -> 02 auditoria cruda -> reglas por variable
+            -> 03 diario por sensor -> 03_01 auditoria diaria
+            -> 04 diario consolidado por estacion -> 05 agregado municipal
+```
+
+- `01_ClimateDataDownloader.ipynb` conserva las observaciones crudas
+  particionadas por departamento, ano y mes.
+- `02_ClimateDataAudit.ipynb` diagnostica la fuente cruda. Sus hallazgos sobre
+  unidad, cadencia, duplicados, conflictos, geografia y rangos permiten proponer
+  un contrato distinto para cada variable; no modifica los datos.
+- `03_ClimateDailyProcessor.ipynb` aplica las reglas preliminares de la variable
+  y produce una fila por estacion, sensor y dia.
+- `03_01_ClimateDailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
+  ausencias, cobertura, extremos y sensores paralelos para confirmar o ajustar
+  el contrato.
+- `04_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
+  una fila canonica por estacion y dia.
+- `05_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el historico
+  diario consolidado tenga cobertura y trazabilidad verificadas.
+
+La infraestructura de lectura, particiones, manifiestos y escrituras seguras es
+reutilizable. Las reglas semanticas no lo son automaticamente: precipitacion se
+acumula, mientras que temperatura, humedad, presion y viento requieren analizar
+y definir sus propias agregaciones y controles.
+
 ## Nota preliminar sobre precipitacion
 
 Los datasets `s54a-sgyg` y `m84s-22dd` tienen columnas muy similares para
