@@ -1,0 +1,60 @@
+# Mapa de documentacion de RAIZ
+
+Este indice es la puerta de entrada para el equipo y para asistentes de IA. Antes
+de proponer codigo, alcance o modelos se debe leer
+[`project_status.md`](project_status.md), que es la fuente de verdad sobre el
+estado vigente del proyecto.
+
+## Orden de lectura recomendado
+
+1. [`project_status.md`](project_status.md): alcance confirmado, decisiones
+   pendientes, datos disponibles y siguiente trabajo.
+2. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura de datos,
+   responsabilidades de los notebooks y principios metodologicos.
+3. El documento operativo de la etapa que se vaya a ejecutar.
+4. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
+
+## Documentos vigentes
+
+| Documento | Contenido | Uso |
+|---|---|---|
+| [`project_status.md`](project_status.md) | Estado y alcance actual | Leer siempre primero |
+| [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-05 | Referencia arquitectonica |
+| [`climate_daily_processing.md`](climate_daily_processing.md) | Paso 03 de precipitacion: estacion-sensor-dia | Operacion |
+| [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 03_01 de precipitacion | Operacion y diagnostico |
+| [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 04 de precipitacion: estacion-dia | Contrato validado |
+| [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
+
+## Investigacion y catalogos
+
+| Documento | Contenido | Vigencia |
+|---|---|---|
+| [`climate_dataset_candidates.md`](climate_dataset_candidates.md) | Fuentes climaticas, IDs y utilidad potencial | Catalogo vigente; alcance MVP antiguo |
+| [`eva_dataset_research.md`](eva_dataset_research.md) | Fuentes EVA, cobertura y cultivos candidatos | Evidencia vigente; seleccion final pendiente |
+| [`climate_audits/`](climate_audits/) | Resultados de corridas y hallazgos por variable | Evidencia historica reproducible |
+
+## Regla de autoridad
+
+Cuando dos documentos parezcan contradecirse, se aplica este orden:
+
+1. `project_status.md` para alcance y estado presente.
+2. Manifiestos y reportes de corridas para resultados verificables.
+3. Documentos operativos de cada etapa para instrucciones de ejecucion.
+4. Estrategias, investigaciones y auditorias para contexto.
+5. Conversaciones y planes dentro de `local_docs/` solo como archivo privado.
+
+Una recomendacion condicionada por una fecha limite pasada no debe tratarse como
+decision vigente. Los cambios de alcance se registran primero en
+`project_status.md` y despues se propagan a los documentos tecnicos afectados.
+
+## Convencion minima
+
+Todo documento nuevo que contenga decisiones debe indicar:
+
+- Fecha de actualizacion.
+- Estado: vigente, en revision o historico.
+- Alcance.
+- Evidencia o archivos de entrada.
+- Decisiones confirmadas y pendientes.
+- Documento que lo reemplaza, si deja de estar vigente.
+

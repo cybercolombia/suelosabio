@@ -90,6 +90,9 @@ debe activar la sobrescritura sin revisar primero por que se interrumpio.
 
 ## Pilotos requeridos
 
+**Estado actual:** completados y comparados. El contrato fue validado despues
+por 03_01 y 04; esta tabla se conserva como trazabilidad del piloto.
+
 | Worker | Departamento | Ano | Mes | Objetivo |
 |---|---|---:|---:|---|
 | A | Cundinamarca | 2025 | 1 | Mes pesado y con duplicados |
@@ -97,10 +100,11 @@ debe activar la sobrescritura sin revisar primero por que se interrumpio.
 | C | Boyaca | 2025 | 1 | Comparacion territorial |
 | D | Boyaca | 2025 | 2 | Comparacion territorial |
 
-No se debe procesar 2021-2025 completo hasta comparar estos cuatro resultados.
-La siguiente etapa sera `03_01_ClimateDailyAudit.ipynb`, que definira cobertura
-minima, tratamiento de sensores paralelos y criterios para valores sospechosos.
-Su configuracion y productos se describen en
+La compuerta de los cuatro pilotos ya fue superada. El historico 2021-2025 puede
+escalarse usando las reglas versionadas y conservando manifiestos por particion.
+La auditoria `03_01_ClimateDailyAudit.ipynb` definio cobertura minima,
+tratamiento de sensores paralelos y criterios para valores sospechosos. Su
+configuracion y productos se describen en
 [`climate_daily_audit.md`](climate_daily_audit.md).
 
 ## Verificacion local

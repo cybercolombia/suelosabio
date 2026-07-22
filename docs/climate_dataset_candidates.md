@@ -2,6 +2,11 @@
 
 **Fecha de verificación:** 11 de julio de 2026
 
+> **Vigencia:** el catalogo de fuentes y sus cautelas sigue siendo referencia.
+> Las menciones a "dos dias", una sola familia climatica y el alcance de aquel
+> MVP son historicas. Consulte [`project_status.md`](project_status.md) para las
+> decisiones actuales.
+
 ## Objetivo
 
 Identificar variables que puedan cruzarse con EVA 2019–2025 para Boyacá y

@@ -2,6 +2,10 @@
 
 **Fecha de verificación:** 11 de julio de 2026
 
+> **Vigencia:** las fuentes, coberturas y calculos conservan valor como evidencia.
+> La seleccion de cultivo y de una unica variable climatica permanece pendiente;
+> consulte [`project_status.md`](project_status.md).
+
 ## Conclusión
 
 El dataset `2pnw-mmge` no es la fuente agrícola más reciente. Su cobertura real
