@@ -1,0 +1,126 @@
+# Estado del pipeline: precipitacion
+
+**Actualizado:** 22 de julio de 2026  
+**Estado:** en proceso  
+**Fuente:** `s54a-sgyg`  
+**Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
+
+## Resumen ejecutivo
+
+El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
+particiones piloto: enero y febrero de 2025 para ambos departamentos. El
+objetivo completo contiene **48 particiones mensuales**. El paso 03 tiene 4 de
+48 particiones procesadas y quedan 44 por procesar; los pasos 03_01 y 04 deben
+cerrarse tambien sobre las 48 antes de pasar a municipio.
+
+## 01. Descarga cruda
+
+**Estado de etapa:** `[P]` disponible estructuralmente; integridad final pendiente.
+
+- [X] Fuente oficial seleccionada: `s54a-sgyg`.
+- [X] Alcance territorial fijado en Boyaca y Cundinamarca.
+- [X] Carpetas mensuales presentes para 2024 y 2025 en ambos departamentos.
+- [X] Los crudos se conservan inmutables en `clima_crudo`.
+- [ ] Reconciliar partes consecutivas y ultimo lote de las 48 particiones.
+- [ ] Confirmar fechas internas y ausencia de archivos incompletos en todo el alcance.
+- [ ] Publicar un resumen final de filas, bytes y manifiestos de descarga.
+
+## 02. Auditoria de datos crudos
+
+**Estado de etapa:** `[P]` evidencia suficiente para el piloto; cierre 2024 pendiente.
+
+- [X] Auditados 2021, 2023 y 2025 en ambos departamentos.
+- [X] Identificados duplicados exactos, cadencias de 2, 10 y 60 minutos y sensores paralelos.
+- [X] Confirmada la ausencia transversal del 5 al 25 de febrero de 2025.
+- [X] Identificado el patron instrumental sospechoso `0035215030` / `0240`.
+- [ ] Auditar muestras contrastantes de 2024 en ambos departamentos.
+- [ ] Comparar 2024 contra los patrones que sustentan el contrato vigente.
+- [ ] Publicar sintesis de cierre de la auditoria cruda 2024-2025.
+
+Evidencia:
+
+- [`../climate_audits/auditoria_precipitacion_boyaca_2021_2023.md`](../climate_audits/auditoria_precipitacion_boyaca_2021_2023.md)
+- [`../climate_audits/auditoria_precipitacion_boyaca_2025.md`](../climate_audits/auditoria_precipitacion_boyaca_2025.md)
+- [`../climate_audits/auditoria_precipitacion_cundinamarca_2021_2023.md`](../climate_audits/auditoria_precipitacion_cundinamarca_2021_2023.md)
+- [`../climate_audits/auditoria_precipitacion_cundinamarca_2025.md`](../climate_audits/auditoria_precipitacion_cundinamarca_2025.md)
+- [`../climate_audits/alerta_cobertura_febrero_2025.md`](../climate_audits/alerta_cobertura_febrero_2025.md)
+
+## Contrato de variable
+
+**Estado de etapa:** `[X]` validado para el piloto.
+
+- [X] `PrecipitationRules.py` define fuente, unidad, sensores y columnas.
+- [X] Los valores se interpretan como incrementos del intervalo y se suman por dia.
+- [X] Duplicados exactos y repeticiones equivalentes se eliminan con trazabilidad.
+- [X] Conflictos de una misma clave se excluyen; no se promedian.
+- [X] Valores negativos y filas incompatibles se rechazan y exportan.
+- [X] Las reglas cuentan con pruebas automatizadas.
+- [ ] Reabrir el contrato solo si la auditoria 2024 descubre un patron no cubierto.
+
+## 03. Diario por estacion y sensor
+
+**Estado de etapa:** `[P]` 4 de 48 particiones objetivo terminadas.
+
+- [X] Boyaca 2025-01: manifiesto `COMPLETA`.
+- [X] Boyaca 2025-02: manifiesto `COMPLETA`.
+- [X] Cundinamarca 2025-01: manifiesto `COMPLETA`.
+- [X] Cundinamarca 2025-02: manifiesto `COMPLETA`.
+- [ ] Procesar las 24 particiones de 2024.
+- [ ] Procesar las 20 particiones restantes de 2025.
+- [ ] Reconciliar exactamente 48 manifiestos `COMPLETA` y ninguna particion incompleta.
+- [ ] Verificar balances de entrada, agregacion, rechazos, duplicados y conflictos.
+
+No se imputan dias ni observaciones en este paso. Las salidas viven en
+`clima_diario_sensor/variable=precipitacion/fuente=s54a-sgyg/`.
+
+## 03_01. Auditoria diaria
+
+**Estado de etapa:** `[P]` piloto validado; auditoria de cierre pendiente.
+
+- [X] Auditadas las cuatro particiones piloto de enero-febrero de 2025.
+- [X] Calendario materializado con ausencias como `NaN`, no como cero.
+- [X] Evaluadas cobertura, cadencia, extremos y concordancia de sensores paralelos.
+- [X] Ventana piloto de cobertura definida entre 90 % y 102 %.
+- [ ] Auditar las 48 particiones procesadas del objetivo 2024-2025.
+- [ ] Construir catalogo esperado de estaciones-sensores usando ambos anos.
+- [ ] Detectar estaciones-sensores ausentes durante meses completos.
+- [ ] Resumir cobertura, brecha maxima, extremos y discrepancias por particion.
+- [ ] Aprobar o versionar de nuevo las reglas antes de consolidar a escala.
+
+Evidencia del piloto:
+[`../climate_audits/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/auditoria_piloto_diario_precipitacion_2025.md).
+
+## 04. Consolidacion diaria por estacion
+
+**Estado de etapa:** `[P]` piloto validado; escala pendiente.
+
+- [X] Consolidado enero-febrero de 2025 para ambos departamentos.
+- [X] Llave unica `estacion + dia` verificada en 5.198 filas piloto.
+- [X] Ausencias, baja cobertura, cuarentenas y desacuerdos conservan `NaN`.
+- [X] Sensores paralelos no se suman ni se promedian.
+- [X] Sensor `0035215030` / `0240` puesto en cuarentena en el piloto.
+- [ ] Consolidar las 48 particiones una vez aprobada la auditoria diaria de cierre.
+- [ ] Reconciliar calidad, procedencia y unicidad de toda la capa curada.
+- [ ] Publicar manifiesto y reporte de cierre 2024-2025.
+
+Contrato y resultado piloto:
+[`../climate_daily_consolidation.md`](../climate_daily_consolidation.md).
+
+## 05. Municipio y periodo
+
+**Estado de etapa:** `[ ]` no iniciado.
+
+- [ ] Construir el catalogo canonico estacion-municipio con DIVIPOLA.
+- [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
+- [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
+- [ ] Definir indicadores por periodo agricola: acumulado, dias con lluvia, intensidad y brechas.
+- [ ] Conservar `NaN` cuando la cobertura sea insuficiente; no extrapolar acumulados.
+
+## Siguiente bloque recomendado
+
+1. Ejecutar 02 sobre muestras de 2024 en ambos departamentos.
+2. Si el contrato sigue siendo defendible, repartir las 44 particiones pendientes de 03 entre workers sin solapamientos.
+3. Reconciliar los 48 manifiestos de 03.
+4. Ejecutar 03_01 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
+5. Revisar la evidencia de cierre antes de ejecutar 04 a escala.
+

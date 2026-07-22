@@ -111,7 +111,9 @@ umbrales y criterios de calidad.
 
 El orden completo y sus compuertas se mantienen en
 [`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre
-productos se mantienen en [`data_artifacts.md`](data_artifacts.md).
+productos se mantienen en [`data_artifacts.md`](data_artifacts.md). El avance
+paso a paso de cada variable se actualiza en
+[`climate_pipeline_status/README.md`](climate_pipeline_status/README.md).
 
 ## Alcances anteriores
 
