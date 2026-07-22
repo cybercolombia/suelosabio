@@ -4,6 +4,10 @@
 **Alcance y fases:** [`project_status.md`](project_status.md) y
 [`project_roadmap.md`](project_roadmap.md)
 
+La secuencia operativa, sus compuertas de calidad y la politica de datos
+faltantes se mantienen en
+[`climate_pipeline_guide.md`](climate_pipeline_guide.md).
+
 Este documento resume una estrategia inicial para trabajar variables climaticas en el
 proyecto RAIZ. No define todavia el dataset maestro agricola ni el modelo final:
 su objetivo es ordenar la exploracion antes de reducir o integrar datos.

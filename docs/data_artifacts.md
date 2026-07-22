@@ -1,6 +1,6 @@
 # Catalogo de artefactos y dependencias
 
-**Actualizado:** 21 de julio de 2026
+**Actualizado:** 22 de julio de 2026
 **Estado:** vigente
 
 Las rutas de datos corresponden a `eco2026_processed` en Google Drive y no se
@@ -50,7 +50,7 @@ clima_crudo/
 | Granularidad | Observacion subdiaria por estacion-sensor |
 | Consumidores | Pasos 02 y 03 |
 | Regla | Inmutable; nunca se corrige en sitio |
-| Estado | Disponible estructuralmente 2021-2025 para precipitacion, humedad, presion y viento |
+| Estado | Disponible estructuralmente 2021-2025 para precipitacion, humedad, presion y viento; temperatura 2024-2025 reportada y parcialmente verificada |
 
 La existencia de las 120 carpetas esperadas por variable no garantiza cobertura
 interna, calidad o continuidad.
@@ -69,7 +69,7 @@ auditorias_climaticas/
 | Productor | `02_ClimateDataAudit.ipynb` |
 | Granularidad | Resumen por corrida y tablas diagnosticas |
 | Consumidores | Reglas, alcance y documentacion |
-| Estado | Precipitacion amplia; humedad Cundinamarca 2025; otras pendientes |
+| Estado | Precipitacion amplia; temperatura 2024-2025 parcial; humedad Cundinamarca 2025; otras pendientes |
 
 Los Parquet completos permanecen en Drive. Las sintesis promovidas a Git viven
 en `docs/climate_audits/`.
@@ -86,7 +86,7 @@ tests/test_<variable>_processing.py
 | Productor | Desarrollo posterior a la auditoria 02 |
 | Consumidor | Paso 03 |
 | Contenido | Columnas, unidad, deduplicacion, rechazos, cadencia y agregacion diaria |
-| Estado | Solo `PrecipitationRules.py` disponible |
+| Estado | Precipitacion validada; temperatura en piloto; humedad, presion y viento bloqueadas por marcadores explicitos |
 
 Cambiar `VARIABLE_NOMBRE` no habilita una variable sin contrato y pruebas.
 
@@ -110,7 +110,7 @@ clima_diario_sensor/
 | Productor | `03_ClimateDailyProcessor.ipynb` |
 | Granularidad | Estacion + sensor + dia |
 | Consumidor | Paso 03_01 |
-| Estado | Piloto de precipitacion: enero-febrero 2025, ambos departamentos |
+| Estado | Piloto de precipitacion validado; temperatura implementada sin salida real valida aun |
 
 Los auxiliares explican como se obtuvo cada total y se conservan con la particion.
 
@@ -135,7 +135,7 @@ auditorias_clima_diario/
 | Productor | `03_01_ClimateDailyAudit.ipynb` |
 | Granularidad | Calendario estacion-sensor-dia y resumen |
 | Consumidores | Paso 04 y revision humana |
-| Estado | Piloto de precipitacion validado |
+| Estado | Piloto de precipitacion validado; auditor de temperatura implementado y pendiente de corrida |
 
 El calendario agrega filas `NaN` para ausencias; por eso puede superar el numero
 de observaciones sin inventar mediciones.

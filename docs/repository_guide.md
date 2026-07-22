@@ -1,6 +1,6 @@
 # Guia del repositorio
 
-**Actualizado:** 21 de julio de 2026
+**Actualizado:** 22 de julio de 2026
 **Estado:** inventario vigente; revision de codigo pendiente
 
 Esta guia orienta a personas y asistentes de IA. Clasifica los archivos por su
@@ -13,8 +13,8 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 |---|---|---|
 | `ClimatePipeline/01_ClimateDataDownloader.ipynb` | Descargar Socrata por departamento, ano y mes | Activo y generico |
 | `ClimatePipeline/02_ClimateDataAudit.ipynb` | Auditar crudos y generar evidencia | Activo y generico |
-| `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Activo solo para precipitacion |
-| `ClimatePipeline/03_01_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Activo solo para precipitacion |
+| `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
+| `ClimatePipeline/03_01_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/04_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
@@ -29,9 +29,17 @@ un nombre en configuracion.
 | `PrecipitationRules.py` | Contrato subdiario a estacion-sensor-dia de precipitacion |
 | `PrecipitationDailyAudit.py` | Calendario y diagnostico diario de precipitacion |
 | `PrecipitationDailyConsolidation.py` | Contrato estacion-dia de precipitacion |
+| `TemperatureRules.py` | Contratos diarios de temperatura ambiente, minima y maxima |
+| `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
+| `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
+| `AtmosphericPressureRules.py` | Marcador bloqueante hasta definir reglas de presion |
+| `WindSpeedRules.py` | Marcador bloqueante hasta definir reglas de viento |
 | `tests/test_climate_processing.py` | Utilidades y reglas preliminares |
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 04 |
+| `tests/test_temperature_processing.py` | Contratos y despacho de temperatura |
+| `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
+| `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |
 
 Las reglas futuras deben seguir el mismo principio de separacion, no
 necesariamente copiar la misma implementacion.

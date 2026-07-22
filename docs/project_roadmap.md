@@ -1,6 +1,6 @@
 # Roadmap de extremo a extremo de RAIZ
 
-**Actualizado:** 21 de julio de 2026
+**Actualizado:** 22 de julio de 2026
 **Estado:** vigente
 **Alcance territorial:** Boyaca y Cundinamarca
 
@@ -35,11 +35,11 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 |---|---|---|---|
 | 0. Alcance | Pregunta, cultivos y variables acordados | El equipo comparte el mismo objetivo | En proceso |
 | 1. Inventario | Matriz de disponibilidad | Rutas y periodos sin ambiguedad | Clima parcial |
-| 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Precipitacion validada; otras parciales |
-| 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Piloto precipitacion validado |
-| 3.1 Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Piloto precipitacion validado |
+| 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Precipitacion validada; temperatura en piloto; otras parciales |
+| 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Precipitacion validada; temperatura implementada |
+| 3.1 Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
 | 4. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Piloto precipitacion validado |
-| 4.1 Escala historica | Historia diaria 2021-2025 | Particiones y manifiestos completos | Pendiente |
+| 4.1 Escala operativa | Historia diaria 2024-2025 | Particiones y manifiestos completos | Pendiente |
 | 5. Municipio y periodo | Indicadores municipio-periodo | Llaves unicas y cobertura visible | Pendiente |
 | 6. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
 | 7. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
@@ -70,8 +70,9 @@ hallazgos automaticamente en reglas. Para habilitar una variable se confirma:
 - Rangos, patrones sospechosos y estabilidad geografica.
 - Regla diaria defendible y versionada.
 
-La salida tecnica es un modulo con pruebas, como `PrecipitationRules.py`.
-Humedad, temperatura, presion y viento necesitan contratos propios antes del 03.
+La salida tecnica es un modulo con pruebas, como `PrecipitationRules.py` o
+`TemperatureRules.py`. Temperatura ya tiene contrato para piloto; humedad,
+presion y viento todavia necesitan contratos propios antes del 03.
 
 ## Fases 3, 3.1 y 4. Construir clima diario
 
@@ -96,9 +97,10 @@ Humedad, temperatura, presion y viento necesitan contratos propios antes del 03.
 - Registra calidad, motivos, parametros y procedencia.
 
 Los tres pasos forman un ciclo por variable. El piloto de precipitacion no
-habilita automaticamente las demas.
+habilita automaticamente las demas. Temperatura dispone de 03 y 03_01, pero su
+paso 04 permanece pendiente hasta revisar pilotos reales.
 
-## Fase 4.1. Escalar el historico
+## Fase 4.1. Escalar 2024-2025
 
 Se ejecutan 03, 03_01 y 04 por bloques manejables. Puede paralelizarse siempre
 que dos workers no escriban la misma particion. La escala termina cuando:

@@ -9,13 +9,15 @@ estado vigente del proyecto.
 
 1. [`project_status.md`](project_status.md): alcance confirmado, decisiones
    pendientes, datos disponibles y siguiente trabajo.
-2. [`project_roadmap.md`](project_roadmap.md): fases, dependencias y compuertas.
-3. [`data_artifacts.md`](data_artifacts.md): entradas y salidas persistidas.
-4. [`repository_guide.md`](repository_guide.md): mapa de notebooks y modulos.
-5. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura climatica
+2. [`climate_pipeline_guide.md`](climate_pipeline_guide.md): operacion,
+   compuertas, escalamiento y datos faltantes.
+3. [`project_roadmap.md`](project_roadmap.md): fases, dependencias y compuertas.
+4. [`data_artifacts.md`](data_artifacts.md): entradas y salidas persistidas.
+5. [`repository_guide.md`](repository_guide.md): mapa de notebooks y modulos.
+6. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura climatica
    y principios metodologicos.
-6. El documento operativo de la etapa que se vaya a ejecutar.
-7. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
+7. El documento operativo de la etapa que se vaya a ejecutar.
+8. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
 
 ## Documentos vigentes
 
@@ -25,10 +27,12 @@ estado vigente del proyecto.
 | [`project_roadmap.md`](project_roadmap.md) | Ruta completa hasta aplicacion | Planificacion y dependencias |
 | [`data_artifacts.md`](data_artifacts.md) | Productores, consumidores, rutas y estados | Contratos entre fases |
 | [`repository_guide.md`](repository_guide.md) | Notebooks, modulos y estado de revision | Navegacion del codigo |
+| [`climate_pipeline_guide.md`](climate_pipeline_guide.md) | Pipeline 01-05, compuertas, escala y faltantes | Guia tecnica principal |
 | [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-05 | Referencia arquitectonica |
 | [`climate_daily_processing.md`](climate_daily_processing.md) | Paso 03 de precipitacion: estacion-sensor-dia | Operacion |
 | [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 03_01 de precipitacion | Operacion y diagnostico |
 | [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 04 de precipitacion: estacion-dia | Contrato validado |
+| [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 03_01 de temperatura | Operacion y limites |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
 
 ## Investigacion y catalogos

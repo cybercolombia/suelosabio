@@ -1,6 +1,6 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 21 de julio de 2026
+**Actualizado:** 22 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
@@ -19,6 +19,7 @@ el conjunto de predictores y el modelo aun no estan cerrados.
 |---|---|
 | Departamentos | Boyaca y Cundinamarca |
 | Periodo climatico disponible | 2021-2025 |
+| Periodo operativo a curar ahora | 2024-2025 completos para las variables aprobadas |
 | Fuente agricola candidata principal | EVA UPRA 2019-2025 |
 | Unidad candidata | Municipio + ano + periodo + cultivo |
 | Target candidato | Rendimiento en toneladas por hectarea |
@@ -50,7 +51,9 @@ departamentos, cinco anos y doce meses.
 | Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
 | Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
 | Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
-| Temperatura ambiente/minima/maxima | Fuentes candidatas en el catalogo | No confirmada | Pendiente | Pendientes | Alta utilidad potencial |
+| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados por auditorias | Ambos departamentos; 2024 y 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; no escalar aun |
+| Temperatura minima | `afdg-3zpb` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
+| Temperatura maxima | `ccvq-rp9s` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
 
 `Completo estructuralmente` significa que existen las carpetas esperadas; no
 garantiza cobertura interna, calidad ni continuidad temporal.
@@ -72,11 +75,11 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | Paso | Producto | Estado actual |
 |---|---|---|
 | 01 Descarga | `clima_crudo` | Validado para cuatro variables disponibles |
-| 02 Auditoria cruda | Evidencia para reglas por variable | Motor generico disponible; cobertura desigual por variable |
-| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion validada en cuatro pilotos de 2025 |
-| 03_01 Auditoria diaria | `auditorias_clima_diario` | Precipitacion piloto validada |
+| 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
+| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
+| 03_01 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
 | 04 Consolidacion | `clima_diario_curado` | Precipitacion piloto validada en Colab |
-| Escala historica | Precipitacion 2021-2025 | Pendiente |
+| Escala operativa | Variables aprobadas 2024-2025 | Pendiente |
 | 05 Municipio y periodo | `clima_municipal` e indicadores | No implementado |
 | EVA y DIVIPOLA | Agricultura y geografia curadas | Pendiente de acceso y validacion |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
@@ -94,13 +97,16 @@ umbrales y criterios de calidad.
 
 ## Prioridades actuales
 
-1. Escalar el pipeline validado de precipitacion al periodo 2021-2025.
-2. Ejecutar auditorias 02 suficientes para las variables adicionales que el
+1. Ejecutar y auditar pilotos reales de temperatura ambiente de enero-febrero
+   de 2025 antes de definir su consolidacion.
+2. Curar precipitacion y las variables aprobadas para 2024-2025; 2021-2023
+   quedan como ampliacion posterior.
+3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-3. Ubicar y curar EVA y DIVIPOLA sin esperar a terminar todas las variables.
-4. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
+4. Ubicar y curar EVA y DIVIPOLA sin esperar a terminar todas las variables.
+5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
-5. Implementar el paso 05 solo cuando exista historia diaria consolidada y una
+6. Implementar el paso 05 solo cuando exista historia diaria consolidada y una
    geografia canonica defendible.
 
 El orden completo y sus compuertas se mantienen en
