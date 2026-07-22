@@ -95,9 +95,10 @@ regla aplicada.
 6. Revisar el manifiesto, el resumen de calidad y la cuarentena.
 7. Volver a dejar la bandera de ejecucion en `False` antes de guardar.
 
-## Resultado esperado del piloto
+## Resultado validado del piloto
 
-La validacion local sobre la auditoria ejecutada produjo:
+La ejecucion en Colab del 21 de julio de 2026, con el commit `2022486`, termino
+en estado `COMPLETA` en 38,4 segundos y reprodujo la validacion local:
 
 - 5.198 filas estacion-dia.
 - 2.492 dias con precipitacion aceptada.
@@ -106,5 +107,7 @@ La validacion local sobre la auditoria ejecutada produjo:
 - Siete dias con sensores discrepantes.
 - Un sensor en cuarentena: `0035215030`/`0240`.
 
-Estas cifras deben reproducirse en Colab antes de preparar el historico o el
+Las 5.198 llaves estacion-dia son unicas. Ninguna ausencia, discrepancia ni fila
+del sensor en cuarentena recibio precipitacion aceptada; el maximo aceptado fue
+174 mm. El piloto queda listo para preparar el procesamiento historico antes del
 agregado municipal.
