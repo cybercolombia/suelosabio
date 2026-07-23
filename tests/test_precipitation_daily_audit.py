@@ -163,6 +163,8 @@ class ClimateDailyAuditNotebookTest(unittest.TestCase):
             exec(compile(source, f"cell_{index}", "exec"), namespace)
 
         self.assertFalse(namespace["EJECUTAR_AUDITORIA_DIARIA"])
+        self.assertFalse(namespace["EJECUTAR_GRAFICA_INTERACTIVA"])
+        self.assertFalse(namespace["GRAFICA_USAR_RESULTADO_EN_MEMORIA"])
         self.assertIsNone(namespace["resultado_auditoria"])
         self.assertEqual(
             namespace["AUDIT_VERSION"], "auditoria_precipitacion_diaria_v2"

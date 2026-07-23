@@ -13,6 +13,29 @@ terminaron el paso 03 y producen 42.190 filas estacion-sensor-dia. El paso 04
 tambien termino sobre las 48 y detecto una nueva estacion atipica que debe
 resolverse antes de consolidar con 05.
 
+```mermaid
+flowchart LR
+    P01[01 Descarga<br/>disponible] --> P02[02 Auditoria cruda<br/>aprobada]
+    P02 --> R03[Reglas 03<br/>validadas]
+    R03 --> P03[03 Diario por sensor<br/>48/48 completa]
+    P03 --> P04[04 Auditoria diaria<br/>ejecutada]
+    P04 --> G{Resolver<br/>3505500121/0240}
+    G --> R05[Reglas 05 v2<br/>pendientes]
+    R05 --> P05[05 Curado estacion-dia<br/>pendiente]
+    P05 --> CURADO[(Precipitacion diaria<br/>curada 2024-2025)]
+
+    classDef done fill:#e8f0e8,stroke:#315a3b,color:#17351e;
+    classDef progress fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
+    classDef pending fill:#eeeeee,stroke:#666666,color:#333333;
+    class P01,P02,R03,P03,P04 done;
+    class G progress;
+    class R05,P05,CURADO pending;
+```
+
+La variable esta al final del bucle 04: no necesita repetir descarga ni
+procesamiento diario. El siguiente cambio pertenece al contrato de 05 y debe
+conservar cuarentenas por intervalo, motivo y evidencia.
+
 ## 01. Descarga cruda
 
 **Estado de etapa:** `[P]` disponible estructuralmente; integridad final pendiente.

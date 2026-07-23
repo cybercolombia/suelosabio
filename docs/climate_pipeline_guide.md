@@ -1,6 +1,6 @@
 # Guia operativa del pipeline climatico
 
-**Actualizado:** 22 de julio de 2026  
+**Actualizado:** 23 de julio de 2026
 **Estado:** vigente  
 **Objetivo operativo actual:** producir datos climaticos diarios curados de
 Boyaca y Cundinamarca para 2024 y 2025
@@ -23,36 +23,44 @@ flowchart TD
     AUDIT_RAW[(auditorias_climaticas<br/>inventario y evidencia)]
     GATE_RULES{Contrato de variable<br/>y pruebas aprobados?}
     BLOCKED[⚠ Variable bloqueada<br/>faltan reglas y evidencia]
-    RULES[Rules.py + pruebas<br/>contrato versionado]
+    RULES03[Rules.py + pruebas<br/>contrato de transformacion]
     P03[03 - Procesamiento diario<br/>todas las filas de la particion]
     DAILY_SENSOR[(clima_diario_sensor<br/>estacion + sensor + dia)]
+    RULES04[DailyAudit.py + pruebas<br/>contrato de diagnostico]
     P04[04 - Auditoria diaria]
     AUDIT_DAILY[(auditorias_clima_diario<br/>calendario, cobertura y sensores)]
     MISSING[Ausencias = NaN + calidad<br/>no imputacion silenciosa]
     GATE_DAILY{Cobertura, extremos y<br/>sensores defendibles?}
+    RULES05[DailyConsolidation.py + pruebas<br/>seleccion y cuarentenas]
     P05[05 - Consolidacion con<br/>reglas propias de la variable]
     CURATED[(clima_diario_curado<br/>estacion + dia + calidad)]
     GEO[Catalogo esperado de estaciones<br/>y geografia canonica]
     P06[06 - Agregacion geografica<br/>y temporal]
+    MUNICIPAL[(municipio + dia<br/>valor y cobertura)]
+    GATE_IMPUTE{Imputacion aporta valor<br/>y fue validada temporalmente?}
+    IMPUTE[Capa imputada versionada<br/>valor + metodo + bandera]
     FEATURES[(municipio-dia e<br/>indicadores municipio-periodo)]
 
     API --> P01 --> RAW --> P02 --> AUDIT_RAW --> GATE_RULES
     GATE_RULES -- No --> BLOCKED
     BLOCKED -. ampliar auditoria 02 .-> P02
-    GATE_RULES -- Si --> RULES --> P03 --> DAILY_SENSOR --> P04
+    GATE_RULES -- Si --> RULES03 --> P03 --> DAILY_SENSOR --> RULES04 --> P04
     P04 --> AUDIT_DAILY --> GATE_DAILY
     AUDIT_DAILY -. materializa calendario .-> MISSING
-    GATE_DAILY -- Ajustar contrato --> RULES
-    GATE_DAILY -- Aprobar --> P05 --> CURATED
-    CURATED --> GEO --> P06 --> FEATURES
+    GATE_DAILY -- Ajustar transformacion --> RULES03
+    GATE_DAILY -- Ajustar diagnostico --> RULES04
+    GATE_DAILY -- Aprobar reglas de curado --> RULES05 --> P05 --> CURATED
+    CURATED --> GEO --> P06 --> MUNICIPAL --> GATE_IMPUTE
+    GATE_IMPUTE -- No o no justificada --> FEATURES
+    GATE_IMPUTE -- Si --> IMPUTE --> FEATURES
 
     classDef data fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef process fill:#e8eef5,stroke:#365b7d,color:#18344d;
     classDef gate fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef blocked fill:#f9dddd,stroke:#a33b3b,color:#5c1717;
-    class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,FEATURES data;
-    class P01,P02,RULES,P03,P04,P05,GEO,P06 process;
-    class GATE_RULES,GATE_DAILY gate;
+    class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,MUNICIPAL,FEATURES data;
+    class P01,P02,RULES03,P03,RULES04,P04,RULES05,P05,GEO,P06,IMPUTE process;
+    class GATE_RULES,GATE_DAILY,GATE_IMPUTE gate;
     class BLOCKED,MISSING blocked;
 ```
 
@@ -61,6 +69,12 @@ La auditoria 04 responde si la transformacion produjo una serie diaria
 defendible. Ninguna reemplaza a la otra. Las flechas de retorno son
 deliberadas: un hallazgo puede exigir modificar el contrato y repetir el piloto
 antes de consolidar o escalar.
+
+Los contratos tambien estan separados por etapa. `Rules.py` decide como pasar
+de observaciones subdiarias a estacion-sensor-dia; `DailyAudit.py` decide que
+diagnosticar; `DailyConsolidation.py` decide seleccion de sensores, cobertura y
+cuarentenas. Una correccion de 05 no obliga a reprocesar 03 si la suma o
+estadistica diaria original sigue siendo trazable.
 
 ## Responsabilidad y compuerta de cada paso
 
@@ -245,6 +259,13 @@ Opciones que pueden evaluarse despues, sin aprobarlas todavia:
 
 La imputacion es una fase explicita y versionada, no una correccion silenciosa
 dentro del procesamiento diario.
+
+Para precipitacion, la politica candidata sigue siendo no interpolar lluvia.
+Primero se intenta conservar otra estacion o sensor defendible y se calcula la
+cobertura del municipio-periodo. Un periodo sin cobertura suficiente permanece
+en `NaN`. Para variables continuas como temperatura, humedad o presion se puede
+evaluar una capa imputada separada, pero el producto observado nunca se
+sobrescribe.
 
 ## Instrucciones para asistentes de IA
 

@@ -100,3 +100,28 @@ las reglas que aplicara el notebook 05.
 
 La implementacion de esas reglas y su operacion segura se documentan en
 [`climate_daily_consolidation.md`](climate_daily_consolidation.md).
+
+## Visualizacion interactiva
+
+El final del notebook incluye una celda opcional con Plotly. Permite escoger un
+par estacion-sensor y recorrer toda su serie con zoom, desplazamiento, botones
+de rango y control inferior de fechas.
+
+```python
+EJECUTAR_GRAFICA_INTERACTIVA = True
+GRAFICA_USAR_RESULTADO_EN_MEMORIA = False
+GRAFICA_DEPARTAMENTO = 'CUNDINAMARCA'
+GRAFICA_ESTACION = '3505500121'
+GRAFICA_SENSOR = '0240'
+```
+
+Con `GRAFICA_USAR_RESULTADO_EN_MEMORIA=False`, la vista evita resultados viejos
+del runtime y lee la auditoria indicada por `AUDIT_OUTPUT_DIR`.
+
+La figura superior muestra solamente valores observados y mantiene los huecos.
+La franja inferior distingue dias observados y ausentes; un punto ausente nunca
+se dibuja como lluvia cero. Si la auditoria no esta cargada en memoria, la celda
+lee `calendario_estacion_sensor.parquet` de `AUDIT_OUTPUT_DIR`.
+
+La visualizacion es diagnostica. No agrega estaciones, no selecciona sensores y
+no modifica ningun Parquet.
