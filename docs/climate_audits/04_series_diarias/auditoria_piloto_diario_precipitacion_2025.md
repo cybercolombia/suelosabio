@@ -2,7 +2,7 @@
 
 > **Estado:** evidencia historica de la compuerta 04. Las reglas propuestas
 > aqui ya fueron implementadas y validadas por 05. Consulte
-> [`../climate_daily_consolidation.md`](../climate_daily_consolidation.md) para el
+> [`../../climate_daily_consolidation.md`](../../climate_daily_consolidation.md) para el
 > contrato vigente y sus resultados.
 
 Este reporte compara las cuatro particiones piloto producidas por

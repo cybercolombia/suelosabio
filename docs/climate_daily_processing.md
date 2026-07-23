@@ -80,9 +80,11 @@ Secuencia segura en Colab:
 2. Ejecutar las celdas hasta visualizar el plan y confirmar entrada y salida.
 3. Asignar un `WORKER_ID` que no contenga correo ni datos personales.
 4. Verificar que ninguna otra cuenta tenga asignada la misma particion.
-5. Cambiar `EJECUTAR_PROCESAMIENTO` a `True` y ejecutar la celda final.
-6. Revisar que `manifest.json` indique `COMPLETA` y conservar el resumen.
-7. Volver a dejar la bandera en `False` antes de guardar el notebook.
+5. Cambiar `EJECUTAR_PROCESAMIENTO` a `True` y ejecutar nuevamente la celda de
+   configuracion para actualizar la bandera y revisar otra vez el plan.
+6. Ejecutar la celda final protegida.
+7. Revisar que `manifest.json` indique `COMPLETA` y conservar el resumen.
+8. Volver a dejar la bandera en `False` antes de guardar el notebook.
 
 `SOBRESCRIBIR_RESULTADOS=False` es la opcion normal. Una particion completa se
 omite al repetirla. Una particion incompleta produce un error deliberado; no se

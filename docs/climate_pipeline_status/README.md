@@ -22,7 +22,7 @@ cientifica esten aprobados.
 
 | Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Municipio |
 |---|---|---|---|---|---|---|---|
-| [Precipitacion](precipitacion.md) | `[P]` | `[P]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` |
+| [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` |
 | [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |

@@ -118,4 +118,3 @@ de cambios geograficos relevantes.
 6. Conservar conteos de observaciones y banderas de calidad por dia.
 7. Refinar el control geografico usando una distancia minima significativa.
 8. No imputar observaciones subdiarias en esta etapa.
-

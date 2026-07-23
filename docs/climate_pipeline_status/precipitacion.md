@@ -27,23 +27,25 @@ cerrarse tambien sobre las 48 antes de pasar a municipio.
 
 ## 02. Auditoria de datos crudos
 
-**Estado de etapa:** `[P]` evidencia suficiente para el piloto; cierre 2024 pendiente.
+**Estado de etapa:** `[X]` evidencia aprobada para escalar 2024-2025.
 
 - [X] Auditados 2021, 2023 y 2025 en ambos departamentos.
+- [X] Auditadas muestras estratificadas de los doce meses de 2024 en ambos departamentos.
 - [X] Identificados duplicados exactos, cadencias de 2, 10 y 60 minutos y sensores paralelos.
 - [X] Confirmada la ausencia transversal del 5 al 25 de febrero de 2025.
 - [X] Identificado el patron instrumental sospechoso `0035215030` / `0240`.
-- [ ] Auditar muestras contrastantes de 2024 en ambos departamentos.
-- [ ] Comparar 2024 contra los patrones que sustentan el contrato vigente.
-- [ ] Publicar sintesis de cierre de la auditoria cruda 2024-2025.
+- [X] Confirmadas tambien cadencias de 1 minuto en 2024, ya admitidas por el contrato.
+- [X] Comparado 2024 contra los patrones que sustentan el contrato vigente.
+- [X] Publicada la sintesis de cierre de la auditoria cruda de 2024.
 
 Evidencia:
 
-- [`../climate_audits/auditoria_precipitacion_boyaca_2021_2023.md`](../climate_audits/auditoria_precipitacion_boyaca_2021_2023.md)
-- [`../climate_audits/auditoria_precipitacion_boyaca_2025.md`](../climate_audits/auditoria_precipitacion_boyaca_2025.md)
-- [`../climate_audits/auditoria_precipitacion_cundinamarca_2021_2023.md`](../climate_audits/auditoria_precipitacion_cundinamarca_2021_2023.md)
-- [`../climate_audits/auditoria_precipitacion_cundinamarca_2025.md`](../climate_audits/auditoria_precipitacion_cundinamarca_2025.md)
-- [`../climate_audits/alerta_cobertura_febrero_2025.md`](../climate_audits/alerta_cobertura_febrero_2025.md)
+- [`../climate_audits/02_datos_crudos/auditoria_precipitacion_boyaca_2021_2023.md`](../climate_audits/02_datos_crudos/auditoria_precipitacion_boyaca_2021_2023.md)
+- [`../climate_audits/02_datos_crudos/auditoria_precipitacion_boyaca_2025.md`](../climate_audits/02_datos_crudos/auditoria_precipitacion_boyaca_2025.md)
+- [`../climate_audits/02_datos_crudos/auditoria_precipitacion_cundinamarca_2021_2023.md`](../climate_audits/02_datos_crudos/auditoria_precipitacion_cundinamarca_2021_2023.md)
+- [`../climate_audits/02_datos_crudos/auditoria_precipitacion_cundinamarca_2025.md`](../climate_audits/02_datos_crudos/auditoria_precipitacion_cundinamarca_2025.md)
+- [`../climate_audits/02_datos_crudos/auditoria_precipitacion_2024.md`](../climate_audits/02_datos_crudos/auditoria_precipitacion_2024.md)
+- [`../climate_audits/transversales/alerta_cobertura_febrero_2025.md`](../climate_audits/transversales/alerta_cobertura_febrero_2025.md)
 
 ## Contrato de variable
 
@@ -88,7 +90,7 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 - [ ] Aprobar o versionar de nuevo las reglas antes de consolidar a escala.
 
 Evidencia del piloto:
-[`../climate_audits/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/auditoria_piloto_diario_precipitacion_2025.md).
+[`../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md).
 
 ## 05. Consolidacion diaria por estacion
 
@@ -118,8 +120,25 @@ Contrato y resultado piloto:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar 02 sobre muestras de 2024 en ambos departamentos.
-2. Si el contrato sigue siendo defendible, repartir las 44 particiones pendientes de 03 entre workers sin solapamientos.
-3. Reconciliar los 48 manifiestos de 03.
-4. Ejecutar 04 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
-5. Revisar la evidencia de cierre antes de ejecutar 05 a escala.
+1. Repartir las 44 particiones pendientes de 03 entre workers sin solapamientos.
+2. Reconciliar los 48 manifiestos de 03.
+3. Ejecutar 04 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
+4. Revisar la evidencia de cierre antes de ejecutar 05 a escala.
+
+## Plan de ejecucion del paso 03
+
+Los cuatro bloques tienen volumen semejante y no se solapan. Enero y febrero de
+2025 no se incluyen porque sus cuatro particiones piloto ya estan `COMPLETA`.
+
+| Estado | Worker sugerido | Departamento | Ano | Meses | Particiones | Filas crudas aproximadas |
+|---|---|---|---:|---|---:|---:|
+| `[ ]` | `w_precip_boyaca_2024` | Boyaca | 2024 | 1-12 | 12 | 1.716.496 |
+| `[ ]` | `w_precip_cundinamarca_2024` | Cundinamarca | 2024 | 1-12 | 12 | 1.866.195 |
+| `[ ]` | `w_precip_boyaca_2025_m03_m12` | Boyaca | 2025 | 3-12 | 10 | 1.919.746 |
+| `[ ]` | `w_precip_cundinamarca_2025_m03_m12` | Cundinamarca | 2025 | 3-12 | 10 | 1.916.182 |
+
+Configuracion comun: `MAX_PARTICIONES=None`,
+`SOBRESCRIBIR_RESULTADOS=False` y primero
+`EJECUTAR_PROCESAMIENTO=False` para revisar el plan. Cada cuenta cambia despues
+la bandera a `True`, reejecuta la celda de configuracion para actualizar el
+valor en memoria y finalmente ejecuta la celda protegida.

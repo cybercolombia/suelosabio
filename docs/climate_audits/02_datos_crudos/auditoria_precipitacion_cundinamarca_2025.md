@@ -197,4 +197,3 @@ Sus riesgos principales son:
 ## Fuente
 
 - [Precipitacion - Datos Abiertos Colombia](https://www.datos.gov.co/Ambiente-y-Desarrollo-Sostenible/Precipitaci-n/s54a-sgyg)
-

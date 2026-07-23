@@ -17,4 +17,4 @@
 Siguiente paso: completar 02 en ambos departamentos y anos objetivo, redactar el
 contrato de humedad, agregar pruebas y ejecutar un piloto de enero-febrero de
 2025. Evidencia disponible:
-[`../climate_audits/auditoria_humedad_cundinamarca_2025.md`](../climate_audits/auditoria_humedad_cundinamarca_2025.md).
+[`../climate_audits/02_datos_crudos/auditoria_humedad_cundinamarca_2025.md`](../climate_audits/02_datos_crudos/auditoria_humedad_cundinamarca_2025.md).

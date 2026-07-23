@@ -47,7 +47,7 @@ departamentos, cinco anos y doce meses.
 
 | Variable | Dataset | Crudo 2021-2025 | Auditoria 02 | Reglas diarias | Estado |
 |---|---|---:|---|---|---|
-| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023 y 2025 | Piloto 03-05 validado | Prioritaria y lista para escalar |
+| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023, 2024 y 2025 | Piloto 03-05 validado | Prioritaria y lista para escalar |
 | Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
 | Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
 | Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |

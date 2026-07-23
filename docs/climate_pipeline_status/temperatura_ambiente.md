@@ -16,4 +16,4 @@
 
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y
-[`../climate_audits/auditoria_temperatura_2024_2025.md`](../climate_audits/auditoria_temperatura_2024_2025.md).
+[`../climate_audits/02_datos_crudos/auditoria_temperatura_2024_2025.md`](../climate_audits/02_datos_crudos/auditoria_temperatura_2024_2025.md).

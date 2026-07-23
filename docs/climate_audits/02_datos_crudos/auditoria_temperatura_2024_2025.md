@@ -38,7 +38,7 @@ reporta haber descargado tambien 2024; esa existencia debe verificarse en
 
 La evidencia transversal y la diferencia entre caida de volumen y hueco diario
 confirmado se detallan en
-[`alerta_cobertura_febrero_2025.md`](alerta_cobertura_febrero_2025.md).
+[`../transversales/alerta_cobertura_febrero_2025.md`](../transversales/alerta_cobertura_febrero_2025.md).
 
 ## Evidencia por fuente
 
