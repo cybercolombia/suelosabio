@@ -37,15 +37,15 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 1. Inventario | Matriz de disponibilidad | Rutas y periodos sin ambiguedad | Clima parcial |
 | 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Precipitacion validada; temperatura en piloto; otras parciales |
 | 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Precipitacion validada; temperatura implementada |
-| 3.1 Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
-| 4. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Piloto precipitacion validado |
-| 4.1 Escala operativa | Historia diaria 2024-2025 | Particiones y manifiestos completos | Pendiente |
-| 5. Municipio y periodo | Indicadores municipio-periodo | Llaves unicas y cobertura visible | Pendiente |
-| 6. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
-| 7. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
-| 8. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Pendiente |
-| 9. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
-| 10. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
+| 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
+| 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Piloto precipitacion validado |
+| 5.1 Escala operativa | Historia diaria 2024-2025 | Particiones y manifiestos completos | Pendiente |
+| 6. Municipio y periodo | Indicadores municipio-periodo | Llaves unicas y cobertura visible | Pendiente |
+| 7. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
+| 8. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
+| 9. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Pendiente |
+| 10. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
+| 11. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
 
 ## Fase 0. Cerrar una pregunta viable
 
@@ -74,7 +74,7 @@ La salida tecnica es un modulo con pruebas, como `PrecipitationRules.py` o
 `TemperatureRules.py`. Temperatura ya tiene contrato para piloto; humedad,
 presion y viento todavia necesitan contratos propios antes del 03.
 
-## Fases 3, 3.1 y 4. Construir clima diario
+## Fases 3, 4 y 5. Construir clima diario
 
 ### Paso 03: estacion-sensor-dia
 
@@ -83,26 +83,26 @@ presion y viento todavia necesitan contratos propios antes del 03.
 - Agrega segun la semantica de la variable.
 - Conserva cobertura, procedencia y regla aplicada.
 
-### Paso 03_01: auditoria diaria
+### Paso 04: auditoria diaria
 
 - Construye un calendario explicito y diferencia cero de ausencia.
 - Examina cobertura, extremos y continuidad.
 - Compara sensores paralelos sin mezclarlos.
 - Propone ajustes al contrato diario.
 
-### Paso 04: estacion-dia consolidado
+### Paso 05: estacion-dia consolidado
 
 - Aplica el contrato versionado y selecciona sensor con reglas defendibles.
 - Conserva desacuerdos y ausencias como `NaN`.
 - Registra calidad, motivos, parametros y procedencia.
 
 Los tres pasos forman un ciclo por variable. El piloto de precipitacion no
-habilita automaticamente las demas. Temperatura dispone de 03 y 03_01, pero su
-paso 04 permanece pendiente hasta revisar pilotos reales.
+habilita automaticamente las demas. Temperatura dispone de 03 y 04, pero su
+paso 05 permanece pendiente hasta revisar pilotos reales.
 
-## Fase 4.1. Escalar 2024-2025
+## Fase 5.1. Escalar 2024-2025
 
-Se ejecutan 03, 03_01 y 04 por bloques manejables. Puede paralelizarse siempre
+Se ejecutan 03, 04 y 05 por bloques manejables. Puede paralelizarse siempre
 que dos workers no escriban la misma particion. La escala termina cuando:
 
 - Todas las particiones esperadas tienen manifiesto `COMPLETA`.
@@ -111,7 +111,7 @@ que dos workers no escriban la misma particion. La escala termina cuando:
 - Las cuarentenas y cambios de regla quedan versionados.
 - Una repeticion no duplica ni mezcla salidas.
 
-## Fase 5. Geografia, municipio y periodos
+## Fase 6. Geografia, municipio y periodos
 
 ```text
 estacion-sensor-dia -> estacion-dia -> municipio-dia -> municipio-periodo
@@ -128,7 +128,7 @@ mensual o bloques inicio-mitad-fin para no esconder la distribucion temporal.
 La salida incluye dias esperados, dias observados, cobertura, brecha maxima y
 numero de estaciones. No se extrapolan sumas ni se imputan municipios en silencio.
 
-## Fase 6. Curar EVA
+## Fase 7. Curar EVA
 
 - Confirmar archivo, hoja, encabezados y periodo.
 - Normalizar codigos DANE como texto.
@@ -142,7 +142,7 @@ numero de estaciones. No se extrapolan sumas ni se imputan municipios en silenci
 La salida tiene llave agricola unica y reporte de inclusiones, exclusiones y
 diferencias frente al rendimiento publicado.
 
-## Fase 7. Dataset maestro
+## Fase 8. Dataset maestro
 
 El cruce usa codigo municipal, ano, periodo y cultivo. Valida cardinalidad,
 reporta filas antes y despues, lista periodos sin clima y conserva calidad.
@@ -154,7 +154,7 @@ reporta filas antes y despues, lista periodos sin clima y conserva calidad.
 El dataset maestro es la unica entrada analitica. No se releen crudos para cada
 grafica o entrenamiento.
 
-## Fase 8. EDA y modelado
+## Fase 9. EDA y modelado
 
 - Separar entrenamiento y prueba por tiempo.
 - Comparar contra baselines calculados solo con entrenamiento.
@@ -165,7 +165,7 @@ grafica o entrenamiento.
 
 No superar el baseline sigue siendo un resultado valido si se reporta con rigor.
 
-## Fases 9 y 10. Publicacion y aplicacion
+## Fases 10 y 11. Publicacion y aplicacion
 
 La aplicacion consume artefactos pequenos y versionados. No descarga Socrata, no
 abre miles de Parquet, no limpia EVA y no entrena al iniciar.

@@ -91,7 +91,7 @@ debe activar la sobrescritura sin revisar primero por que se interrumpio.
 ## Pilotos requeridos
 
 **Estado actual:** completados y comparados. El contrato fue validado despues
-por 03_01 y 04; esta tabla se conserva como trazabilidad del piloto.
+por 04 y 05; esta tabla se conserva como trazabilidad del piloto.
 
 | Worker | Departamento | Ano | Mes | Objetivo |
 |---|---|---:|---:|---|
@@ -102,7 +102,7 @@ por 03_01 y 04; esta tabla se conserva como trazabilidad del piloto.
 
 La compuerta de los cuatro pilotos ya fue superada. El historico 2021-2025 puede
 escalarse usando las reglas versionadas y conservando manifiestos por particion.
-La auditoria `03_01_ClimateDailyAudit.ipynb` definio cobertura minima,
+La auditoria `04_ClimateDailyAudit.ipynb` definio cobertura minima,
 tratamiento de sensores paralelos y criterios para valores sospechosos. Su
 configuracion y productos se describen en
 [`climate_daily_audit.md`](climate_daily_audit.md).

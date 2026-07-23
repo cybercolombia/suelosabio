@@ -109,12 +109,12 @@ clima_diario_sensor/
 |---|---|
 | Productor | `03_ClimateDailyProcessor.ipynb` |
 | Granularidad | Estacion + sensor + dia |
-| Consumidor | Paso 03_01 |
+| Consumidor | Paso 04 |
 | Estado | Piloto de precipitacion validado; temperatura implementada sin salida real valida aun |
 
 Los auxiliares explican como se obtuvo cada total y se conservan con la particion.
 
-### 03_01. Auditoria diaria
+### 04. Auditoria diaria
 
 ```text
 auditorias_clima_diario/
@@ -132,15 +132,15 @@ auditorias_clima_diario/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `03_01_ClimateDailyAudit.ipynb` |
+| Productor | `04_ClimateDailyAudit.ipynb` |
 | Granularidad | Calendario estacion-sensor-dia y resumen |
-| Consumidores | Paso 04 y revision humana |
+| Consumidores | Paso 05 y revision humana |
 | Estado | Piloto de precipitacion validado; auditor de temperatura implementado y pendiente de corrida |
 
 El calendario agrega filas `NaN` para ausencias; por eso puede superar el numero
 de observaciones sin inventar mediciones.
 
-### 04. Clima diario consolidado
+### 05. Clima diario consolidado
 
 ```text
 clima_diario_curado/
@@ -157,9 +157,9 @@ clima_diario_curado/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `04_ClimateDailyConsolidator.ipynb` |
+| Productor | `05_ClimateDailyConsolidator.ipynb` |
 | Granularidad | Estacion + dia |
-| Consumidor | Paso 05 |
+| Consumidor | Paso 06 |
 | Estado | Piloto de precipitacion validado |
 
 El valor, sensor seleccionado, calidad, motivo y regla viajan juntos. Ausencias,
@@ -176,13 +176,13 @@ geografia_curada/estaciones_municipio.parquet
 |---|---|
 | Productor | Curacion DIVIPOLA y reglas geograficas por definir |
 | Granularidad | Municipio; estacion-periodo |
-| Consumidores | Pasos 05, 06 y 07 |
+| Consumidores | Pasos 06, 07 y 08 |
 | Estado | Planeado |
 
 Debe conservar codigo DANE, nombres canonicos, coordenadas, fuente, periodo de
 validez y evidencia de reasignaciones.
 
-### 05. Clima municipal e indicadores
+### 06. Clima municipal e indicadores
 
 ```text
 clima_municipal/variable=<variable>/municipio_dia.parquet
@@ -193,7 +193,7 @@ indicadores_climaticos/quality_report.md
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `05_ClimateMunicipalAggregator.ipynb` |
+| Productor | Futuro `06_ClimateMunicipalAggregator.ipynb` |
 | Granularidad | Municipio-dia y municipio-periodo |
 | Consumidores | Dataset maestro y EDA climatico |
 | Estado | Planeado |
@@ -201,7 +201,7 @@ indicadores_climaticos/quality_report.md
 Conserva cobertura, brecha maxima, estaciones y dispersion. Las agregaciones
 dependen de variable y periodo agricola; no se reducen todas a una media.
 
-### 06. Agricultura curada
+### 07. Agricultura curada
 
 ```text
 agricultura_curada/eva_curada.parquet
@@ -211,14 +211,14 @@ agricultura_curada/quality_report.md
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `06_EvaCurator.ipynb` |
+| Productor | Futuro `07_EvaCurator.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
-| Consumidor | Paso 07 |
+| Consumidor | Paso 08 |
 | Estado | Planeado |
 
 El nombre no incluye papa porque el conjunto puede contener uno o dos cultivos.
 
-### 07. Dataset maestro
+### 08. Dataset maestro
 
 ```text
 dataset_maestro/version=<version>/
@@ -230,15 +230,15 @@ dataset_maestro/version=<version>/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `07_MasterDatasetBuilder.ipynb` |
+| Productor | Futuro `08_MasterDatasetBuilder.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
-| Consumidor | Paso 08 exclusivamente |
+| Consumidor | Paso 09 exclusivamente |
 | Estado | Planeado |
 
 Conserva procedencia, variables, target, calidad y perdidas del cruce. Produccion
 y area auditan el target, pero no son features si rendimiento se calcula con ellas.
 
-### 08. Corridas de modelado
+### 09. Corridas de modelado
 
 ```text
 model_runs/run=<id>/
@@ -252,7 +252,7 @@ model_runs/run=<id>/
 Cada corrida registra dataset maestro, corte temporal, baseline, features,
 parametros, metricas y commit. Su estado es planeado.
 
-### 09. Artefactos para aplicacion
+### 10. Artefactos para aplicacion
 
 ```text
 artifacts/release=<version>/
@@ -265,7 +265,7 @@ artifacts/release=<version>/
   figures/
 ```
 
-El futuro `09_ArtifactsPublisher.ipynb` selecciona una corrida aprobada; no
+El futuro `10_ArtifactsPublisher.ipynb` selecciona una corrida aprobada; no
 recalcula el pipeline. La aplicacion consume esta salida sin montar Drive.
 
 ## Reglas de trazabilidad

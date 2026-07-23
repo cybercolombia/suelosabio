@@ -9,11 +9,10 @@
 - [ ] **02 Auditoria cruda:** no existe una sintesis aprobada para definir reglas.
 - [ ] **Contrato:** `WindSpeedRules.py` es un marcador bloqueante.
 - [ ] **03 Diario por sensor:** bloqueado hasta confirmar unidad, rango, calma, cadencia, conflictos y estadisticos diarios.
-- [ ] **03_01 Auditoria diaria:** pendiente.
-- [ ] **04 Curado por estacion:** pendiente.
+- [ ] **04 Auditoria diaria:** pendiente.
+- [ ] **05 Curado por estacion:** pendiente.
 - [ ] **Escala 2024-2025:** no autorizada.
-- [ ] **05 Municipio y periodo:** pendiente.
+- [ ] **06 Municipio y periodo:** pendiente.
 
 Siguiente paso: ejecutar 02 sobre meses contrastantes de 2024-2025 en ambos
 departamentos y convertir los hallazgos en un contrato con pruebas.
-

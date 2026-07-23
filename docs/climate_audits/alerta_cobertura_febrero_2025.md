@@ -25,7 +25,7 @@ frecuencia de sensores, no la magnitud fisica de lluvia, temperatura o humedad.
 
 ## Lo demostrado y lo pendiente
 
-Para precipitacion, 03_01 demostro que los dos departamentos carecen por
+Para precipitacion, 04 demostro que los dos departamentos carecen por
 completo de observaciones entre el 5 y el 25 de febrero. Una consulta directa a
 Socrata confirmo que el hueco ya existe en la fuente y no fue creado por la
 descarga local.
@@ -33,7 +33,7 @@ descarga local.
 Para temperatura y humedad esta tabla confirma una caida de volumen muy similar,
 pero las auditorias disponibles no han construido todavia un calendario diario
 completo para demostrar que coincidan exactamente los mismos 21 dias. Esa es una
-hipotesis fuerte que debe verificarse con 03 y 03_01.
+hipotesis fuerte que debe verificarse con 03 y 04.
 
 Presion atmosferica y velocidad del viento no tienen auditorias suficientes para
 afirmar o descartar el mismo patron.
@@ -49,4 +49,3 @@ afirmar o descartar el mismo patron.
   Si lo es, una imputacion conjunta puede introducir falsa confianza y fuga.
 - La causa puede estar en adquisicion, publicacion o disponibilidad de una red
   comun de estaciones; los conteos por si solos no permiten escoger una causa.
-

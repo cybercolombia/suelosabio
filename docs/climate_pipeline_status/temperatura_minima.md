@@ -9,12 +9,11 @@
 - [P] **02 Auditoria cruda:** ambos departamentos fueron auditados para 2025; falta evidencia de 2024 y contraste temporal.
 - [P] **Contrato:** `TemperatureRules.py` implementa minimo diario y estadisticos auxiliares; falta validacion con datos reales.
 - [ ] **03 Diario por sensor:** ejecutar un piloto pequeno de 2025 despues de confirmar el crudo.
-- [ ] **03_01 Auditoria diaria:** revisar calendario, cobertura, extremos y coherencia con temperatura ambiente/maxima.
-- [ ] **04 Curado por estacion:** contrato no implementado; no usar reglas de precipitacion.
+- [ ] **04 Auditoria diaria:** revisar calendario, cobertura, extremos y coherencia con temperatura ambiente/maxima.
+- [ ] **05 Curado por estacion:** contrato no implementado; no usar reglas de precipitacion.
 - [ ] **Escala 2024-2025:** bloqueada hasta verificar 2024 y aprobar el piloto.
-- [ ] **05 Municipio y periodo:** pendiente.
+- [ ] **06 Municipio y periodo:** pendiente.
 
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y
 [`../climate_audits/auditoria_temperatura_2024_2025.md`](../climate_audits/auditoria_temperatura_2024_2025.md).
-

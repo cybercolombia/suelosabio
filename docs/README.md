@@ -29,13 +29,13 @@ estado vigente del proyecto.
 | [`project_roadmap.md`](project_roadmap.md) | Ruta completa hasta aplicacion | Planificacion y dependencias |
 | [`data_artifacts.md`](data_artifacts.md) | Productores, consumidores, rutas y estados | Contratos entre fases |
 | [`repository_guide.md`](repository_guide.md) | Notebooks, modulos y estado de revision | Navegacion del codigo |
-| [`climate_pipeline_guide.md`](climate_pipeline_guide.md) | Pipeline 01-05, compuertas, escala y faltantes | Guia tecnica principal |
+| [`climate_pipeline_guide.md`](climate_pipeline_guide.md) | Pipeline 01-06, compuertas, escala y faltantes | Guia tecnica principal |
 | [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md) | Estado paso a paso de cada variable | Seguimiento operativo |
-| [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-05 | Referencia arquitectonica |
+| [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-06 | Referencia arquitectonica |
 | [`climate_daily_processing.md`](climate_daily_processing.md) | Paso 03 de precipitacion: estacion-sensor-dia | Operacion |
-| [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 03_01 de precipitacion | Operacion y diagnostico |
-| [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 04 de precipitacion: estacion-dia | Contrato validado |
-| [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 03_01 de temperatura | Operacion y limites |
+| [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 04 de precipitacion | Operacion y diagnostico |
+| [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 05 de precipitacion: estacion-dia | Contrato validado |
+| [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 04 de temperatura | Operacion y limites |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
 
 ## Investigacion y catalogos

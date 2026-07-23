@@ -20,7 +20,7 @@ cientifica esten aprobados.
 
 ## Tablero por variable
 
-| Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 03_01 Auditoria diaria | 04 Curado | 05 Municipio |
+| Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Municipio |
 |---|---|---|---|---|---|---|---|
 | [Precipitacion](precipitacion.md) | `[P]` | `[P]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` |
 | [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
@@ -41,4 +41,3 @@ alcance.
 2. Enlazar el manifiesto, reporte o sintesis que respalda el cambio.
 3. Actualizar este tablero solo si cambia el estado de una etapa.
 4. Actualizar `project_status.md` si cambia el alcance o una prioridad global.
-

@@ -150,7 +150,7 @@ class PrecipitationDailyConsolidationTest(unittest.TestCase):
 
 class ClimateDailyConsolidatorNotebookTest(unittest.TestCase):
     def test_run_all_permanece_protegido(self):
-        notebook_path = PIPELINE_DIR / "04_ClimateDailyConsolidator.ipynb"
+        notebook_path = PIPELINE_DIR / "05_ClimateDailyConsolidator.ipynb"
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__daily_consolidator_notebook_test__"}
 

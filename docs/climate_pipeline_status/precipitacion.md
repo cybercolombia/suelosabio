@@ -10,7 +10,7 @@
 El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
 particiones piloto: enero y febrero de 2025 para ambos departamentos. El
 objetivo completo contiene **48 particiones mensuales**. El paso 03 tiene 4 de
-48 particiones procesadas y quedan 44 por procesar; los pasos 03_01 y 04 deben
+48 particiones procesadas y quedan 44 por procesar; los pasos 04 y 05 deben
 cerrarse tambien sobre las 48 antes de pasar a municipio.
 
 ## 01. Descarga cruda
@@ -73,7 +73,7 @@ Evidencia:
 No se imputan dias ni observaciones en este paso. Las salidas viven en
 `clima_diario_sensor/variable=precipitacion/fuente=s54a-sgyg/`.
 
-## 03_01. Auditoria diaria
+## 04. Auditoria diaria
 
 **Estado de etapa:** `[P]` piloto validado; auditoria de cierre pendiente.
 
@@ -90,7 +90,7 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 Evidencia del piloto:
 [`../climate_audits/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/auditoria_piloto_diario_precipitacion_2025.md).
 
-## 04. Consolidacion diaria por estacion
+## 05. Consolidacion diaria por estacion
 
 **Estado de etapa:** `[P]` piloto validado; escala pendiente.
 
@@ -106,7 +106,7 @@ Evidencia del piloto:
 Contrato y resultado piloto:
 [`../climate_daily_consolidation.md`](../climate_daily_consolidation.md).
 
-## 05. Municipio y periodo
+## 06. Municipio y periodo
 
 **Estado de etapa:** `[ ]` no iniciado.
 
@@ -121,6 +121,5 @@ Contrato y resultado piloto:
 1. Ejecutar 02 sobre muestras de 2024 en ambos departamentos.
 2. Si el contrato sigue siendo defendible, repartir las 44 particiones pendientes de 03 entre workers sin solapamientos.
 3. Reconciliar los 48 manifiestos de 03.
-4. Ejecutar 03_01 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
-5. Revisar la evidencia de cierre antes de ejecutar 04 a escala.
-
+4. Ejecutar 04 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
+5. Revisar la evidencia de cierre antes de ejecutar 05 a escala.

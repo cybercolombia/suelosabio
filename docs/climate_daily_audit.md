@@ -1,6 +1,6 @@
 # Auditoria de la capa diaria de precipitacion
 
-El notebook `03_01_ClimateDailyAudit.ipynb` audita las salidas preliminares de
+El notebook `04_ClimateDailyAudit.ipynb` audita las salidas preliminares de
 `03_ClimateDailyProcessor.ipynb`. Es una etapa de solo lectura: no modifica los
 Parquet diarios, no imputa ausencias, no elimina extremos y no selecciona un
 sensor canonico.
@@ -86,7 +86,7 @@ sobrescribe. Una salida incompleta exige revision antes de habilitar
 Esta version no calcula todavia rachas secas, no resuelve geografia canonica y
 no decide si una estacion estuvo activa durante todo el mes. Tampoco llena
 `precipitacion_diaria_mm`: esa columna debe permanecer en `NaN` hasta aprobar las
-reglas que aplicara el notebook 04.
+reglas que aplicara el notebook 05.
 
 La implementacion de esas reglas y su operacion segura se documentan en
 [`climate_daily_consolidation.md`](climate_daily_consolidation.md).

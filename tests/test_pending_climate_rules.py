@@ -27,7 +27,7 @@ class PendingClimateRulesTest(unittest.TestCase):
                     detener()
 
     def test_consolidador_bloquea_variables_distintas_de_precipitacion(self):
-        notebook_path = PIPELINE_DIR / "04_ClimateDailyConsolidator.ipynb"
+        notebook_path = PIPELINE_DIR / "05_ClimateDailyConsolidator.ipynb"
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         celdas = {cell.get("id"): "".join(cell["source"]) for cell in notebook["cells"]}
         config = celdas["daily_consolidation_config"].replace(

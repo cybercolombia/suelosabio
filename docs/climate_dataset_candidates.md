@@ -217,7 +217,7 @@ celdas únicas y luego asignar cada municipio a la celda más cercana.
 ## Ruta actual de evaluacion
 
 1. Auditar cada fuente candidata con el paso 02.
-2. Definir y probar reglas diarias propias antes de habilitarla en 03-04.
+2. Definir y probar reglas diarias propias antes de habilitarla en 03-05.
 3. Construir indicadores compatibles con el periodo y ciclo del cultivo.
 4. Medir cobertura municipal y temporal antes de incorporarla al dataset maestro.
 5. Comparar cada familia y sus combinaciones contra el baseline.

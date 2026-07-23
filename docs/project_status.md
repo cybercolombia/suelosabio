@@ -47,13 +47,13 @@ departamentos, cinco anos y doce meses.
 
 | Variable | Dataset | Crudo 2021-2025 | Auditoria 02 | Reglas diarias | Estado |
 |---|---|---:|---|---|---|
-| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023 y 2025 | Piloto 03-04 validado | Prioritaria y lista para escalar |
+| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023 y 2025 | Piloto 03-05 validado | Prioritaria y lista para escalar |
 | Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
 | Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
 | Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
-| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados por auditorias | Ambos departamentos; 2024 y 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; no escalar aun |
-| Temperatura minima | `afdg-3zpb` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
-| Temperatura maxima | `ccvq-rp9s` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 03_01 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
+| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados por auditorias | Ambos departamentos; 2024 y 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; no escalar aun |
+| Temperatura minima | `afdg-3zpb` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
+| Temperatura maxima | `ccvq-rp9s` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
 
 `Completo estructuralmente` significa que existen las carpetas esperadas; no
 garantiza cobertura interna, calidad ni continuidad temporal.
@@ -77,10 +77,10 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 01 Descarga | `clima_crudo` | Validado para cuatro variables disponibles |
 | 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
 | 03 Diario por sensor | `clima_diario_sensor` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
-| 03_01 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
-| 04 Consolidacion | `clima_diario_curado` | Precipitacion piloto validada en Colab |
+| 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
+| 05 Consolidacion | `clima_diario_curado` | Precipitacion piloto validada en Colab |
 | Escala operativa | Variables aprobadas 2024-2025 | Pendiente |
-| 05 Municipio y periodo | `clima_municipal` e indicadores | No implementado |
+| 06 Municipio y periodo | `clima_municipal` e indicadores | No implementado |
 | EVA y DIVIPOLA | Agricultura y geografia curadas | Pendiente de acceso y validacion |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
 
@@ -88,7 +88,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 
 El notebook 02 diagnostica la variable cruda y produce evidencia. No define ni
 aplica reglas automaticamente. A partir de esa evidencia se crea y prueba un
-contrato propio para la variable antes de habilitarla en 03, 03_01 y 04.
+contrato propio para la variable antes de habilitarla en 03, 04 y 05.
 
 La infraestructura de rutas, particiones, manifiestos y escritura segura puede
 reutilizarse. Las reglas semanticas no: precipitacion se acumula, mientras que
@@ -106,7 +106,7 @@ umbrales y criterios de calidad.
 4. Ubicar y curar EVA y DIVIPOLA sin esperar a terminar todas las variables.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
-6. Implementar el paso 05 solo cuando exista historia diaria consolidada y una
+6. Implementar el paso 06 solo cuando exista historia diaria consolidada y una
    geografia canonica defendible.
 
 El orden completo y sus compuertas se mantienen en

@@ -14,11 +14,11 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/01_ClimateDataDownloader.ipynb` | Descargar Socrata por departamento, ano y mes | Activo y generico |
 | `ClimatePipeline/02_ClimateDataAudit.ipynb` | Auditar crudos y generar evidencia | Activo y generico |
 | `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/03_01_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/04_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
+| `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
+| `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
-pasos 03-04 dependen de contratos por variable; no se vuelven genericos cambiando
+pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
 un nombre en configuracion.
 
 ## Modulos y pruebas activos
@@ -36,7 +36,7 @@ un nombre en configuracion.
 | `WindSpeedRules.py` | Marcador bloqueante hasta definir reglas de viento |
 | `tests/test_climate_processing.py` | Utilidades y reglas preliminares |
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
-| `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 04 |
+| `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |
 | `tests/test_temperature_processing.py` | Contratos y despacho de temperatura |
 | `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
 | `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |
@@ -70,11 +70,11 @@ Los nombres son contratos de roadmap, no archivos existentes:
 
 | Componente | Producto esperado |
 |---|---|
-| `05_ClimateMunicipalAggregator.ipynb` | Clima municipio-dia e indicadores municipio-periodo |
-| `06_EvaCurator.ipynb` | EVA curada y target validado |
-| `07_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |
-| `08_ModelingPipeline.ipynb` | EDA, baselines, modelos y evaluacion temporal |
-| `09_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
+| `06_ClimateMunicipalAggregator.ipynb` | Clima municipio-dia e indicadores municipio-periodo |
+| `07_EvaCurator.ipynb` | EVA curada y target validado |
+| `08_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |
+| `09_ModelingPipeline.ipynb` | EDA, baselines, modelos y evaluacion temporal |
+| `10_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
 
 ## Donde buscar cada respuesta
 

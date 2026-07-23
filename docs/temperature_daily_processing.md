@@ -53,7 +53,7 @@ clima_diario_sensor/
 Incluye media, mediana, minimo, maximo, desviacion, amplitud, observaciones,
 cadencia y cobertura. Los sensores nunca se fusionan en esta etapa.
 
-## Configuracion de 03_01
+## Configuracion de 04
 
 Use exactamente la misma variable, fuente, departamentos, anos y meses que
 terminaron `COMPLETA` en 03. Para el piloto anterior:
@@ -74,8 +74,7 @@ las convierten automaticamente en invalidas.
 
 ## Limite actual
 
-El notebook 04 y `PrecipitationDailyConsolidation.py` siguen siendo exclusivos
+El notebook 05 y `PrecipitationDailyConsolidation.py` siguen siendo exclusivos
 de precipitacion. No se deben ejecutar para temperatura. El contrato de
 consolidacion termica se definira despues de revisar los pilotos exportados por
-03_01.
-
+04.

@@ -233,8 +233,8 @@ durante el modelado.
 
 ```text
 01 descarga -> 02 auditoria cruda -> reglas por variable
-            -> 03 diario por sensor -> 03_01 auditoria diaria
-            -> 04 diario consolidado por estacion -> 05 agregado municipal
+            -> 03 diario por sensor -> 04 auditoria diaria
+            -> 05 diario consolidado por estacion -> 06 agregado municipal
 ```
 
 - `01_ClimateDataDownloader.ipynb` conserva las observaciones crudas
@@ -244,12 +244,12 @@ durante el modelado.
   un contrato distinto para cada variable; no modifica los datos.
 - `03_ClimateDailyProcessor.ipynb` aplica las reglas preliminares de la variable
   y produce una fila por estacion, sensor y dia.
-- `03_01_ClimateDailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
+- `04_ClimateDailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
   ausencias, cobertura, extremos y sensores paralelos para confirmar o ajustar
   el contrato.
-- `04_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
+- `05_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
   una fila canonica por estacion y dia.
-- `05_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el historico
+- `06_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el historico
   diario consolidado tenga cobertura y trazabilidad verificadas.
 
 La infraestructura de lectura, particiones, manifiestos y escrituras seguras es

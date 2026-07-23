@@ -26,38 +26,38 @@ flowchart TD
     RULES[Rules.py + pruebas<br/>contrato versionado]
     P03[03 - Procesamiento diario<br/>todas las filas de la particion]
     DAILY_SENSOR[(clima_diario_sensor<br/>estacion + sensor + dia)]
-    P0301[03_01 - Auditoria diaria]
+    P04[04 - Auditoria diaria]
     AUDIT_DAILY[(auditorias_clima_diario<br/>calendario, cobertura y sensores)]
     MISSING[Ausencias = NaN + calidad<br/>no imputacion silenciosa]
     GATE_DAILY{Cobertura, extremos y<br/>sensores defendibles?}
-    P04[04 - Consolidacion con<br/>reglas propias de la variable]
+    P05[05 - Consolidacion con<br/>reglas propias de la variable]
     CURATED[(clima_diario_curado<br/>estacion + dia + calidad)]
     GEO[Catalogo esperado de estaciones<br/>y geografia canonica]
-    P05[05 - Agregacion geografica<br/>y temporal]
+    P06[06 - Agregacion geografica<br/>y temporal]
     FEATURES[(municipio-dia e<br/>indicadores municipio-periodo)]
 
     API --> P01 --> RAW --> P02 --> AUDIT_RAW --> GATE_RULES
     GATE_RULES -- No --> BLOCKED
     BLOCKED -. ampliar auditoria 02 .-> P02
-    GATE_RULES -- Si --> RULES --> P03 --> DAILY_SENSOR --> P0301
-    P0301 --> AUDIT_DAILY --> GATE_DAILY
+    GATE_RULES -- Si --> RULES --> P03 --> DAILY_SENSOR --> P04
+    P04 --> AUDIT_DAILY --> GATE_DAILY
     AUDIT_DAILY -. materializa calendario .-> MISSING
     GATE_DAILY -- Ajustar contrato --> RULES
-    GATE_DAILY -- Aprobar --> P04 --> CURATED
-    CURATED --> GEO --> P05 --> FEATURES
+    GATE_DAILY -- Aprobar --> P05 --> CURATED
+    CURATED --> GEO --> P06 --> FEATURES
 
     classDef data fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef process fill:#e8eef5,stroke:#365b7d,color:#18344d;
     classDef gate fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef blocked fill:#f9dddd,stroke:#a33b3b,color:#5c1717;
     class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,FEATURES data;
-    class P01,P02,RULES,P03,P0301,P04,GEO,P05 process;
+    class P01,P02,RULES,P03,P04,P05,GEO,P06 process;
     class GATE_RULES,GATE_DAILY gate;
     class BLOCKED,MISSING blocked;
 ```
 
 La auditoria 02 responde si la fuente puede transformarse y como debe hacerse.
-La auditoria 03_01 responde si la transformacion produjo una serie diaria
+La auditoria 04 responde si la transformacion produjo una serie diaria
 defendible. Ninguna reemplaza a la otra. Las flechas de retorno son
 deliberadas: un hallazgo puede exigir modificar el contrato y repetir el piloto
 antes de consolidar o escalar.
@@ -139,7 +139,7 @@ Este paso:
 - Registra filas de entrada, validas, rechazadas, duplicadas y conflictivas.
 - Solo marca el manifiesto `COMPLETA` despues de verificar todas las salidas.
 
-Compuerta antes de 03_01:
+Compuerta antes de 04:
 
 - Todas las particiones elegidas tienen manifiesto `COMPLETA`.
 - No existen llaves `estacion + sensor + fecha` duplicadas en la salida.
@@ -147,7 +147,7 @@ Compuerta antes de 03_01:
   observaciones agregadas.
 - La regla y el commit aparecen en el manifiesto.
 
-### 03_01. Auditar la serie diaria preliminar
+### 04. Auditar la serie diaria preliminar
 
 **Entrada:** particiones `COMPLETA` de 03.  
 **Salida:** calendario por estacion-sensor, cobertura, extremos, comparaciones y
@@ -169,7 +169,7 @@ mes no puede inferirse mirando solo ese mes. Antes de cerrar 2024-2025 se debe
 construir un catalogo esperado de estaciones-sensores a partir de ambos anos y
 comparar cada mes contra ese catalogo, respetando altas y bajas reales.
 
-Compuerta antes de 04:
+Compuerta antes de 05:
 
 - Umbral de cobertura y tolerancia superior aprobados por variable.
 - Extremos y patrones instrumentales distinguidos de eventos plausibles.
@@ -177,7 +177,7 @@ Compuerta antes de 04:
 - Politica para ausencias y estaciones completamente faltantes definida.
 - Pilotos contrastantes aprobados en ambos departamentos.
 
-### 04. Consolidar por estacion
+### 05. Consolidar por estacion
 
 El paso selecciona o combina sensores solo mediante reglas aprobadas y produce
 una fila por estacion-dia con valor, calidad, motivo y procedencia. Actualmente
@@ -191,8 +191,8 @@ solo precipitacion tiene consolidacion implementada. Temperatura no debe usar
 2. Auditar con 02 meses contrastantes, incluidos enero y febrero de 2025, y al
    menos una muestra de 2024.
 3. Crear o ajustar el contrato con pruebas unitarias y un piloto de 03.
-4. Ejecutar 03 y 03_01 para enero-febrero de 2025 en ambos departamentos.
-5. Aprobar el contrato de 04 con evidencia del piloto.
+4. Ejecutar 03 y 04 para enero-febrero de 2025 en ambos departamentos.
+5. Aprobar el contrato de 05 con evidencia del piloto.
 6. Procesar 2024-2025 por particiones independientes y manifiestos reanudables.
 7. Ejecutar una auditoria diaria de cierre por variable, departamento, ano y
    mes; no basta con auditar solo el piloto.
@@ -214,8 +214,8 @@ La politica vigente es **no imputar en 01, 02 ni 03**.
 
 - Un cero observado es un dato; una ausencia es `NaN`.
 - 03 solo contiene dias con alguna observacion valida.
-- 03_01 materializa el calendario y deja los dias ausentes en `NaN`.
-- 04 conserva `NaN` cuando no hay cobertura suficiente, hay desacuerdo de
+- 04 materializa el calendario y deja los dias ausentes en `NaN`.
+- 05 conserva `NaN` cuando no hay cobertura suficiente, hay desacuerdo de
   sensores o el sensor esta en cuarentena.
 - No se multiplica una suma parcial por el inverso de la cobertura.
 - No se interpola precipitacion faltante: hacerlo fabricaria lluvia.
@@ -239,7 +239,7 @@ dentro del procesamiento diario.
 
 ## Instrucciones para asistentes de IA
 
-Antes de modificar 03, 03_01 o 04:
+Antes de modificar 03, 04 o 05:
 
 1. Leer `project_status.md`, esta guia, `data_artifacts.md` y la auditoria de la
    variable.

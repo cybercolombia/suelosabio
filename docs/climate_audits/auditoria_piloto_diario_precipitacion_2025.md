@@ -1,7 +1,7 @@
 # Auditoria piloto del procesamiento diario de precipitacion
 
-> **Estado:** evidencia historica de la compuerta 03_01. Las reglas propuestas
-> aqui ya fueron implementadas y validadas por 04. Consulte
+> **Estado:** evidencia historica de la compuerta 04. Las reglas propuestas
+> aqui ya fueron implementadas y validadas por 05. Consulte
 > [`../climate_daily_consolidation.md`](../climate_daily_consolidation.md) para el
 > contrato vigente y sus resultados.
 
@@ -107,7 +107,7 @@ que elimine toda precipitacion alta.
 - Una particion completa puede identificarse y reanudarse por manifiesto.
 - La reduccion de filas supera 99,4 % en las cuatro particiones.
 
-## Ejecucion de `03_01_ClimateDailyAudit.ipynb`
+## Ejecucion de `04_ClimateDailyAudit.ipynb`
 
 La auditoria diaria se ejecuto con el commit `8b63e88` y termino en 1,79
 segundos. El manifiesto quedo en estado `COMPLETA`.
@@ -142,8 +142,8 @@ El motor de deduplicacion, agregacion y trazabilidad queda validado para estos
 pilotos. Aun no se aprueba ejecutar todo el historico ni llenar
 `precipitacion_diaria_mm`.
 
-La auditoria 03_01 queda validada. El contrato preliminar para disenar el
-notebook 04 es:
+La auditoria 04 queda validada. El contrato preliminar para disenar el
+notebook 05 es:
 
 1. Conservar dias ausentes como `NaN`; nunca convertirlos en cero.
 2. Evaluar como aceptable una cobertura entre 90 % y 102 %, conservando el valor
@@ -157,5 +157,5 @@ notebook 04 es:
    bandera revisable.
 
 Estas reglas se implementaran primero sobre los cuatro pilotos. El historico no
-se procesara hasta comprobar que el notebook 04 conserva trazabilidad y no
+se procesara hasta comprobar que el notebook 05 conserva trazabilidad y no
 convierte ausencias o desacuerdos en lluvia valida.

@@ -85,9 +85,9 @@ El modulo `TemperatureRules.py` implementa `temperatura_diaria_v1`:
 - Ninguna temperatura se suma.
 - El rango operativo de entrada `[-30, 60] °C` solo captura codigos o valores
   fisicamente incompatibles muy evidentes. Los umbrales diagnosticos mas
-  estrechos de 03_01 marcan candidatos, pero no eliminan observaciones.
+  estrechos de 04 marcan candidatos, pero no eliminan observaciones.
 - `temperatura_diaria_c` permanece en `NaN` hasta aprobar cobertura y seleccion
-  de sensor despues de 03_01.
+  de sensor despues de 04.
 
 ## Intento fallido anterior
 
@@ -109,7 +109,7 @@ pero los manifiestos de error anteriores permanecerian como evidencia historica.
    2025 por departamento.
 2. Confirmar manifiestos `COMPLETA`, estadisticos diarios, rechazos, conflictos
    y cobertura.
-3. Ejecutar 03_01 sobre esos cuatro pilotos.
+3. Ejecutar 04 sobre esos cuatro pilotos.
 4. Revisar diferencias entre `0068` y `0071`, extremos, amplitud y el hueco de
    febrero.
 5. Solo entonces definir el contrato de consolidacion de temperatura para 04.

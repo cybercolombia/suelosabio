@@ -104,7 +104,7 @@ class PrecipitationDailyAuditTest(unittest.TestCase):
 
 class ClimateDailyAuditNotebookTest(unittest.TestCase):
     def test_run_all_permanece_protegido(self):
-        notebook_path = PIPELINE_DIR / "03_01_ClimateDailyAudit.ipynb"
+        notebook_path = PIPELINE_DIR / "04_ClimateDailyAudit.ipynb"
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__daily_audit_notebook_test__"}
 
