@@ -122,6 +122,9 @@ auditorias_clima_diario/
     calendario_estacion_sensor.parquet
     resumen_particiones.parquet
     resumen_estacion_sensor.parquet
+    catalogo_estacion_sensor.parquet
+    actividad_mensual_estacion_sensor.parquet
+    ausencias_mes_completo.parquet
     valores_sospechosos.parquet
     comparaciones_sensores.parquet
     resumen_sensores_paralelos.parquet

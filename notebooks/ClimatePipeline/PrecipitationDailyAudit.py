@@ -10,8 +10,15 @@ from typing import Any
 import pandas as pd
 
 
-AUDIT_VERSION = "auditoria_precipitacion_diaria_v1"
+AUDIT_VERSION = "auditoria_precipitacion_diaria_v2"
 CLAVE_DIARIA = ("departamento", "codigoestacion", "codigosensor", "fecha")
+CLAVE_PAR = (
+    "variable",
+    "dataset_id",
+    "departamento",
+    "codigoestacion",
+    "codigosensor",
+)
 COLUMNAS_REQUERIDAS = (
     "variable",
     "dataset_id",
@@ -40,6 +47,9 @@ class DailyAuditResult:
     calendario: pd.DataFrame
     resumen_particiones: pd.DataFrame
     resumen_pares: pd.DataFrame
+    catalogo_pares: pd.DataFrame
+    actividad_mensual: pd.DataFrame
+    ausencias_mes_completo: pd.DataFrame
     valores_sospechosos: pd.DataFrame
     comparaciones_sensores: pd.DataFrame
     resumen_sensores_paralelos: pd.DataFrame
@@ -82,8 +92,91 @@ def _estado_cobertura(fila: pd.Series, umbral_cobertura_pct: float) -> str:
     return "COBERTURA_CANDIDATA_SUFICIENTE"
 
 
+def construir_catalogo_actividad(
+    diario: pd.DataFrame,
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Infiere meses esperados solo entre la primera y ultima observacion."""
+    presencia = diario.copy()
+    presencia["periodo"] = presencia["fecha"].dt.to_period("M")
+    presencia_mensual = (
+        presencia.groupby([*CLAVE_PAR, "periodo"], as_index=False)
+        .agg(
+            filas_diarias=("fecha", "size"),
+            dias_con_registro=("fecha", "nunique"),
+            primera_fecha_mes=("fecha", "min"),
+            ultima_fecha_mes=("fecha", "max"),
+        )
+    )
+
+    filas_actividad = []
+    filas_catalogo = []
+    for identificador, grupo in presencia_mensual.groupby(
+        list(CLAVE_PAR), sort=True
+    ):
+        primer_periodo = grupo["periodo"].min()
+        ultimo_periodo = grupo["periodo"].max()
+        periodos = pd.period_range(primer_periodo, ultimo_periodo, freq="M")
+        observados = set(grupo["periodo"])
+        meses_ausentes = len(set(periodos) - observados)
+        base = dict(zip(CLAVE_PAR, identificador))
+        filas_catalogo.append(
+            {
+                **base,
+                "primera_fecha_observada": grupo["primera_fecha_mes"].min(),
+                "ultima_fecha_observada": grupo["ultima_fecha_mes"].max(),
+                "primer_mes_observado": str(primer_periodo),
+                "ultimo_mes_observado": str(ultimo_periodo),
+                "meses_observados": len(observados),
+                "meses_esperados_intervalo": len(periodos),
+                "meses_ausentes_completos": meses_ausentes,
+                "cobertura_mensual_pct": round(
+                    100.0 * len(observados) / len(periodos), 2
+                ),
+            }
+        )
+        for periodo in periodos:
+            filas_actividad.append(
+                {
+                    **base,
+                    "anio": int(periodo.year),
+                    "mes": int(periodo.month),
+                    "periodo": str(periodo),
+                }
+            )
+
+    catalogo = pd.DataFrame(filas_catalogo)
+    actividad = pd.DataFrame(filas_actividad)
+    presencia_union = presencia_mensual.copy()
+    presencia_union["anio"] = presencia_union["periodo"].dt.year.astype(int)
+    presencia_union["mes"] = presencia_union["periodo"].dt.month.astype(int)
+    presencia_union = presencia_union.drop(columns="periodo")
+    actividad = actividad.merge(
+        presencia_union,
+        on=[*CLAVE_PAR, "anio", "mes"],
+        how="left",
+        validate="one_to_one",
+    )
+    actividad["mes_observado"] = actividad["filas_diarias"].notna()
+    for columna in ("filas_diarias", "dias_con_registro"):
+        actividad[columna] = actividad[columna].fillna(0).astype(int)
+    actividad["dias_calendario"] = actividad.apply(
+        lambda fila: month_calendar.monthrange(
+            int(fila["anio"]), int(fila["mes"])
+        )[1],
+        axis=1,
+    )
+    actividad["motivo_esperado"] = "ENTRE_PRIMER_Y_ULTIMO_MES_OBSERVADO"
+    ausencias = actividad.loc[~actividad["mes_observado"]].copy()
+    return (
+        catalogo.sort_values(list(CLAVE_PAR)).reset_index(drop=True),
+        actividad.sort_values([*CLAVE_PAR, "anio", "mes"]).reset_index(drop=True),
+        ausencias.sort_values([*CLAVE_PAR, "anio", "mes"]).reset_index(drop=True),
+    )
+
+
 def construir_calendario(
     diario: pd.DataFrame,
+    actividad_mensual: pd.DataFrame,
     umbral_cobertura_pct: float = 90.0,
 ) -> pd.DataFrame:
     if not 0 < umbral_cobertura_pct <= 100:
@@ -99,7 +192,16 @@ def construir_calendario(
             periods=fin_mes,
             freq="D",
         )
-        pares = grupo[["codigoestacion", "codigosensor"]].drop_duplicates()
+        mascara_actividad = (
+            actividad_mensual["variable"].eq(variable)
+            & actividad_mensual["dataset_id"].eq(dataset_id)
+            & actividad_mensual["departamento"].eq(departamento)
+            & actividad_mensual["anio"].eq(int(anio))
+            & actividad_mensual["mes"].eq(int(mes))
+        )
+        pares = actividad_mensual.loc[
+            mascara_actividad, ["codigoestacion", "codigosensor"]
+        ].drop_duplicates()
         pares["_union"] = 1
         calendario = pd.DataFrame({"fecha": fechas, "_union": 1})
         bloque = pares.merge(calendario, on="_union", how="inner").drop(
@@ -157,6 +259,17 @@ def resumir_particiones(
         dias_presentes = observado["fecha"].dt.normalize().nunique()
         dias_mes = month_calendar.monthrange(int(particion[3]), int(particion[4]))[1]
         cobertura = observado["cobertura_observada_pct"]
+        pares_esperados = calendario_mes[
+            ["codigoestacion", "codigosensor"]
+        ].drop_duplicates()
+        pares_observados = observado[
+            ["codigoestacion", "codigosensor"]
+        ].drop_duplicates()
+        pares_ausentes = pares_esperados.merge(
+            pares_observados.assign(_observado=True),
+            on=["codigoestacion", "codigosensor"],
+            how="left",
+        )["_observado"].isna().sum()
         filas.append(
             {
                 **dict(zip(claves, particion)),
@@ -164,10 +277,10 @@ def resumir_particiones(
                 "dias_con_algun_registro": int(dias_presentes),
                 "dias_sin_ningun_registro": int(dias_mes - dias_presentes),
                 "pares_estacion_sensor": int(
-                    observado[["codigoestacion", "codigosensor"]]
-                    .drop_duplicates()
-                    .shape[0]
+                    pares_observados.shape[0]
                 ),
+                "pares_esperados_intervalo": int(pares_esperados.shape[0]),
+                "pares_ausentes_mes_completo": int(pares_ausentes),
                 "filas_calendario": len(calendario_mes),
                 "filas_observadas": len(observado),
                 "filas_ausentes": int(calendario_mes["es_dia_ausente"].sum()),
@@ -404,7 +517,14 @@ def auditar_precipitacion_diaria(
     tolerancia_sensores_mm: float = 0.1,
 ) -> DailyAuditResult:
     validado = validar_capa_diaria(diario)
-    calendario = construir_calendario(validado, umbral_cobertura_pct)
+    catalogo, actividad_mensual, ausencias_mes = construir_catalogo_actividad(
+        validado
+    )
+    calendario = construir_calendario(
+        validado,
+        actividad_mensual,
+        umbral_cobertura_pct,
+    )
     resumen_particiones = resumir_particiones(calendario, validado)
     resumen_pares = resumir_pares(calendario)
     sospechosos = detectar_valores_sospechosos(
@@ -421,6 +541,9 @@ def auditar_precipitacion_diaria(
         "filas_diarias_entrada": len(validado),
         "filas_calendario": len(calendario),
         "dias_ausentes_estacion_sensor": int(calendario["es_dia_ausente"].sum()),
+        "pares_catalogo": len(catalogo),
+        "filas_actividad_mensual": len(actividad_mensual),
+        "ausencias_mes_completo": len(ausencias_mes),
         "filas_revision": len(sospechosos),
         "pares_sensores_paralelos": len(resumen_paralelos),
         "umbral_cobertura_candidato_pct": float(umbral_cobertura_pct),
@@ -434,6 +557,9 @@ def auditar_precipitacion_diaria(
         calendario=calendario,
         resumen_particiones=resumen_particiones,
         resumen_pares=resumen_pares,
+        catalogo_pares=catalogo,
+        actividad_mensual=actividad_mensual,
+        ausencias_mes_completo=ausencias_mes,
         valores_sospechosos=sospechosos,
         comparaciones_sensores=comparaciones,
         resumen_sensores_paralelos=resumen_paralelos,

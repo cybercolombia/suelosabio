@@ -163,11 +163,13 @@ Esta auditoria detecta:
 - Concordancia o discrepancia entre sensores paralelos.
 - Cambios territoriales, mensuales y entre periodos piloto.
 
-Limitacion critica: el calendario se construye para estaciones-sensores que
-aparecen al menos una vez en la particion. Una estacion ausente durante todo el
-mes no puede inferirse mirando solo ese mes. Antes de cerrar 2024-2025 se debe
-construir un catalogo esperado de estaciones-sensores a partir de ambos anos y
-comparar cada mes contra ese catalogo, respetando altas y bajas reales.
+La auditoria de precipitacion `v2` construye un catalogo de estaciones-sensores
+a partir de ambos anos. Considera esperado cada par entre su primer y ultimo mes
+observado y asi detecta huecos mensuales internos sin asumir actividad antes del
+alta ni despues de la ultima aparicion. Esta regla no demuestra si una estacion
+debio existir fuera de esos limites; esa incertidumbre se conserva para la
+geografia canonica. Las demas variables deben implementar y probar una politica
+equivalente antes de cerrar su historia.
 
 Compuerta antes de 05:
 

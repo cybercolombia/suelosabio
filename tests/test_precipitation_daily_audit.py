@@ -101,6 +101,53 @@ class PrecipitationDailyAuditTest(unittest.TestCase):
         self.assertIn("diferencia_abs_mm", resultado.comparaciones_sensores.columns)
         self.assertTrue(resultado.resumen_sensores_paralelos.empty)
 
+    def test_detecta_mes_completo_ausente_dentro_del_periodo_activo(self):
+        diario = pd.DataFrame(
+            [
+                fila_diaria("0240", "2024-01-15", 1.0),
+                fila_diaria("0240", "2024-03-15", 2.0),
+                {
+                    **fila_diaria("0240", "2024-02-10", 3.0),
+                    "codigoestacion": "E2",
+                },
+            ]
+        )
+
+        resultado = auditar_precipitacion_diaria(diario)
+
+        ausencia = resultado.ausencias_mes_completo
+        self.assertEqual(len(ausencia), 1)
+        self.assertEqual(ausencia.iloc[0]["codigoestacion"], "E1")
+        self.assertEqual(ausencia.iloc[0]["periodo"], "2024-02")
+        febrero_e1 = resultado.calendario.loc[
+            resultado.calendario["codigoestacion"].eq("E1")
+            & resultado.calendario["anio"].eq(2024)
+            & resultado.calendario["mes"].eq(2)
+        ]
+        self.assertEqual(len(febrero_e1), 29)
+        self.assertTrue(febrero_e1["es_dia_ausente"].all())
+        self.assertTrue(febrero_e1["precipitacion_observada_mm"].isna().all())
+
+    def test_no_exige_meses_anteriores_al_alta_ni_posteriores_a_la_baja(self):
+        diario = pd.DataFrame(
+            [
+                fila_diaria("0240", "2024-01-15", 1.0),
+                fila_diaria("0240", "2024-03-15", 2.0),
+                {
+                    **fila_diaria("0240", "2024-02-10", 3.0),
+                    "codigoestacion": "E2",
+                },
+            ]
+        )
+
+        resultado = auditar_precipitacion_diaria(diario)
+        actividad_e2 = resultado.actividad_mensual.loc[
+            resultado.actividad_mensual["codigoestacion"].eq("E2")
+        ]
+
+        self.assertEqual(actividad_e2["periodo"].tolist(), ["2024-02"])
+        self.assertTrue(actividad_e2["mes_observado"].all())
+
 
 class ClimateDailyAuditNotebookTest(unittest.TestCase):
     def test_run_all_permanece_protegido(self):
@@ -117,6 +164,13 @@ class ClimateDailyAuditNotebookTest(unittest.TestCase):
 
         self.assertFalse(namespace["EJECUTAR_AUDITORIA_DIARIA"])
         self.assertIsNone(namespace["resultado_auditoria"])
+        self.assertEqual(
+            namespace["AUDIT_VERSION"], "auditoria_precipitacion_diaria_v2"
+        )
+        self.assertEqual(
+            namespace["NOMBRES_SALIDA"]["ausencias_mes"],
+            "ausencias_mes_completo.parquet",
+        )
 
 
 if __name__ == "__main__":

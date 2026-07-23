@@ -8,10 +8,10 @@
 ## Resumen ejecutivo
 
 El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
-particiones piloto: enero y febrero de 2025 para ambos departamentos. El
-objetivo completo contiene **48 particiones mensuales**. El paso 03 tiene 4 de
-48 particiones procesadas y quedan 44 por procesar; los pasos 04 y 05 deben
-cerrarse tambien sobre las 48 antes de pasar a municipio.
+particiones piloto: enero y febrero de 2025 para ambos departamentos. Las
+**48 particiones mensuales** del objetivo 2024-2025 terminaron el paso 03 y
+producen 42.190 filas estacion-sensor-dia. Los pasos 04 y 05 deben cerrarse
+ahora sobre las 48 antes de pasar a municipio.
 
 ## 01. Descarga cruda
 
@@ -61,16 +61,18 @@ Evidencia:
 
 ## 03. Diario por estacion y sensor
 
-**Estado de etapa:** `[P]` 4 de 48 particiones objetivo terminadas.
+**Estado de etapa:** `[X]` 48 de 48 particiones objetivo terminadas.
 
 - [X] Boyaca 2025-01: manifiesto `COMPLETA`.
 - [X] Boyaca 2025-02: manifiesto `COMPLETA`.
 - [X] Cundinamarca 2025-01: manifiesto `COMPLETA`.
 - [X] Cundinamarca 2025-02: manifiesto `COMPLETA`.
-- [ ] Procesar las 24 particiones de 2024.
-- [ ] Procesar las 20 particiones restantes de 2025.
-- [ ] Reconciliar exactamente 48 manifiestos `COMPLETA` y ninguna particion incompleta.
-- [ ] Verificar balances de entrada, agregacion, rechazos, duplicados y conflictos.
+- [X] Procesadas las 24 particiones de 2024.
+- [X] Procesadas las 20 particiones restantes de 2025.
+- [X] Reconciliados exactamente 48 manifiestos `COMPLETA`, sin faltantes ni duplicados.
+- [X] Verificados 42.190 registros diarios declarados por los manifiestos.
+- [X] Las cuatro particiones piloto conservan el commit `75b24d9`; las 44 nuevas usan `9dff0aa`.
+- [ ] Resumir globalmente balances, rechazos, duplicados y conflictos durante el cierre de 04.
 
 No se imputan dias ni observaciones en este paso. Las salidas viven en
 `clima_diario_sensor/variable=precipitacion/fuente=s54a-sgyg/`.
@@ -83,8 +85,9 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 - [X] Calendario materializado con ausencias como `NaN`, no como cero.
 - [X] Evaluadas cobertura, cadencia, extremos y concordancia de sensores paralelos.
 - [X] Ventana piloto de cobertura definida entre 90 % y 102 %.
+- [X] Implementado el catalogo esperado por intervalo activo en `auditoria_precipitacion_diaria_v2`.
 - [ ] Auditar las 48 particiones procesadas del objetivo 2024-2025.
-- [ ] Construir catalogo esperado de estaciones-sensores usando ambos anos.
+- [ ] Ejecutar y revisar el catalogo esperado de estaciones-sensores usando ambos anos.
 - [ ] Detectar estaciones-sensores ausentes durante meses completos.
 - [ ] Resumir cobertura, brecha maxima, extremos y discrepancias por particion.
 - [ ] Aprobar o versionar de nuevo las reglas antes de consolidar a escala.
@@ -120,10 +123,10 @@ Contrato y resultado piloto:
 
 ## Siguiente bloque recomendado
 
-1. Repartir las 44 particiones pendientes de 03 entre workers sin solapamientos.
-2. Reconciliar los 48 manifiestos de 03.
-3. Ejecutar 04 sobre todo 2024-2025 y construir el catalogo esperado de estaciones-sensores.
-4. Revisar la evidencia de cierre antes de ejecutar 05 a escala.
+1. Ejecutar 04 sobre todo 2024-2025 con la auditoria `v2`.
+2. Revisar catalogo, ausencias mensuales, cobertura, extremos y sensores.
+3. Versionar reglas si aparece un problema no cubierto.
+4. Ejecutar 05 a escala solo despues de aprobar la evidencia de cierre.
 
 ## Plan de ejecucion del paso 03
 
@@ -132,10 +135,10 @@ Los cuatro bloques tienen volumen semejante y no se solapan. Enero y febrero de
 
 | Estado | Worker sugerido | Departamento | Ano | Meses | Particiones | Filas crudas aproximadas |
 |---|---|---|---:|---|---:|---:|
-| `[ ]` | `w_precip_boyaca_2024` | Boyaca | 2024 | 1-12 | 12 | 1.716.496 |
-| `[ ]` | `w_precip_cundinamarca_2024` | Cundinamarca | 2024 | 1-12 | 12 | 1.866.195 |
-| `[ ]` | `w_precip_boyaca_2025_m03_m12` | Boyaca | 2025 | 3-12 | 10 | 1.919.746 |
-| `[ ]` | `w_precip_cundinamarca_2025_m03_m12` | Cundinamarca | 2025 | 3-12 | 10 | 1.916.182 |
+| `[X]` | `w_precip_boyaca_2024` | Boyaca | 2024 | 1-12 | 12 | 1.716.496 |
+| `[X]` | `w_precip_cundinamarca_2024` | Cundinamarca | 2024 | 1-12 | 12 | 1.866.195 |
+| `[X]` | `w_precip_boyaca_2025_m03_m12` | Boyaca | 2025 | 3-12 | 10 | 1.919.746 |
+| `[X]` | `w_precip_cundinamarca_2025_m03_m12` | Cundinamarca | 2025 | 3-12 | 10 | 1.916.182 |
 
 Configuracion comun: `MAX_PARTICIONES=None`,
 `SOBRESCRIBIR_RESULTADOS=False` y primero

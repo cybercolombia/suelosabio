@@ -36,6 +36,9 @@ manifiesto y el nombre de la nueva auditoria.
 ## Analisis producidos
 
 - Calendario completo por departamento, estacion, sensor y mes.
+- Catalogo de estaciones-sensores con primer y ultimo mes observado.
+- Actividad mensual esperada dentro del intervalo observado de cada par.
+- Meses completamente ausentes entre la primera y ultima aparicion del par.
 - Dias observados y ausentes sin reemplazar `NaN` por cero.
 - Fechas observadas minima y maxima por estacion-sensor.
 - Cobertura diaria frente al umbral candidato.
@@ -59,6 +62,9 @@ eco2026_processed/auditorias_clima_diario/
         calendario_estacion_sensor.parquet
         resumen_particiones.parquet
         resumen_estacion_sensor.parquet
+        catalogo_estacion_sensor.parquet
+        actividad_mensual_estacion_sensor.parquet
+        ausencias_mes_completo.parquet
         valores_sospechosos.parquet
         comparaciones_sensores.parquet
         resumen_sensores_paralelos.parquet
@@ -76,17 +82,21 @@ sobrescribe. Una salida incompleta exige revision antes de habilitar
 
 1. Ejecutar las celdas hasta revisar que las cuatro entradas esten `COMPLETA`.
 2. Confirmar que `AUDIT_OUTPUT_DIR` apunta a la carpeta compartida esperada.
-3. Cambiar `EJECUTAR_AUDITORIA_DIARIA=True`.
-4. Mantener `GUARDAR_RESULTADOS=True` para exportar la evidencia.
-5. Revisar el Markdown, los Parquet y las figuras antes de decidir reglas.
-6. Volver a dejar la bandera de ejecucion en `False` antes de guardar el notebook.
+3. Cambiar `EJECUTAR_AUDITORIA_DIARIA=True` y reejecutar la celda de
+   configuracion para actualizar la bandera en memoria.
+4. Ejecutar la celda final protegida.
+5. Mantener `GUARDAR_RESULTADOS=True` para exportar la evidencia.
+6. Revisar el Markdown, los Parquet y las figuras antes de decidir reglas.
+7. Volver a dejar la bandera de ejecucion en `False` antes de guardar el notebook.
 
 ## Limites deliberados
 
-Esta version no calcula todavia rachas secas, no resuelve geografia canonica y
-no decide si una estacion estuvo activa durante todo el mes. Tampoco llena
-`precipitacion_diaria_mm`: esa columna debe permanecer en `NaN` hasta aprobar las
-reglas que aplicara el notebook 05.
+Esta version no calcula todavia rachas secas ni resuelve geografia canonica. El
+catalogo considera esperado un par solo entre su primer y ultimo mes observado:
+detecta huecos mensuales internos, pero no puede demostrar si debio existir
+antes del alta o despues de la ultima aparicion. Tampoco llena
+`precipitacion_diaria_mm`: esa columna debe permanecer en `NaN` hasta aprobar
+las reglas que aplicara el notebook 05.
 
 La implementacion de esas reglas y su operacion segura se documentan en
 [`climate_daily_consolidation.md`](climate_daily_consolidation.md).

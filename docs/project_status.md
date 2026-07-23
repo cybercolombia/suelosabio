@@ -76,7 +76,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 |---|---|---|
 | 01 Descarga | `clima_crudo` | Validado para cuatro variables disponibles |
 | 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
-| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
+| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion 2024-2025 completa en 48 particiones; temperatura implementada y pendiente de piloto real |
 | 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion piloto validada en Colab |
 | Escala operativa | Variables aprobadas 2024-2025 | Pendiente |
