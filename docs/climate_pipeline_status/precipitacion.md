@@ -1,6 +1,6 @@
 # Estado del pipeline: precipitacion
 
-**Actualizado:** 22 de julio de 2026  
+**Actualizado:** 23 de julio de 2026
 **Estado:** en proceso  
 **Fuente:** `s54a-sgyg`  
 **Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
@@ -8,10 +8,10 @@
 ## Resumen ejecutivo
 
 El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
-particiones piloto: enero y febrero de 2025 para ambos departamentos. Las
-**48 particiones mensuales** del objetivo 2024-2025 terminaron el paso 03 y
-producen 42.190 filas estacion-sensor-dia. Los pasos 04 y 05 deben cerrarse
-ahora sobre las 48 antes de pasar a municipio.
+particiones piloto. Las **48 particiones mensuales** del objetivo 2024-2025
+terminaron el paso 03 y producen 42.190 filas estacion-sensor-dia. El paso 04
+tambien termino sobre las 48 y detecto una nueva estacion atipica que debe
+resolverse antes de consolidar con 05.
 
 ## 01. Descarga cruda
 
@@ -79,21 +79,25 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 
 ## 04. Auditoria diaria
 
-**Estado de etapa:** `[P]` piloto validado; auditoria de cierre pendiente.
+**Estado de etapa:** `[P]` cierre ejecutado; una decision de calidad pendiente.
 
 - [X] Auditadas las cuatro particiones piloto de enero-febrero de 2025.
 - [X] Calendario materializado con ausencias como `NaN`, no como cero.
 - [X] Evaluadas cobertura, cadencia, extremos y concordancia de sensores paralelos.
 - [X] Ventana piloto de cobertura definida entre 90 % y 102 %.
 - [X] Implementado el catalogo esperado por intervalo activo en `auditoria_precipitacion_diaria_v2`.
-- [ ] Auditar las 48 particiones procesadas del objetivo 2024-2025.
-- [ ] Ejecutar y revisar el catalogo esperado de estaciones-sensores usando ambos anos.
-- [ ] Detectar estaciones-sensores ausentes durante meses completos.
-- [ ] Resumir cobertura, brecha maxima, extremos y discrepancias por particion.
+- [X] Auditadas las 48 particiones procesadas del objetivo 2024-2025.
+- [X] Ejecutado el catalogo esperado de 130 estaciones-sensores usando ambos anos.
+- [X] Detectadas 102 ausencias de mes completo dentro de intervalos activos.
+- [X] Resumidas cobertura, continuidad, extremos y discrepancias por particion.
+- [X] Confirmada la cuarentena de `0035215030` / `0240`.
+- [ ] Resolver la cuarentena de `3505500121` / `0240`, cuyos extremos recurrentes no estan cubiertos por la regla actual.
 - [ ] Aprobar o versionar de nuevo las reglas antes de consolidar a escala.
 
-Evidencia del piloto:
-[`../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md).
+Evidencia:
+
+- [`../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md`](../climate_audits/04_series_diarias/auditoria_piloto_diario_precipitacion_2025.md)
+- [`../climate_audits/04_series_diarias/auditoria_cierre_diario_precipitacion_2024_2025.md`](../climate_audits/04_series_diarias/auditoria_cierre_diario_precipitacion_2024_2025.md)
 
 ## 05. Consolidacion diaria por estacion
 
@@ -104,6 +108,8 @@ Evidencia del piloto:
 - [X] Ausencias, baja cobertura, cuarentenas y desacuerdos conservan `NaN`.
 - [X] Sensores paralelos no se suman ni se promedian.
 - [X] Sensor `0035215030` / `0240` puesto en cuarentena en el piloto.
+- [P] Simulacion de solo lectura completada sobre las 48 particiones: 53.128 filas estacion-dia.
+- [ ] Evitar que `3505500121` / `0240` entre al curado antes de resolver su patron atipico.
 - [ ] Consolidar las 48 particiones una vez aprobada la auditoria diaria de cierre.
 - [ ] Reconciliar calidad, procedencia y unicidad de toda la capa curada.
 - [ ] Publicar manifiesto y reporte de cierre 2024-2025.
@@ -123,10 +129,10 @@ Contrato y resultado piloto:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar 04 sobre todo 2024-2025 con la auditoria `v2`.
-2. Revisar catalogo, ausencias mensuales, cobertura, extremos y sensores.
-3. Versionar reglas si aparece un problema no cubierto.
-4. Ejecutar 05 a escala solo despues de aprobar la evidencia de cierre.
+1. Contrastar `3505500121` / `0240` con sus crudos o estaciones vecinas.
+2. Aprobar una cuarentena explicita o justificar documentalmente su conservacion.
+3. Versionar y probar la regla de 05 si se aprueba la cuarentena.
+4. Ejecutar 05 a escala solo despues de cerrar esa decision.
 
 ## Plan de ejecucion del paso 03
 
