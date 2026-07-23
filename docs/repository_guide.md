@@ -32,8 +32,11 @@ un nombre en configuracion.
 | `TemperatureRules.py` | Contratos diarios de temperatura ambiente, minima y maxima |
 | `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
 | `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
+| `HumidityDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de humedad |
 | `AtmosphericPressureRules.py` | Marcador bloqueante hasta definir reglas de presion |
+| `AtmosphericPressureDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de presion |
 | `WindSpeedRules.py` | Marcador bloqueante hasta definir reglas de viento |
+| `WindSpeedDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de viento |
 | `tests/test_climate_processing.py` | Utilidades y reglas preliminares |
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |

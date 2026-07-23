@@ -9,7 +9,7 @@
 - [P] **02 Auditoria cruda:** Cundinamarca 2025 auditada; faltan Boyaca, evidencia de 2024 y contraste de febrero de 2025.
 - [ ] **Contrato:** `HumidityRules.py` es un marcador bloqueante, no una regla implementada.
 - [ ] **03 Diario por sensor:** bloqueado hasta definir unidad, rango, estadistico, duplicados, conflictos y cobertura.
-- [ ] **04 Auditoria diaria:** pendiente de contrato y piloto de 03.
+- [ ] **04 Auditoria diaria:** `HumidityDailyAudit.py` bloquea la ejecucion hasta contar con contrato y piloto de 03.
 - [ ] **05 Curado por estacion:** pendiente de evidencia diaria.
 - [ ] **Escala 2024-2025:** no autorizada.
 - [ ] **06 Municipio y periodo:** pendiente.

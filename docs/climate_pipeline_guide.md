@@ -171,6 +171,13 @@ debio existir fuera de esos limites; esa incertidumbre se conserva para la
 geografia canonica. Las demas variables deben implementar y probar una politica
 equivalente antes de cerrar su historia.
 
+Cada variable tiene un modulo `<Variable>DailyAudit.py` separado de sus reglas
+del paso 03. Precipitacion y temperatura ya poseen auditores implementados;
+humedad, presion y viento tienen marcadores que detienen 04 con
+`NotImplementedError`. Para habilitarlos no basta con copiar el auditor de otra
+variable: primero se revisa evidencia real de 03 y se definen sus rangos,
+extremos, continuidad, cobertura y politica de sensores.
+
 Compuerta antes de 05:
 
 - Umbral de cobertura y tolerancia superior aprobados por variable.

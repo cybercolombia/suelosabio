@@ -138,7 +138,7 @@ auditorias_clima_diario/
 | Productor | `04_ClimateDailyAudit.ipynb` |
 | Granularidad | Calendario estacion-sensor-dia y resumen |
 | Consumidores | Paso 05 y revision humana |
-| Estado | Piloto de precipitacion validado; auditor de temperatura implementado y pendiente de corrida |
+| Estado | Precipitacion validada; temperatura implementada y pendiente de corrida; las demas variables tienen bloqueadores explicitos |
 
 El calendario agrega filas `NaN` para ausencias; por eso puede superar el numero
 de observaciones sin inventar mediciones.
