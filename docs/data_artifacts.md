@@ -152,6 +152,7 @@ clima_diario_curado/
       observaciones_estacion_dia.parquet
     candidatos_sensor.parquet
     sensores_cuarentena.parquet
+    ajustes_temporales.parquet
     resumen_calidad.parquet
     ConsolidacionDiaria_<variable>_<version>.md
     manifest.json
@@ -163,10 +164,11 @@ clima_diario_curado/
 | Productor | `05_ClimateDailyConsolidator.ipynb` |
 | Granularidad | Estacion + dia |
 | Consumidor | Paso 06 |
-| Estado | Piloto de precipitacion validado |
+| Estado | Piloto de precipitacion validado; cierre 2024-2025 v2 listo para ejecutar |
 
-El valor, sensor seleccionado, calidad, motivo y regla viajan juntos. Ausencias,
-sensores invalidos y desacuerdos permanecen en `NaN`.
+El valor original, valor ajustado, sensor seleccionado, calidad, motivo y regla
+viajan juntos. Ausencias, sensores invalidos, cuarentenas y desacuerdos
+permanecen en `NaN`; los artefactos anteriores nunca se sobrescriben.
 
 ### Geografia curada
 

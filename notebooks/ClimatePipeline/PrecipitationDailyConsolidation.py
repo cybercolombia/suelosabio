@@ -8,9 +8,20 @@ from typing import Any, Sequence
 import pandas as pd
 
 
-CONSOLIDATION_VERSION = "precipitacion_estacion_dia_v1"
+CONSOLIDATION_VERSION = "precipitacion_estacion_dia_v2"
 CLAVE_SENSOR_DIA = ("departamento", "codigoestacion", "codigosensor", "fecha")
 CLAVE_ESTACION_DIA = ("departamento", "codigoestacion", "fecha")
+COLUMNAS_AJUSTE_TEMPORAL = (
+    "ajuste_id",
+    "departamento",
+    "codigoestacion",
+    "codigosensor",
+    "fecha_inicio",
+    "fecha_fin",
+    "factor_multiplicativo",
+    "motivo_ajuste",
+    "evidencia_ajuste",
+)
 COLUMNAS_CALENDARIO_REQUERIDAS = (
     "variable",
     "dataset_id",
@@ -34,6 +45,7 @@ class DailyConsolidationResult:
     diario_estacion: pd.DataFrame
     candidatos_sensor: pd.DataFrame
     sensores_cuarentena: pd.DataFrame
+    ajustes_temporales: pd.DataFrame
     metricas: dict[str, Any]
 
 
@@ -63,6 +75,97 @@ def validar_calendario(calendario: pd.DataFrame) -> pd.DataFrame:
     if tabla.loc[~observados, "precipitacion_observada_mm"].notna().any():
         raise ValueError("Hay dias ausentes con precipitacion observada.")
     return tabla
+
+
+def normalizar_ajustes_temporales(
+    ajustes_temporales: pd.DataFrame | Sequence[dict[str, Any]] | None,
+) -> pd.DataFrame:
+    if ajustes_temporales is None:
+        return pd.DataFrame(columns=COLUMNAS_AJUSTE_TEMPORAL)
+    if isinstance(ajustes_temporales, pd.DataFrame):
+        tabla = ajustes_temporales.copy()
+    else:
+        tabla = pd.DataFrame(list(ajustes_temporales))
+    if tabla.empty:
+        return pd.DataFrame(columns=COLUMNAS_AJUSTE_TEMPORAL)
+
+    faltantes = sorted(set(COLUMNAS_AJUSTE_TEMPORAL) - set(tabla.columns))
+    if faltantes:
+        raise ValueError(f"Faltan columnas de ajustes temporales: {faltantes}.")
+
+    tabla = tabla[list(COLUMNAS_AJUSTE_TEMPORAL)].copy()
+    if tabla["ajuste_id"].isna().any() or tabla["ajuste_id"].duplicated().any():
+        raise ValueError("Cada ajuste temporal debe tener un ajuste_id unico.")
+
+    for columna in ("departamento", "codigoestacion", "codigosensor", "ajuste_id"):
+        tabla[columna] = tabla[columna].astype("string")
+    for columna in ("fecha_inicio", "fecha_fin"):
+        tabla[columna] = pd.to_datetime(tabla[columna], errors="coerce")
+    if tabla[["fecha_inicio", "fecha_fin"]].isna().any().any():
+        raise ValueError("Los ajustes temporales contienen fechas invalidas.")
+    if tabla["fecha_inicio"].gt(tabla["fecha_fin"]).any():
+        raise ValueError("Un ajuste temporal inicia despues de su fecha final.")
+
+    tabla["factor_multiplicativo"] = pd.to_numeric(
+        tabla["factor_multiplicativo"], errors="coerce"
+    )
+    if (
+        tabla["factor_multiplicativo"].isna().any()
+        or tabla["factor_multiplicativo"].le(0).any()
+    ):
+        raise ValueError("Los factores temporales deben ser numeros positivos.")
+
+    claves = ["departamento", "codigoestacion", "codigosensor"]
+    ordenada = tabla.sort_values(claves + ["fecha_inicio", "fecha_fin"])
+    for _, grupo in ordenada.groupby(claves, sort=False):
+        inicio = grupo["fecha_inicio"]
+        fin_anterior = grupo["fecha_fin"].shift()
+        if inicio.le(fin_anterior).fillna(False).any():
+            raise ValueError(
+                "Hay ajustes temporales superpuestos para un mismo sensor."
+            )
+    return ordenada.reset_index(drop=True)
+
+
+def aplicar_ajustes_temporales(
+    calendario: pd.DataFrame,
+    ajustes_temporales: pd.DataFrame | Sequence[dict[str, Any]] | None,
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    reglas = normalizar_ajustes_temporales(ajustes_temporales)
+    tabla = calendario.copy()
+    tabla["precipitacion_observada_original_mm"] = tabla[
+        "precipitacion_observada_mm"
+    ].astype("Float64")
+    tabla["precipitacion_observada_ajustada_mm"] = tabla[
+        "precipitacion_observada_mm"
+    ].astype("Float64")
+    tabla["ajuste_temporal_aplicado"] = False
+    tabla["factor_ajuste"] = 1.0
+    tabla["ajuste_id"] = pd.NA
+    tabla["motivo_ajuste"] = pd.NA
+    tabla["evidencia_ajuste"] = pd.NA
+
+    observado = tabla["es_dia_observado"].astype("boolean").fillna(False)
+    for regla in reglas.itertuples(index=False):
+        coincide = (
+            observado
+            & tabla["departamento"].astype("string").eq(regla.departamento)
+            & tabla["codigoestacion"].astype("string").eq(regla.codigoestacion)
+            & tabla["codigosensor"].astype("string").eq(regla.codigosensor)
+            & tabla["fecha"].between(regla.fecha_inicio, regla.fecha_fin)
+        )
+        tabla.loc[coincide, "precipitacion_observada_ajustada_mm"] = (
+            tabla.loc[coincide, "precipitacion_observada_original_mm"]
+            * float(regla.factor_multiplicativo)
+        )
+        tabla.loc[coincide, "ajuste_temporal_aplicado"] = True
+        tabla.loc[coincide, "factor_ajuste"] = float(
+            regla.factor_multiplicativo
+        )
+        tabla.loc[coincide, "ajuste_id"] = regla.ajuste_id
+        tabla.loc[coincide, "motivo_ajuste"] = regla.motivo_ajuste
+        tabla.loc[coincide, "evidencia_ajuste"] = regla.evidencia_ajuste
+    return tabla, reglas
 
 
 def identificar_sensores_cuarentena(
@@ -147,14 +250,38 @@ def clasificar_candidatos_sensor(
     if sensores_cuarentena.empty:
         tabla["sensor_en_cuarentena"] = False
         tabla["motivo_cuarentena"] = pd.NA
+        tabla["inicio_cuarentena"] = pd.NaT
+        tabla["fin_cuarentena"] = pd.NaT
     else:
+        ventanas = sensores_cuarentena[
+            claves_sensor
+            + [
+                "primera_fecha_evidencia",
+                "ultima_fecha_evidencia",
+                "motivo_cuarentena",
+            ]
+        ].rename(
+            columns={
+                "primera_fecha_evidencia": "inicio_cuarentena",
+                "ultima_fecha_evidencia": "fin_cuarentena",
+            }
+        )
         tabla = tabla.merge(
-            sensores_cuarentena[claves_sensor + ["motivo_cuarentena"]],
+            ventanas,
             on=claves_sensor,
             how="left",
             validate="many_to_one",
         )
-        tabla["sensor_en_cuarentena"] = tabla["motivo_cuarentena"].notna()
+        tabla["sensor_en_cuarentena"] = (
+            tabla["motivo_cuarentena"].notna()
+            & tabla["fecha"].between(
+                tabla["inicio_cuarentena"],
+                tabla["fin_cuarentena"],
+            )
+        )
+        tabla["motivo_cuarentena"] = tabla["motivo_cuarentena"].where(
+            tabla["sensor_en_cuarentena"], pd.NA
+        )
 
     observado = tabla["es_dia_observado"].astype("boolean").fillna(False)
     cobertura_evaluable = tabla["cobertura_evaluable"].astype("boolean").fillna(False)
@@ -172,7 +299,9 @@ def clasificar_candidatos_sensor(
     tabla["estado_candidato_sensor"] = estado
     tabla["es_candidato_valido"] = estado.eq("CANDIDATO_VALIDO")
     tabla["cobertura_superior_100"] = observado & cobertura.gt(100)
-    tabla["requiere_revision"] = tabla["motivos_revision"].notna()
+    tabla["requiere_revision"] = (
+        tabla["motivos_revision"].notna() | tabla["ajuste_temporal_aplicado"]
+    )
     tabla["cobertura_minima_regla_pct"] = float(cobertura_minima_pct)
     tabla["cobertura_maxima_regla_pct"] = float(cobertura_maxima_pct)
     return tabla
@@ -213,8 +342,8 @@ def consolidar_estacion_dia(
             grupo.loc[grupo["sensor_en_cuarentena"], "codigosensor"]
         )
         diferencia = (
-            validos["precipitacion_observada_mm"].max()
-            - validos["precipitacion_observada_mm"].min()
+            validos["precipitacion_observada_ajustada_mm"].max()
+            - validos["precipitacion_observada_ajustada_mm"].min()
             if len(validos) > 1
             else 0.0 if len(validos) == 1 else pd.NA
         )
@@ -244,6 +373,9 @@ def consolidar_estacion_dia(
             else:
                 calidad = "VALIDO_SENSORES_CONCORDANTES"
                 motivo = "SENSORES_DENTRO_TOLERANCIA"
+            if bool(seleccionado["ajuste_temporal_aplicado"]):
+                calidad = f"VALIDO_AJUSTADO_{calidad.removeprefix('VALIDO_')}"
+                motivo = f"{motivo}|AJUSTE_TEMPORAL_APLICADO"
 
         metadatos = observados if not observados.empty else grupo
         motivos_revision = _unicos_texto(observados["motivos_revision"])
@@ -262,12 +394,38 @@ def consolidar_estacion_dia(
             "numero_sensores_observados": len(observados),
             "numero_sensores_validos": len(validos),
             "precipitacion_observada_seleccionada_mm": (
-                seleccionado["precipitacion_observada_mm"]
+                seleccionado["precipitacion_observada_original_mm"]
+                if seleccionado is not None
+                else pd.NA
+            ),
+            "precipitacion_ajustada_seleccionada_mm": (
+                seleccionado["precipitacion_observada_ajustada_mm"]
                 if seleccionado is not None
                 else pd.NA
             ),
             "precipitacion_diaria_mm": (
-                seleccionado["precipitacion_observada_mm"]
+                seleccionado["precipitacion_observada_ajustada_mm"]
+                if seleccionado is not None
+                else pd.NA
+            ),
+            "ajuste_temporal_aplicado": (
+                bool(seleccionado["ajuste_temporal_aplicado"])
+                if seleccionado is not None
+                else False
+            ),
+            "factor_ajuste": (
+                seleccionado["factor_ajuste"] if seleccionado is not None else pd.NA
+            ),
+            "ajuste_id": (
+                seleccionado["ajuste_id"] if seleccionado is not None else pd.NA
+            ),
+            "motivo_ajuste": (
+                seleccionado["motivo_ajuste"]
+                if seleccionado is not None
+                else pd.NA
+            ),
+            "evidencia_ajuste": (
+                seleccionado["evidencia_ajuste"]
                 if seleccionado is not None
                 else pd.NA
             ),
@@ -311,6 +469,9 @@ def consolidar_estacion_dia(
     consolidado["precipitacion_observada_seleccionada_mm"] = consolidado[
         "precipitacion_observada_seleccionada_mm"
     ].astype("Float64")
+    consolidado["precipitacion_ajustada_seleccionada_mm"] = consolidado[
+        "precipitacion_ajustada_seleccionada_mm"
+    ].astype("Float64")
     if consolidado.duplicated(list(CLAVE_ESTACION_DIA)).any():
         raise RuntimeError("La consolidacion produjo llaves estacion-dia repetidas.")
     return consolidado.sort_values(list(CLAVE_ESTACION_DIA)).reset_index(drop=True)
@@ -324,14 +485,19 @@ def consolidar_precipitacion_diaria(
     tolerancia_sensores_mm: float = 0.1,
     prioridad_sensores: Sequence[str] = ("0240", "0257"),
     minimo_dias_cuarentena: int = 3,
+    ajustes_temporales: pd.DataFrame | Sequence[dict[str, Any]] | None = None,
 ) -> DailyConsolidationResult:
     calendario_validado = validar_calendario(calendario)
+    calendario_ajustado, reglas_ajuste = aplicar_ajustes_temporales(
+        calendario_validado,
+        ajustes_temporales,
+    )
     cuarentena = identificar_sensores_cuarentena(
         valores_sospechosos,
         minimo_dias_persistentes=minimo_dias_cuarentena,
     )
     candidatos = clasificar_candidatos_sensor(
-        calendario_validado,
+        calendario_ajustado,
         valores_sospechosos,
         cuarentena,
         cobertura_minima_pct=cobertura_minima_pct,
@@ -346,6 +512,13 @@ def consolidar_precipitacion_diaria(
         "regla_version": CONSOLIDATION_VERSION,
         "filas_calendario_entrada": len(calendario_validado),
         "filas_estacion_dia_salida": len(diario_estacion),
+        "ajustes_temporales": len(reglas_ajuste),
+        "filas_sensor_dia_ajustadas": int(
+            candidatos["ajuste_temporal_aplicado"].sum()
+        ),
+        "filas_estacion_dia_ajustadas": int(
+            diario_estacion["ajuste_temporal_aplicado"].sum()
+        ),
         "sensores_cuarentena": len(cuarentena),
         "dias_aceptados": int(diario_estacion["precipitacion_diaria_mm"].notna().sum()),
         "dias_sin_observacion": int(diario_estacion["es_dia_faltante"].sum()),
@@ -365,5 +538,6 @@ def consolidar_precipitacion_diaria(
         diario_estacion=diario_estacion,
         candidatos_sensor=candidatos,
         sensores_cuarentena=cuarentena,
+        ajustes_temporales=reglas_ajuste,
         metricas=metricas,
     )

@@ -10,8 +10,8 @@
 El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
 particiones piloto. Las **48 particiones mensuales** del objetivo 2024-2025
 terminaron el paso 03 y producen 42.190 filas estacion-sensor-dia. El paso 04
-tambien termino sobre las 48 y detecto una nueva estacion atipica que debe
-resolverse antes de consolidar con 05.
+termino sobre las 48, diagnostico un cambio temporal de escala y el contrato 05
+v2 ya supero una simulacion completa de solo lectura.
 
 ```mermaid
 flowchart LR
@@ -19,22 +19,22 @@ flowchart LR
     P02 --> R03[Reglas 03<br/>validadas]
     R03 --> P03[03 Diario por sensor<br/>48/48 completa]
     P03 --> P04[04 Auditoria diaria<br/>ejecutada]
-    P04 --> G{Resolver<br/>3505500121/0240}
-    G --> R05[Reglas 05 v2<br/>pendientes]
+    P04 --> G{Calibrar o aislar<br/>3505500121/0240}
+    G --> R05[Reglas 05 v2<br/>validadas localmente]
     R05 --> P05[05 Curado estacion-dia<br/>pendiente]
     P05 --> CURADO[(Precipitacion diaria<br/>curada 2024-2025)]
 
     classDef done fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef progress fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef pending fill:#eeeeee,stroke:#666666,color:#333333;
-    class P01,P02,R03,P03,P04 done;
-    class G progress;
-    class R05,P05,CURADO pending;
+    class P01,P02,R03,P03,P04,G,R05 done;
+    class P05 progress;
+    class CURADO pending;
 ```
 
-La variable esta al final del bucle 04: no necesita repetir descarga ni
-procesamiento diario. El siguiente cambio pertenece al contrato de 05 y debe
-conservar cuarentenas por intervalo, motivo y evidencia.
+La variable cerro el bucle 04: no necesita repetir descarga, procesamiento
+diario ni auditoria. El siguiente paso es ejecutar 05 v2 en Colab y revisar sus
+artefactos antes de entregar la capa a 06.
 
 ## 01. Descarga cruda
 
@@ -102,7 +102,7 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 
 ## 04. Auditoria diaria
 
-**Estado de etapa:** `[P]` cierre ejecutado; una decision de calidad pendiente.
+**Estado de etapa:** `[X]` cierre aprobado para 05 v2.
 
 - [X] Auditadas las cuatro particiones piloto de enero-febrero de 2025.
 - [X] Calendario materializado con ausencias como `NaN`, no como cero.
@@ -114,8 +114,9 @@ No se imputan dias ni observaciones en este paso. Las salidas viven en
 - [X] Detectadas 102 ausencias de mes completo dentro de intervalos activos.
 - [X] Resumidas cobertura, continuidad, extremos y discrepancias por particion.
 - [X] Confirmada la cuarentena de `0035215030` / `0240`.
-- [ ] Resolver la cuarentena de `3505500121` / `0240`, cuyos extremos recurrentes no estan cubiertos por la regla actual.
-- [ ] Aprobar o versionar de nuevo las reglas antes de consolidar a escala.
+- [X] Diagnosticado el cambio de escala de `3505500121` / `0240` alrededor del 22 de julio de 2025.
+- [X] Validada la correccion temporal `factor=0,1` entre `2024-10-29` y `2025-07-21`.
+- [X] Aprobada la version 2 de las reglas antes de consolidar a escala.
 
 Evidencia:
 
@@ -124,15 +125,16 @@ Evidencia:
 
 ## 05. Consolidacion diaria por estacion
 
-**Estado de etapa:** `[P]` piloto validado; escala pendiente.
+**Estado de etapa:** `[P]` contrato v2 validado; ejecucion oficial pendiente.
 
 - [X] Consolidado enero-febrero de 2025 para ambos departamentos.
 - [X] Llave unica `estacion + dia` verificada en 5.198 filas piloto.
 - [X] Ausencias, baja cobertura, cuarentenas y desacuerdos conservan `NaN`.
 - [X] Sensores paralelos no se suman ni se promedian.
 - [X] Sensor `0035215030` / `0240` puesto en cuarentena en el piloto.
-- [P] Simulacion de solo lectura completada sobre las 48 particiones: 53.128 filas estacion-dia.
-- [ ] Evitar que `3505500121` / `0240` entre al curado antes de resolver su patron atipico.
+- [X] Simulacion de solo lectura completada sobre las 48 particiones: 53.128 filas estacion-dia.
+- [X] Calibracion temporal de `3505500121` / `0240` conserva original, ajustado, factor, motivo y evidencia.
+- [X] Cuarentena de `0035215030` / `0240` limitada al intervalo con evidencia; periodos confiables sobreviven.
 - [ ] Consolidar las 48 particiones una vez aprobada la auditoria diaria de cierre.
 - [ ] Reconciliar calidad, procedencia y unicidad de toda la capa curada.
 - [ ] Publicar manifiesto y reporte de cierre 2024-2025.
@@ -152,10 +154,12 @@ Contrato y resultado piloto:
 
 ## Siguiente bloque recomendado
 
-1. Contrastar `3505500121` / `0240` con sus crudos o estaciones vecinas.
-2. Aprobar una cuarentena explicita o justificar documentalmente su conservacion.
-3. Versionar y probar la regla de 05 si se aprueba la cuarentena.
-4. Ejecutar 05 a escala solo despues de cerrar esa decision.
+1. Abrir `05_ClimateDailyConsolidator.ipynb` y ejecutar con
+   `EJECUTAR_CONSOLIDACION=False`.
+2. Confirmar que `cierre_precipitacion_2024_2025_v1` aparezca `COMPLETA`.
+3. Cambiar solo `EJECUTAR_CONSOLIDACION=True` y ejecutar desde la configuracion.
+4. Copiar los artefactos de cierre para reconciliar metricas, calidad y reglas.
+5. Dejar de nuevo la bandera en `False` antes de guardar el notebook.
 
 ## Plan de ejecucion del paso 03
 
