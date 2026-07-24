@@ -12,7 +12,9 @@
 - [ ] **04 Auditoria diaria:** validar calendario, cobertura, extremos, amplitud y sensores paralelos del piloto.
 - [ ] **05 Curado por estacion:** disenar reglas termicas a partir del piloto; el consolidador de precipitacion esta prohibido.
 - [ ] **Escala 2024-2025:** procesar 48 particiones solo despues de aprobar 04 y 05.
-- [ ] **06 Municipio y periodo:** pendiente de geografia canonica y consolidacion diaria.
+- [ ] **06 Geografia:** pendiente de consolidacion diaria para conocer su catalogo de estaciones.
+- [ ] **07 Municipio diario:** pendiente.
+- [ ] **08 Indicadores por periodo:** pendiente.
 
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y

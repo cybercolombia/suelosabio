@@ -10,8 +10,8 @@
 El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
 particiones piloto. Las **48 particiones mensuales** del objetivo 2024-2025
 terminaron el paso 03 y producen 42.190 filas estacion-sensor-dia. El paso 04
-termino sobre las 48, diagnostico un cambio temporal de escala y el contrato 05
-v2 ya supero una simulacion completa de solo lectura.
+termino sobre las 48, diagnostico un cambio temporal de escala y el paso 05 v2
+ya genero y reconcilio la capa diaria curada.
 
 ```mermaid
 flowchart LR
@@ -20,21 +20,19 @@ flowchart LR
     R03 --> P03[03 Diario por sensor<br/>48/48 completa]
     P03 --> P04[04 Auditoria diaria<br/>ejecutada]
     P04 --> G{Calibrar o aislar<br/>3505500121/0240}
-    G --> R05[Reglas 05 v2<br/>validadas localmente]
-    R05 --> P05[05 Curado estacion-dia<br/>pendiente]
+    G --> R05[Reglas 05 v2<br/>validadas]
+    R05 --> P05[05 Curado estacion-dia<br/>completo]
     P05 --> CURADO[(Precipitacion diaria<br/>curada 2024-2025)]
 
     classDef done fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef progress fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef pending fill:#eeeeee,stroke:#666666,color:#333333;
-    class P01,P02,R03,P03,P04,G,R05 done;
-    class P05 progress;
-    class CURADO pending;
+    class P01,P02,R03,P03,P04,G,R05,P05,CURADO done;
 ```
 
-La variable cerro el bucle 04: no necesita repetir descarga, procesamiento
-diario ni auditoria. El siguiente paso es ejecutar 05 v2 en Colab y revisar sus
-artefactos antes de entregar la capa a 06.
+La variable completo el curado diario 2024-2025 y no necesita repetir descarga,
+procesamiento ni auditoria. La capa puede pasar al diseno del paso 06, que
+requiere geografia canonica y reglas de agregacion municipal.
 
 ## 01. Descarga cruda
 
@@ -125,7 +123,7 @@ Evidencia:
 
 ## 05. Consolidacion diaria por estacion
 
-**Estado de etapa:** `[P]` contrato v2 validado; ejecucion oficial pendiente.
+**Estado de etapa:** `[X]` cierre 2024-2025 completo y reconciliado.
 
 - [X] Consolidado enero-febrero de 2025 para ambos departamentos.
 - [X] Llave unica `estacion + dia` verificada en 5.198 filas piloto.
@@ -135,31 +133,55 @@ Evidencia:
 - [X] Simulacion de solo lectura completada sobre las 48 particiones: 53.128 filas estacion-dia.
 - [X] Calibracion temporal de `3505500121` / `0240` conserva original, ajustado, factor, motivo y evidencia.
 - [X] Cuarentena de `0035215030` / `0240` limitada al intervalo con evidencia; periodos confiables sobreviven.
-- [ ] Consolidar las 48 particiones una vez aprobada la auditoria diaria de cierre.
-- [ ] Reconciliar calidad, procedencia y unicidad de toda la capa curada.
-- [ ] Publicar manifiesto y reporte de cierre 2024-2025.
+- [X] Consolidadas las 48 particiones aprobadas por la auditoria diaria.
+- [X] Reconciliadas 53.128 filas, calidad, procedencia y cero llaves duplicadas.
+- [X] Publicados manifiesto y reporte de cierre 2024-2025.
 
-Contrato y resultado piloto:
-[`../climate_daily_consolidation.md`](../climate_daily_consolidation.md).
+Contrato y evidencia:
 
-## 06. Municipio y periodo
+- [`../climate_daily_consolidation.md`](../climate_daily_consolidation.md)
+- [`../climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md`](../climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md)
 
-**Estado de etapa:** `[ ]` no iniciado.
+## 06. Geografia de estaciones
 
-- [ ] Construir el catalogo canonico estacion-municipio con DIVIPOLA.
+**Estado de etapa:** `[P]` auditoria implementada; asignacion canonica pendiente.
+
+- [X] Implementado `06_ClimateGeographyAudit.ipynb` con ejecucion protegida.
+- [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
+- [X] Implementado el mapa de puntos y la exportacion en una carpeta propia.
+- [X] Las coincidencias por catalogo se etiquetan como candidatas, no canonicas.
+- [ ] Ejecutar y persistir el cierre geografico en Colab.
+- [ ] Resolver 15 estaciones candidatas a revision.
+- [ ] Conseguir `.dbf` y `.prj` compatibles con `Div_Pol.shp`, o un GeoPackage,
+  GeoJSON o GeoParquet equivalente.
+- [ ] Validar puntos contra poligonos y aprobar la asignacion canonica.
+
+Contrato:
+
+- [`../climate_geography_audit.md`](../climate_geography_audit.md)
+
+## 07. Municipio diario
+
+**Estado de etapa:** `[ ]` bloqueado por la compuerta geografica.
+
 - [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
 - [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
+- [ ] Conservar estaciones esperadas, observadas, dispersion y calidad.
+- [ ] Mantener `NaN` cuando no exista evidencia suficiente.
+
+## 08. Indicadores por periodo
+
+**Estado de etapa:** `[ ]` pendiente de 07.
+
 - [ ] Definir indicadores por periodo agricola: acumulado, dias con lluvia, intensidad y brechas.
 - [ ] Conservar `NaN` cuando la cobertura sea insuficiente; no extrapolar acumulados.
 
 ## Siguiente bloque recomendado
 
-1. Abrir `05_ClimateDailyConsolidator.ipynb` y ejecutar con
-   `EJECUTAR_CONSOLIDACION=False`.
-2. Confirmar que `cierre_precipitacion_2024_2025_v1` aparezca `COMPLETA`.
-3. Cambiar solo `EJECUTAR_CONSOLIDACION=True` y ejecutar desde la configuracion.
-4. Copiar los artefactos de cierre para reconciliar metricas, calidad y reglas.
-5. Dejar de nuevo la bandera en `False` antes de guardar el notebook.
+1. Ejecutar 06 primero con la bandera en `False` y revisar el plan.
+2. Ejecutar 06 con escritura habilitada en `eco2026_processed/geografia_curada`.
+3. Revisar las 15 estaciones marcadas y conseguir poligonos municipales completos.
+4. Cerrar la asignacion canonica antes de implementar 07.
 
 ## Plan de ejecucion del paso 03
 

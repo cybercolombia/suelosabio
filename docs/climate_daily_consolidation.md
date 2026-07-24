@@ -150,7 +150,8 @@ ejecucion de cierre v2.
 
 ## Compuerta de cierre v2
 
-Antes de entregar la capa a 06 se debe comprobar:
+La corrida oficial en Colab del 23 de julio de 2026 uso el commit `ccd0573`,
+termino `COMPLETA` en 380,64 segundos y supero estas comprobaciones:
 
 1. Las llaves `departamento + estacion + fecha` son unicas.
 2. La calibracion solo afecta `3505500121/0240` entre el 29 de octubre de 2024
@@ -160,3 +161,7 @@ Antes de entregar la capa a 06 se debe comprobar:
    mismo sensor sobreviven.
 5. Ausencias, cobertura insuficiente y discrepancias conservan motivos distintos.
 6. El manifiesto enumera las reglas, particiones, metricas y archivos generados.
+
+Resultado: 48 particiones, 53.128 filas estacion-dia, 36.288 valores aceptados
+y cero llaves duplicadas. El detalle reproducible se encuentra en
+[`climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md`](climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md).

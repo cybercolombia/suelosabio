@@ -34,12 +34,15 @@ flowchart TD
     RULES05[DailyConsolidation.py + pruebas<br/>seleccion y cuarentenas]
     P05[05 - Consolidacion con<br/>reglas propias de la variable]
     CURATED[(clima_diario_curado<br/>estacion + dia + calidad)]
-    GEO[Catalogo esperado de estaciones<br/>y geografia canonica]
-    P06[06 - Agregacion geografica<br/>y temporal]
+    P06[06 - Auditoria geografica<br/>y mapa de estaciones]
+    GEO[(geografia_curada<br/>asignacion estacion-municipio)]
+    GATE_GEO{Asignacion canonica<br/>validada con poligonos?}
+    P07[07 - Agregacion<br/>municipio-dia]
     MUNICIPAL[(municipio + dia<br/>valor y cobertura)]
+    P08[08 - Indicadores<br/>municipio-periodo]
     GATE_IMPUTE{Imputacion aporta valor<br/>y fue validada temporalmente?}
     IMPUTE[Capa imputada versionada<br/>valor + metodo + bandera]
-    FEATURES[(municipio-dia e<br/>indicadores municipio-periodo)]
+    FEATURES[(indicadores<br/>municipio-periodo)]
 
     API --> P01 --> RAW --> P02 --> AUDIT_RAW --> GATE_RULES
     GATE_RULES -- No --> BLOCKED
@@ -50,17 +53,19 @@ flowchart TD
     GATE_DAILY -- Ajustar transformacion --> RULES03
     GATE_DAILY -- Ajustar diagnostico --> RULES04
     GATE_DAILY -- Aprobar reglas de curado --> RULES05 --> P05 --> CURATED
-    CURATED --> GEO --> P06 --> MUNICIPAL --> GATE_IMPUTE
-    GATE_IMPUTE -- No o no justificada --> FEATURES
-    GATE_IMPUTE -- Si --> IMPUTE --> FEATURES
+    CURATED --> P06 --> GEO --> GATE_GEO
+    GATE_GEO -- No --> P06
+    GATE_GEO -- Si --> P07 --> MUNICIPAL --> GATE_IMPUTE
+    GATE_IMPUTE -- No o no justificada --> P08 --> FEATURES
+    GATE_IMPUTE -- Si --> IMPUTE --> P08
 
     classDef data fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef process fill:#e8eef5,stroke:#365b7d,color:#18344d;
     classDef gate fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef blocked fill:#f9dddd,stroke:#a33b3b,color:#5c1717;
-    class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,MUNICIPAL,FEATURES data;
-    class P01,P02,RULES03,P03,RULES04,P04,RULES05,P05,GEO,P06,IMPUTE process;
-    class GATE_RULES,GATE_DAILY,GATE_IMPUTE gate;
+    class RAW,AUDIT_RAW,DAILY_SENSOR,AUDIT_DAILY,CURATED,GEO,MUNICIPAL,FEATURES data;
+    class P01,P02,RULES03,P03,RULES04,P04,RULES05,P05,P06,P07,P08,IMPUTE process;
+    class GATE_RULES,GATE_DAILY,GATE_GEO,GATE_IMPUTE gate;
     class BLOCKED,MISSING blocked;
 ```
 
@@ -207,6 +212,38 @@ una fila por estacion-dia con valor, calidad, motivo y procedencia. Actualmente
 solo precipitacion tiene consolidacion implementada. Temperatura no debe usar
 `PrecipitationDailyConsolidation.py`.
 
+### 06. Auditar la geografia de estaciones
+
+**Entrada:** historia `clima_diario_curado`, catalogo IDEAM y DIVIPOLA.
+**Salida:** catalogo de estaciones, asignaciones candidatas, revisiones, mapa y
+manifiesto en `geografia_curada`.
+
+El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes. Puede
+producir puntos y candidatos con los catalogos tabulares disponibles, pero no
+declara una asignacion canonica solo por coincidencia de texto. La compuerta
+antes de 07 exige resolver las revisiones y validar espacialmente con poligonos
+municipales completos. El contrato operativo se detalla en
+[`climate_geography_audit.md`](climate_geography_audit.md).
+
+### 07. Agregar a municipio-dia
+
+**Entrada:** `clima_diario_curado` y asignacion estacion-municipio canonica.
+**Salida:** una fila por variable, municipio y dia con valor y cobertura.
+
+Este paso combina estaciones despues de la reduccion diaria. Conserva numero de
+estaciones esperadas y observadas, dispersion, calidad y ausencias; no convierte
+`NaN` en cero ni usa estaciones en revision como si estuvieran confirmadas.
+
+### 08. Construir indicadores municipio-periodo
+
+**Entrada:** `clima_municipal`.
+**Salida:** caracteristicas por municipio y periodo agricola.
+
+Las estadisticas dependen de la variable. Para precipitacion incluyen acumulado,
+dias con lluvia, intensidad, extremos y rachas; para otras variables se definen
+contratos propios. Toda salida conserva dias esperados, dias validos, cobertura y
+criterio de aceptacion.
+
 ## Protocolo para escalar 2024-2025
 
 1. Ejecutar inventario estructural de 02 para confirmar dos departamentos, dos
@@ -269,7 +306,7 @@ sobrescribe.
 
 ## Instrucciones para asistentes de IA
 
-Antes de modificar 03, 04 o 05:
+Antes de modificar 03 a 08:
 
 1. Leer `project_status.md`, esta guia, `data_artifacts.md` y la auditoria de la
    variable.
@@ -279,3 +316,4 @@ Antes de modificar 03, 04 o 05:
 5. No reutilizar umbrales ni agregaciones de otra variable.
 6. Mantener crudos inmutables, banderas en `False` y manifiestos atomicos.
 7. Proponer y documentar cambios de contrato antes de escalar.
+8. No declarar geografias candidatas como canonicas sin evidencia espacial.

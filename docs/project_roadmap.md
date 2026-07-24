@@ -1,6 +1,6 @@
 # Roadmap de extremo a extremo de RAIZ
 
-**Actualizado:** 22 de julio de 2026
+**Actualizado:** 23 de julio de 2026
 **Estado:** vigente
 **Alcance territorial:** Boyaca y Cundinamarca
 
@@ -17,7 +17,8 @@ alcance y fuentes
   -> clima diario por estacion-sensor
   -> auditoria diaria
   -> clima diario consolidado por estacion
-  -> geografia canonica y clima municipal
+  -> auditoria geografica y catalogo de estaciones
+  -> clima municipal diario
   -> indicadores municipio-periodo
   -> EVA curada
   -> dataset maestro
@@ -38,14 +39,16 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Precipitacion validada; temperatura en piloto; otras parciales |
 | 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Precipitacion validada; temperatura implementada |
 | 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
-| 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Piloto precipitacion validado |
-| 5.1 Escala operativa | Historia diaria 2024-2025 | Particiones y manifiestos completos | Pendiente |
-| 6. Municipio y periodo | Indicadores municipio-periodo | Llaves unicas y cobertura visible | Pendiente |
-| 7. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
-| 8. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
-| 9. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Pendiente |
-| 10. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
-| 11. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
+| 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Precipitacion 2024-2025 completa |
+| 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | Precipitacion completa; otras pendientes |
+| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | Auditoria implementada; poligonos pendientes |
+| 7. Municipio diario | `clima_municipal` | Llaves unicas y cobertura espacial visible | Pendiente |
+| 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Pendiente |
+| 9. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
+| 10. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
+| 11. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Pendiente |
+| 12. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
+| 13. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
 
 ## Fase 0. Cerrar una pregunta viable
 
@@ -111,15 +114,39 @@ que dos workers no escriban la misma particion. La escala termina cuando:
 - Las cuarentenas y cambios de regla quedan versionados.
 - Una repeticion no duplica ni mezcla salidas.
 
-## Fase 6. Geografia, municipio y periodos
+## Fase 6. Geografia de estaciones
 
 ```text
-estacion-sensor-dia -> estacion-dia -> municipio-dia -> municipio-periodo
+estacion-dia -> catalogo de estaciones -> asignacion estacion-municipio
 ```
 
-Primero se construye una tabla canonica estacion-municipio con codigos DANE,
-DIVIPOLA y evidencia geografica. Luego se combinan estaciones sin dar mas peso a
-las que reportan con mayor frecuencia.
+El paso 06 audita codigos, nombres y coordenadas frente al catalogo IDEAM y
+DIVIPOLA. Produce un mapa de puntos y asignaciones candidatas. Una coincidencia
+por nombre no es todavia una asignacion canonica: para declararla canonica se
+necesita resolver las revisiones y validar las coordenadas contra poligonos
+municipales completos.
+
+La fuente compartida `eco2026` se trata como solo lectura. Las tablas, el mapa,
+el manifiesto y el reporte se escriben en
+`eco2026_processed/geografia_curada`.
+
+## Fase 7. Clima municipal diario
+
+```text
+estacion-dia + estacion-municipio canonico -> municipio-dia
+```
+
+Se combinan estaciones del mismo municipio sin dar mas peso a las que reportaban
+con mayor frecuencia subdiaria. La salida conserva estaciones esperadas,
+estaciones con valor, cobertura espacial, dispersion y motivos de ausencia.
+Los datos en cuarentena no se convierten en cero ni se usan para rellenar otras
+estaciones en silencio.
+
+## Fase 8. Indicadores climaticos por periodo
+
+```text
+municipio-dia -> municipio-periodo
+```
 
 Cada variable produce varias caracteristicas: acumulacion o tendencia,
 variabilidad, extremos, persistencia y calidad. Un semestre debe conservar perfil
@@ -128,7 +155,7 @@ mensual o bloques inicio-mitad-fin para no esconder la distribucion temporal.
 La salida incluye dias esperados, dias observados, cobertura, brecha maxima y
 numero de estaciones. No se extrapolan sumas ni se imputan municipios en silencio.
 
-## Fase 7. Curar EVA
+## Fase 9. Curar EVA
 
 - Confirmar archivo, hoja, encabezados y periodo.
 - Normalizar codigos DANE como texto.
@@ -142,7 +169,7 @@ numero de estaciones. No se extrapolan sumas ni se imputan municipios en silenci
 La salida tiene llave agricola unica y reporte de inclusiones, exclusiones y
 diferencias frente al rendimiento publicado.
 
-## Fase 8. Dataset maestro
+## Fase 10. Dataset maestro
 
 El cruce usa codigo municipal, ano, periodo y cultivo. Valida cardinalidad,
 reporta filas antes y despues, lista periodos sin clima y conserva calidad.
@@ -154,7 +181,7 @@ reporta filas antes y despues, lista periodos sin clima y conserva calidad.
 El dataset maestro es la unica entrada analitica. No se releen crudos para cada
 grafica o entrenamiento.
 
-## Fase 9. EDA y modelado
+## Fase 11. EDA y modelado
 
 - Separar entrenamiento y prueba por tiempo.
 - Comparar contra baselines calculados solo con entrenamiento.
@@ -165,7 +192,7 @@ grafica o entrenamiento.
 
 No superar el baseline sigue siendo un resultado valido si se reporta con rigor.
 
-## Fases 10 y 11. Publicacion y aplicacion
+## Fases 12 y 13. Publicacion y aplicacion
 
 La aplicacion consume artefactos pequenos y versionados. No descarga Socrata, no
 abre miles de Parquet, no limpia EVA y no entrena al iniciar.

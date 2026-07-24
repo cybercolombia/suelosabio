@@ -1,6 +1,6 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 22 de julio de 2026
+**Actualizado:** 23 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
@@ -36,7 +36,8 @@ historicas de descarga y rendimiento de la API.
   una sola; cada variable debe justificar utilidad, cobertura y calidad.
 - Confirmar el archivo EVA compartido, su hoja, granularidad y reglas de
   consolidacion.
-- Confirmar DIVIPOLA y la geografia canonica de estaciones y municipios.
+- Conseguir los componentes completos de los poligonos municipales y cerrar la
+  asignacion geografica canonica de estaciones.
 - Definir periodos climaticos compatibles con EVA y con el ciclo de cada cultivo.
 - Definir baseline, modelos, validacion temporal y metricas.
 
@@ -47,7 +48,7 @@ departamentos, cinco anos y doce meses.
 
 | Variable | Dataset | Crudo 2021-2025 | Auditoria 02 | Reglas diarias | Estado |
 |---|---|---:|---|---|---|
-| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023, 2024 y 2025 | Piloto 03-05 validado | Prioritaria y lista para escalar |
+| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023, 2024 y 2025 | 03-05 completos para 2024-2025 | Curada por estacion-dia |
 | Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
 | Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
 | Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
@@ -63,7 +64,7 @@ garantiza cobertura interna, calidad ni continuidad temporal.
 | Dominio | Evidencia actual | Estado vigente |
 |---|---|---|
 | Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
-| Geografia | `GeoData.ipynb` y trabajo previo con DIVIPOLA | Catalogo compartido, llaves y geografia canonica pendientes |
+| Geografia | Catalogos IDEAM y DIVIPOLA auditados por el paso 06 | Catalogo candidato y mapa implementados; poligonos municipales completos pendientes |
 | Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
 | Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
 
@@ -78,10 +79,12 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
 | 03 Diario por sensor | `clima_diario_sensor` | Precipitacion 2024-2025 completa en 48 particiones; temperatura implementada y pendiente de piloto real |
 | 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
-| 05 Consolidacion | `clima_diario_curado` | Precipitacion piloto validada en Colab |
-| Escala operativa | Variables aprobadas 2024-2025 | Pendiente |
-| 06 Municipio y periodo | `clima_municipal` e indicadores | No implementado |
-| EVA y DIVIPOLA | Agricultura y geografia curadas | Pendiente de acceso y validacion |
+| 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
+| Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
+| 06 Geografia | `geografia_curada` | Auditoria y mapa implementados; ejecucion en Colab y poligonos pendientes |
+| 07 Municipio diario | `clima_municipal` | No implementado |
+| 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
+| 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
 
 ## Regla para nuevas variables
@@ -99,15 +102,15 @@ umbrales y criterios de calidad.
 
 1. Ejecutar y auditar pilotos reales de temperatura ambiente de enero-febrero
    de 2025 antes de definir su consolidacion.
-2. Curar precipitacion y las variables aprobadas para 2024-2025; 2021-2023
-   quedan como ampliacion posterior.
+2. Curar las variables adicionales aprobadas para 2024-2025; precipitacion ya
+   termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Ubicar y curar EVA y DIVIPOLA sin esperar a terminar todas las variables.
+4. Ejecutar el paso 06, resolver sus revisiones y conseguir el conjunto completo
+   de poligonos municipales sin escribir en la carpeta compartida.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
-6. Implementar el paso 06 solo cuando exista historia diaria consolidada y una
-   geografia canonica defendible.
+6. Implementar 07 y 08 solo despues de cerrar la asignacion geografica canonica.
 
 El orden completo y sus compuertas se mantienen en
 [`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre

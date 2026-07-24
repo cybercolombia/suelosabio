@@ -1,6 +1,6 @@
 # Guia del repositorio
 
-**Actualizado:** 22 de julio de 2026
+**Actualizado:** 23 de julio de 2026
 **Estado:** inventario vigente; revision de codigo pendiente
 
 Esta guia orienta a personas y asistentes de IA. Clasifica los archivos por su
@@ -16,6 +16,7 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
+| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Auditar estaciones, DIVIPOLA y mapa de puntos | Activo; poligonos pendientes |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
@@ -29,6 +30,7 @@ un nombre en configuracion.
 | `PrecipitationRules.py` | Contrato subdiario a estacion-sensor-dia de precipitacion |
 | `PrecipitationDailyAudit.py` | Calendario y diagnostico diario de precipitacion |
 | `PrecipitationDailyConsolidation.py` | Contrato estacion-dia de precipitacion |
+| `ClimateGeography.py` | Cruce trazable de estaciones, catalogo IDEAM y DIVIPOLA |
 | `TemperatureRules.py` | Contratos diarios de temperatura ambiente, minima y maxima |
 | `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
 | `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
@@ -40,6 +42,7 @@ un nombre en configuracion.
 | `tests/test_climate_processing.py` | Utilidades y reglas preliminares |
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |
+| `tests/test_climate_geography.py` | Cruce geografico y proteccion del notebook 06 |
 | `tests/test_temperature_processing.py` | Contratos y despacho de temperatura |
 | `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
 | `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |
@@ -73,11 +76,12 @@ Los nombres son contratos de roadmap, no archivos existentes:
 
 | Componente | Producto esperado |
 |---|---|
-| `06_ClimateMunicipalAggregator.ipynb` | Clima municipio-dia e indicadores municipio-periodo |
-| `07_EvaCurator.ipynb` | EVA curada y target validado |
-| `08_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |
-| `09_ModelingPipeline.ipynb` | EDA, baselines, modelos y evaluacion temporal |
-| `10_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
+| `07_ClimateMunicipalAggregator.ipynb` | Clima municipio-dia con cobertura espacial |
+| `08_ClimatePeriodFeatures.ipynb` | Indicadores climaticos municipio-periodo |
+| `09_EvaCurator.ipynb` | EVA curada y target validado |
+| `10_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |
+| `11_ModelingPipeline.ipynb` | EDA, baselines, modelos y evaluacion temporal |
+| `12_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
 
 ## Donde buscar cada respuesta
 

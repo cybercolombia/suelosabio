@@ -1,6 +1,6 @@
 # Estado del pipeline climatico por variable
 
-**Actualizado:** 22 de julio de 2026  
+**Actualizado:** 23 de julio de 2026
 **Estado:** vigente  
 **Alcance operativo:** Boyaca y Cundinamarca, 2024-2025
 
@@ -20,20 +20,24 @@ cientifica esten aprobados.
 
 ## Tablero por variable
 
-| Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Municipio |
-|---|---|---|---|---|---|---|---|
-| [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[P]` | `[P]` | `[ ]` |
-| [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Humedad](humedad.md) | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Presion atmosferica](presion_atmosferica.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Velocidad del viento](velocidad_viento.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Geografia | 07 Municipio | 08 Periodo |
+|---|---|---|---|---|---|---|---|---|---|
+| [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[P]` | `[ ]` | `[ ]` |
+| [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Humedad](humedad.md) | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Presion atmosferica](presion_atmosferica.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Velocidad del viento](velocidad_viento.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 
 El estado `[P]` de los crudos significa que las carpetas esperadas fueron
 observadas o reportadas, pero falta una reconciliacion de integridad que revise
 partes consecutivas, ultimo lote, fechas internas y manifiestos para todo el
 alcance.
+
+El estado `[P]` de geografia para precipitacion significa que el catalogo y la
+auditoria estan implementados, pero todavia no existe una asignacion canonica
+validada con poligonos municipales completos.
 
 ## Regla de actualizacion
 

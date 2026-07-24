@@ -234,7 +234,8 @@ durante el modelado.
 ```text
 01 descarga -> 02 auditoria cruda -> reglas por variable
             -> 03 diario por sensor -> 04 auditoria diaria
-            -> 05 diario consolidado por estacion -> 06 agregado municipal
+            -> 05 diario consolidado por estacion -> 06 geografia
+            -> 07 agregado municipal -> 08 indicadores por periodo
 ```
 
 - `01_ClimateDataDownloader.ipynb` conserva las observaciones crudas
@@ -249,8 +250,13 @@ durante el modelado.
   el contrato.
 - `05_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
   una fila canonica por estacion y dia.
-- `06_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el historico
-  diario consolidado tenga cobertura y trazabilidad verificadas.
+- `06_ClimateGeographyAudit.ipynb` audita estaciones y DIVIPOLA, produce el mapa
+  de puntos y deja explicitas las asignaciones que requieren poligonos.
+- El futuro `07_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el
+  historico diario consolidado y la asignacion estacion-municipio esten
+  validados.
+- El futuro paso 08 construira indicadores municipio-periodo sin reemplazar las
+  capas diarias trazables.
 
 La infraestructura de lectura, particiones, manifiestos y escrituras seguras es
 reutilizable. Las reglas semanticas no lo son automaticamente: precipitacion se

@@ -12,7 +12,9 @@
 - [ ] **04 Auditoria diaria:** `HumidityDailyAudit.py` bloquea la ejecucion hasta contar con contrato y piloto de 03.
 - [ ] **05 Curado por estacion:** pendiente de evidencia diaria.
 - [ ] **Escala 2024-2025:** no autorizada.
-- [ ] **06 Municipio y periodo:** pendiente.
+- [ ] **06 Geografia:** pendiente de una capa diaria curada para conocer sus estaciones.
+- [ ] **07 Municipio diario:** pendiente.
+- [ ] **08 Indicadores por periodo:** pendiente.
 
 Siguiente paso: completar 02 en ambos departamentos y anos objetivo, redactar el
 contrato de humedad, agregar pruebas y ejecutar un piloto de enero-febrero de

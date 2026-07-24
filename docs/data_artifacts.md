@@ -164,49 +164,80 @@ clima_diario_curado/
 | Productor | `05_ClimateDailyConsolidator.ipynb` |
 | Granularidad | Estacion + dia |
 | Consumidor | Paso 06 |
-| Estado | Piloto de precipitacion validado; cierre 2024-2025 v2 listo para ejecutar |
+| Estado | Precipitacion 2024-2025 v2 completa y reconciliada |
 
 El valor original, valor ajustado, sensor seleccionado, calidad, motivo y regla
 viajan juntos. Ausencias, sensores invalidos, cuarentenas y desacuerdos
 permanecen en `NaN`; los artefactos anteriores nunca se sobrescriben.
 
-### Geografia curada
+### 06. Geografia auditada y curada
 
 ```text
-geografia_curada/divipola_municipios.parquet
-geografia_curada/estaciones_municipio.parquet
+geografia_curada/ejecucion=<version>/
+  catalogo_estaciones_climaticas.parquet
+  estaciones_municipio_candidato.parquet
+  estaciones_revision.parquet
+  divipola_municipios.parquet
+  resumen_geografico.parquet
+  mapa_estaciones.html
+  manifest.json
+
+geografia_curada/canonica=<version>/
+  estaciones_municipio.parquet
+  divipola_municipios_geometria.parquet
+  manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Curacion DIVIPOLA y reglas geograficas por definir |
-| Granularidad | Municipio; estacion-periodo |
-| Consumidores | Pasos 06, 07 y 08 |
-| Estado | Planeado |
+| Productor | `06_ClimateGeographyAudit.ipynb` |
+| Granularidad | Estacion; municipio |
+| Consumidor | Paso 07 |
+| Estado | Auditoria de puntos implementada; punto-en-poligono pendiente |
 
-Debe conservar codigo DANE, nombres canonicos, coordenadas, fuente, periodo de
-validez y evidencia de reasignaciones.
+La primera salida contiene candidatos de catalogo y nunca los llama canonicos.
+La segunda requiere una capa completa de poligonos, punto-en-poligono y revision
+de excepciones. Ambas conservan codigo DANE, coordenadas, fuente, periodo,
+metodo y evidencia.
 
-### 06. Clima municipal e indicadores
+### 07. Clima municipal diario
 
 ```text
 clima_municipal/variable=<variable>/municipio_dia.parquet
-indicadores_climaticos/variable=<variable>/municipio_periodo.parquet
-indicadores_climaticos/data_dictionary.md
-indicadores_climaticos/quality_report.md
+clima_municipal/variable=<variable>/quality_report.md
+clima_municipal/variable=<variable>/manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `06_ClimateMunicipalAggregator.ipynb` |
-| Granularidad | Municipio-dia y municipio-periodo |
-| Consumidores | Dataset maestro y EDA climatico |
+| Productor | Futuro `07_ClimateMunicipalAggregator.ipynb` |
+| Granularidad | Municipio + dia |
+| Consumidor | Paso 08 |
 | Estado | Planeado |
 
-Conserva cobertura, brecha maxima, estaciones y dispersion. Las agregaciones
-dependen de variable y periodo agricola; no se reducen todas a una media.
+Conserva estaciones esperadas, observadas y validas, cobertura, dispersion,
+calidad y metodo. Las estaciones nunca se suman para construir precipitacion.
 
-### 07. Agricultura curada
+### 08. Indicadores climaticos por periodo
+
+```text
+indicadores_climaticos/variable=<variable>/municipio_periodo.parquet
+indicadores_climaticos/data_dictionary.md
+indicadores_climaticos/quality_report.md
+indicadores_climaticos/manifest.json
+```
+
+| Propiedad | Valor |
+|---|---|
+| Productor | Futuro `08_ClimatePeriodFeatures.ipynb` |
+| Granularidad | Municipio + ano + periodo |
+| Consumidor | Paso 10 |
+| Estado | Planeado |
+
+Conserva dias esperados, observados, cobertura y brecha maxima. Los indicadores
+dependen de variable y periodo agricola; no se reducen todos a una media.
+
+### 09. Agricultura curada
 
 ```text
 agricultura_curada/eva_curada.parquet
@@ -216,14 +247,14 @@ agricultura_curada/quality_report.md
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `07_EvaCurator.ipynb` |
+| Productor | Futuro `09_EvaCurator.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
-| Consumidor | Paso 08 |
+| Consumidor | Paso 10 |
 | Estado | Planeado |
 
 El nombre no incluye papa porque el conjunto puede contener uno o dos cultivos.
 
-### 08. Dataset maestro
+### 10. Dataset maestro
 
 ```text
 dataset_maestro/version=<version>/
@@ -235,15 +266,15 @@ dataset_maestro/version=<version>/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `08_MasterDatasetBuilder.ipynb` |
+| Productor | Futuro `10_MasterDatasetBuilder.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
-| Consumidor | Paso 09 exclusivamente |
+| Consumidor | Paso 11 exclusivamente |
 | Estado | Planeado |
 
 Conserva procedencia, variables, target, calidad y perdidas del cruce. Produccion
 y area auditan el target, pero no son features si rendimiento se calcula con ellas.
 
-### 09. Corridas de modelado
+### 11. Corridas de modelado
 
 ```text
 model_runs/run=<id>/
@@ -257,7 +288,7 @@ model_runs/run=<id>/
 Cada corrida registra dataset maestro, corte temporal, baseline, features,
 parametros, metricas y commit. Su estado es planeado.
 
-### 10. Artefactos para aplicacion
+### 12. Artefactos para aplicacion
 
 ```text
 artifacts/release=<version>/
@@ -270,7 +301,7 @@ artifacts/release=<version>/
   figures/
 ```
 
-El futuro `10_ArtifactsPublisher.ipynb` selecciona una corrida aprobada; no
+El futuro `12_ArtifactsPublisher.ipynb` selecciona una corrida aprobada; no
 recalcula el pipeline. La aplicacion consume esta salida sin montar Drive.
 
 ## Reglas de trazabilidad

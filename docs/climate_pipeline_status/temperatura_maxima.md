@@ -12,7 +12,9 @@
 - [ ] **04 Auditoria diaria:** revisar calendario, cobertura, extremos y coherencia con temperatura ambiente/minima.
 - [ ] **05 Curado por estacion:** contrato no implementado; no usar reglas de precipitacion.
 - [ ] **Escala 2024-2025:** bloqueada hasta verificar 2024 y aprobar el piloto.
-- [ ] **06 Municipio y periodo:** pendiente.
+- [ ] **06 Geografia:** pendiente de una capa diaria curada para conocer sus estaciones.
+- [ ] **07 Municipio diario:** pendiente.
+- [ ] **08 Indicadores por periodo:** pendiente.
 
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y

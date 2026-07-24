@@ -12,7 +12,9 @@
 - [ ] **04 Auditoria diaria:** `WindSpeedDailyAudit.py` bloquea la ejecucion hasta contar con evidencia y contrato.
 - [ ] **05 Curado por estacion:** pendiente.
 - [ ] **Escala 2024-2025:** no autorizada.
-- [ ] **06 Municipio y periodo:** pendiente.
+- [ ] **06 Geografia:** pendiente de una capa diaria curada para conocer sus estaciones.
+- [ ] **07 Municipio diario:** pendiente.
+- [ ] **08 Indicadores por periodo:** pendiente.
 
 Siguiente paso: ejecutar 02 sobre meses contrastantes de 2024-2025 en ambos
 departamentos y convertir los hallazgos en un contrato con pruebas.
