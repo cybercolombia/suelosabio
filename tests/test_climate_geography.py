@@ -172,6 +172,11 @@ class ClimateGeographyTest(unittest.TestCase):
         notebook_path = PIPELINE_DIR / "06_ClimateGeographyAudit.ipynb"
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__climate_geography_notebook_test__"}
+        codigo = "\n".join(
+            "".join(cell["source"])
+            for cell in notebook["cells"]
+            if cell["cell_type"] == "code"
+        )
 
         for index, cell in enumerate(notebook["cells"]):
             if cell["cell_type"] != "code":
@@ -190,6 +195,8 @@ class ClimateGeographyTest(unittest.TestCase):
             namespace["SHARED_SOURCE_ROOT"],
             namespace["OUTPUT_DIR"].parents,
         )
+        self.assertIn("importlib.reload(ClimateGeography)", codigo)
+        self.assertIn("importlib.reload(ClimateProcessingUtils)", codigo)
 
 
 if __name__ == "__main__":
