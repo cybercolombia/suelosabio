@@ -10,7 +10,11 @@ import pandas as pd
 PIPELINE_DIR = Path(__file__).resolve().parents[1] / "notebooks" / "ClimatePipeline"
 sys.path.insert(0, str(PIPELINE_DIR))
 
-from ClimateGeography import auditar_geografia, validar_catalogo_ideam  # noqa: E402
+from ClimateGeography import (  # noqa: E402
+    auditar_geografia,
+    preparar_tabla_serializable,
+    validar_catalogo_ideam,
+)
 
 
 def fila_diaria(estacion, municipio, latitud=5.0, longitud=-73.0):
@@ -64,6 +68,21 @@ def fila_divipola(codigo, municipio, departamento="CUNDINAMARCA", codigo_dep="25
 
 
 class ClimateGeographyTest(unittest.TestCase):
+    def test_tabla_para_mapa_reemplaza_nulos_no_serializables(self):
+        original = pd.DataFrame(
+            {
+                "codigo_municipio": pd.Series(["25839", pd.NA], dtype="string"),
+                "fecha_suspension": [pd.Timestamp("2025-01-01"), pd.NaT],
+            }
+        )
+
+        resultado = preparar_tabla_serializable(original)
+
+        self.assertEqual(resultado.loc[0, "codigo_municipio"], "25839")
+        self.assertIsNone(resultado.loc[1, "codigo_municipio"])
+        self.assertIsNone(resultado.loc[1, "fecha_suspension"])
+        self.assertTrue(pd.isna(original.loc[1, "codigo_municipio"]))
+
     def test_cruce_exacto_conserva_codigo_y_no_declara_canonico(self):
         diario = pd.DataFrame([fila_diaria("0035060220", "UBALÁ")])
         ideam = pd.DataFrame([fila_ideam("0035060220", "Ubalá")])

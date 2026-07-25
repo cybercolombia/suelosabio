@@ -67,6 +67,12 @@ def normalizar_nombre(valor: Any) -> str:
     return re.sub(r"[^A-Z0-9]+", " ", texto).strip()
 
 
+def preparar_tabla_serializable(tabla: pd.DataFrame) -> pd.DataFrame:
+    """Reemplaza escalares nulos de pandas por valores serializables."""
+    serializable = tabla.copy().astype(object)
+    return serializable.where(pd.notna(serializable), None)
+
+
 def _normalizar_departamento_catalogo(valor: Any) -> str:
     nombre = normalizar_nombre(valor)
     alias = {
