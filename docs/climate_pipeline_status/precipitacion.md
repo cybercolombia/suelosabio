@@ -1,6 +1,6 @@
 # Estado del pipeline: precipitacion
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 24 de julio de 2026
 **Estado:** en proceso  
 **Fuente:** `s54a-sgyg`  
 **Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
@@ -150,7 +150,9 @@ Contrato y evidencia:
 - [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
 - [X] Implementado el mapa de puntos y la exportacion en una carpeta propia.
 - [X] Las coincidencias por catalogo se etiquetan como candidatas, no canonicas.
-- [ ] Ejecutar y persistir el cierre geografico en Colab.
+- [X] Ejecutado y persistido el cierre geografico
+  `estaciones_precipitacion_2024_2025_v1`.
+- [X] Verificadas 126 estaciones unicas: 111 verdes y 15 para revision.
 - [ ] Resolver 15 estaciones candidatas a revision.
 - [ ] Conseguir `.dbf` y `.prj` compatibles con `Div_Pol.shp`, o un GeoPackage,
   GeoJSON o GeoParquet equivalente.
@@ -159,6 +161,7 @@ Contrato y evidencia:
 Contrato:
 
 - [`../climate_geography_audit.md`](../climate_geography_audit.md)
+- [`../climate_audits/06_geografia/auditoria_geografica_precipitacion_2024_2025.md`](../climate_audits/06_geografia/auditoria_geografica_precipitacion_2024_2025.md)
 
 ## 07. Municipio diario
 
@@ -178,10 +181,10 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar 06 primero con la bandera en `False` y revisar el plan.
-2. Ejecutar 06 con escritura habilitada en `eco2026_processed/geografia_curada`.
-3. Revisar las 15 estaciones marcadas y conseguir poligonos municipales completos.
-4. Cerrar la asignacion canonica antes de implementar 07.
+1. Pausar precipitacion antes de 07 mientras se consiguen poligonos completos.
+2. Resolver los cuatro alias DIVIPOLA con una tabla explicita y trazable.
+3. Revisar espacialmente los municipios multiples y diferencias de coordenadas.
+4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
 
 ## Plan de ejecucion del paso 03
 

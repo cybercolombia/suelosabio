@@ -1,6 +1,6 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 24 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
@@ -64,7 +64,7 @@ garantiza cobertura interna, calidad ni continuidad temporal.
 | Dominio | Evidencia actual | Estado vigente |
 |---|---|---|
 | Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
-| Geografia | Catalogos IDEAM y DIVIPOLA auditados por el paso 06 | Catalogo candidato y mapa implementados; poligonos municipales completos pendientes |
+| Geografia | Catalogos IDEAM y DIVIPOLA auditados por el paso 06 | Cierre tabular y mapa completos para precipitacion; 15 revisiones y poligonos pendientes |
 | Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
 | Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
 
@@ -81,7 +81,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
-| 06 Geografia | `geografia_curada` | Auditoria y mapa implementados; ejecucion en Colab y poligonos pendientes |
+| 06 Geografia | `geografia_curada` | Precipitacion ejecutada: 111 candidatos sin alertas y 15 revisiones; poligonos pendientes |
 | 07 Municipio diario | `clima_municipal` | No implementado |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
 | 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
@@ -106,8 +106,8 @@ umbrales y criterios de calidad.
    termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Ejecutar el paso 06, resolver sus revisiones y conseguir el conjunto completo
-   de poligonos municipales sin escribir en la carpeta compartida.
+4. Resolver las revisiones del paso 06 y conseguir el conjunto completo de
+   poligonos municipales sin escribir en la carpeta compartida.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
 6. Implementar 07 y 08 solo despues de cerrar la asignacion geografica canonica.

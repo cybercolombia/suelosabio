@@ -1,7 +1,7 @@
 # Auditoria geografica climatica
 
-**Actualizado:** 23 de julio de 2026
-**Estado:** implementado; cierre en Colab y poligonos pendientes
+**Actualizado:** 24 de julio de 2026
+**Estado:** cierre tabular y mapa ejecutados; poligonos pendientes
 **Alcance:** estaciones de precipitacion de Boyaca y Cundinamarca, 2024-2025
 
 `06_ClimateGeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
@@ -48,6 +48,22 @@ un mapa de puntos. El estado esperado es `COMPLETA_SIN_POLIGONOS`.
 Los archivos `estaciones_municipio_candidato.parquet` y
 `estaciones_revision.parquet` son evidencia preliminar. La columna
 `asignacion_canonica` permanece en `False` para todas las filas.
+
+## Cierre ejecutado
+
+La ejecucion `estaciones_precipitacion_2024_2025_v1` termino el 24 de julio de
+2026 con estado `COMPLETA_SIN_POLIGONOS`:
+
+- 48 particiones y 53.128 filas estacion-dia como entrada.
+- 126 estaciones climaticas unicas, todas encontradas en el catalogo IDEAM.
+- 111 candidatos sin alertas de catalogo y 15 estaciones para revision.
+- 122 candidatos DIVIPOLA resueltos por nombre normalizado.
+- Cero estaciones duplicadas, cero coordenadas IDEAM faltantes y cero
+  asignaciones declaradas canonicas.
+- Mapa HTML, cinco tablas Parquet, manifiesto y reporte persistidos.
+
+La evidencia resumida esta en
+[`climate_audits/06_geografia/auditoria_geografica_precipitacion_2024_2025.md`](climate_audits/06_geografia/auditoria_geografica_precipitacion_2024_2025.md).
 
 ## Compuerta antes de 07
 
