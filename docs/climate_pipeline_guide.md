@@ -81,6 +81,72 @@ diagnosticar; `DailyConsolidation.py` decide seleccion de sensores, cobertura y
 cuarentenas. Una correccion de 05 no obliga a reprocesar 03 si la suma o
 estadistica diaria original sigue siendo trazable.
 
+## Del piloto a la escala completa
+
+Cada variable atraviesa dos ciclos. Auditar unos meses no autoriza por si solo
+la historia completa.
+
+```mermaid
+flowchart TD
+    A02[02 - Evidencia cruda] --> C1[Contratos candidatos]
+    C1 --> P03[03 - Piloto<br/>meses contrastantes]
+    P03 --> P04[04 - Auditoria piloto]
+    P04 --> P05[05 - Piloto si existe contrato]
+    P05 --> G1{Piloto defendible?}
+    G1 -- No --> C1
+    G1 -- Si --> E03[03 - Todas las particiones objetivo]
+    E03 --> E04[04 - Auditoria global de cierre]
+    E04 --> G2{Problemas nuevos<br/>al escalar?}
+    G2 -- Transformacion diaria --> C1
+    G2 -- Diagnostico --> C04[Ajustar contrato 04]
+    C04 --> E04
+    G2 -- Seleccion o cuarentena --> C05[Ajustar contrato 05]
+    C05 --> E05
+    G2 -- No --> E05[05 - Consolidacion completa]
+    E05 --> R[Reconciliacion final]
+```
+
+### Ciclo 1: piloto
+
+Se eligen meses y territorios contrastantes, no solamente los mas faciles. Para
+el objetivo actual se priorizan enero y febrero de 2025 en Boyaca y
+Cundinamarca, porque febrero presenta una caida transversal de actividad.
+
+El piloto permite comprobar semantica, duplicados, conflictos, cadencia,
+cobertura, sensores paralelos y salidas. Si falla, se ajusta el contrato y se
+repite solo este subconjunto. Todavia no se procesan los 48 meses objetivo.
+
+### Compuerta para escalar
+
+La escala se autoriza cuando:
+
+- Las particiones piloto tienen manifiesto `COMPLETA`.
+- La transformacion diaria conserva significado y trazabilidad.
+- La auditoria diferencia dato observado, ausencia y baja cobertura.
+- Los extremos y sensores paralelos tienen una politica candidata defendible.
+- Un piloto de 05, cuando exista, conserva motivos y no imputa silenciosamente.
+
+### Ciclo 2: escala y cierre
+
+Primero se ejecuta 03 sobre todas las particiones objetivo. Despues 04 vuelve a
+auditar la historia completa; no se extrapolan las conclusiones del piloto. Esa
+auditoria global puede revelar cambios de sensor, periodos ausentes o anomalías
+que no aparecieron en la muestra.
+
+Un hallazgo no obliga automaticamente a empezar desde cero:
+
+- Si cambia la estadistica diaria, se vuelve a `Rules.py`, 03 y las etapas
+  dependientes.
+- Si cambia solamente el diagnostico, se ajusta `DailyAudit.py` y se repite 04.
+- Si cambia seleccion, calibracion o cuarentena de sensores, se ajusta
+  `DailyConsolidation.py` y se repite 05.
+- Los productos anteriores se reutilizan solo cuando su contrato sigue siendo
+  valido y su trazabilidad permite demostrarlo.
+
+La variable termina la escala cuando 05 reconcilia todas las particiones,
+llaves, calidades, reglas y manifiestos. `COMPLETA` en una particion aislada no
+equivale a este cierre global.
+
 ## Responsabilidad y compuerta de cada paso
 
 ### 01. Descargar sin reinterpretar

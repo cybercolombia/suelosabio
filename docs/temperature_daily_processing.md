@@ -53,6 +53,20 @@ clima_diario_sensor/
 Incluye media, mediana, minimo, maximo, desviacion, amplitud, observaciones,
 cadencia y cobertura. Los sensores nunca se fusionan en esta etapa.
 
+## Contrato v2 de cadencia y cobertura
+
+La corrida piloto v1 demostro que no es valido inferir frecuencia usando saltos
+entre dias separados. Desde `temperatura_diaria_v2`:
+
+- Los intervalos se calculan por estacion-sensor-dia, solamente entre
+  observaciones del mismo dia. Un cambio de frecuencia no se propaga a todo el
+  mes.
+- Las cadencias reconocidas son 1, 2, 10 y 60 minutos.
+- Una cadencia escasa o desconocida conserva la temperatura observada, pero
+  deja `observaciones_esperadas` y `cobertura_observada_pct` en `NaN`.
+- `cobertura_evaluable=False` significa que no hay base para declarar el dia
+  completo o incompleto; no significa que su temperatura sea cero o invalida.
+
 ## Configuracion de 04
 
 Use exactamente la misma variable, fuente, departamentos, anos y meses que
@@ -68,9 +82,24 @@ AUDITORIA_NOMBRE = 'piloto_temperatura_ambiente_2025_01'
 EJECUTAR_AUDITORIA_DIARIA = False
 ```
 
-Los umbrales iniciales de -10 °C, 45 °C, 25 °C de amplitud y 1 °C entre
+Los umbrales iniciales de -10 grados C, 45 grados C, 25 grados C de amplitud,
+90 % de cobertura minima, 102 % de tolerancia superior y 1 grado C entre
 sensores son diagnosticos. Marcan observaciones para revision; no las borran ni
 las convierten automaticamente en invalidas.
+
+Dos sensores paralelos solo se comparan si ambos dias tienen cobertura evaluable
+entre 90 y 102 %. Una diferencia observada con cobertura baja se conserva, pero
+no se usa para juzgar concordancia instrumental.
+
+## Ciclo piloto vigente
+
+El piloto v1 de temperatura ambiente termino `COMPLETA` para enero-febrero de
+2025 en ambos departamentos. Confirmo un hueco real del 5 al 25 de febrero y
+descubrio el error de cadencia entre dias. El siguiente paso es repetir
+solamente esas cuatro particiones con 03 v2 y luego 04 v2.
+
+No se autoriza todavia procesar los 48 meses de 2024-2025. Consulte el
+[reporte del piloto](climate_audits/04_series_diarias/auditoria_piloto_temperatura_ambiente_2025.md).
 
 ## Limite actual
 

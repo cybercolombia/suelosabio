@@ -11,7 +11,7 @@ import pandas as pd
 from ClimateProcessingUtils import PartitionSpec
 
 
-RULE_VERSION = "temperatura_diaria_v1"
+RULE_VERSION = "temperatura_diaria_v2"
 CADENCIAS_OBSERVADAS_SEGUNDOS = (60, 120, 600, 3600)
 RANGO_OPERATIVO_C = (-30.0, 60.0)
 COLUMNAS_REQUERIDAS = (
@@ -291,6 +291,7 @@ def inferir_cadencias(depurados: pd.DataFrame) -> pd.DataFrame:
     columnas = [
         "codigoestacion",
         "codigosensor",
+        "fecha",
         "intervalos_validos",
         "intervalo_moda_segundos",
         "intervalo_mediano_segundos",
@@ -307,8 +308,11 @@ def inferir_cadencias(depurados: pd.DataFrame) -> pd.DataFrame:
     tiempos = tiempos.sort_values(
         ["codigoestacion", "codigosensor", "fechaobservacion"]
     )
+    tiempos["fecha"] = tiempos["fechaobservacion"].dt.floor("D")
     tiempos["delta_segundos"] = (
-        tiempos.groupby(["codigoestacion", "codigosensor"])["fechaobservacion"]
+        tiempos.groupby(["codigoestacion", "codigosensor", "fecha"])[
+            "fechaobservacion"
+        ]
         .diff()
         .dt.total_seconds()
     )
@@ -318,12 +322,17 @@ def inferir_cadencias(depurados: pd.DataFrame) -> pd.DataFrame:
         modas = serie.mode()
         return float(modas.iloc[0]) if not modas.empty else float("nan")
 
-    pares = depurados[["codigoestacion", "codigosensor"]].drop_duplicates()
+    pares_dia = depurados[["codigoestacion", "codigosensor", "fechaobservacion"]].copy()
+    pares_dia["fecha"] = pares_dia["fechaobservacion"].dt.floor("D")
+    pares_dia = pares_dia[["codigoestacion", "codigosensor", "fecha"]].drop_duplicates()
     if positivos.empty:
         resumen = pd.DataFrame(columns=columnas[:-1])
     else:
         resumen = (
-            positivos.groupby(["codigoestacion", "codigosensor"], as_index=False)
+            positivos.groupby(
+                ["codigoestacion", "codigosensor", "fecha"],
+                as_index=False,
+            )
             .agg(
                 intervalos_validos=("delta_segundos", "size"),
                 intervalo_moda_segundos=("delta_segundos", moda),
@@ -332,9 +341,9 @@ def inferir_cadencias(depurados: pd.DataFrame) -> pd.DataFrame:
                 intervalo_p90_segundos=("delta_segundos", lambda s: s.quantile(0.90)),
             )
         )
-    cadencias = pares.merge(
+    cadencias = pares_dia.merge(
         resumen,
-        on=["codigoestacion", "codigosensor"],
+        on=["codigoestacion", "codigosensor", "fecha"],
         how="left",
     )
     cadencias["cadencia_observada_conocida"] = cadencias[
@@ -393,14 +402,18 @@ def agregar_diario(
 
     diario = diario.merge(
         cadencias,
-        on=["codigoestacion", "codigosensor"],
+        on=["codigoestacion", "codigosensor", "fecha"],
         how="left",
     )
-    diario["observaciones_esperadas"] = 86_400 / diario["intervalo_moda_segundos"]
+    diario["cobertura_evaluable"] = (
+        diario["cadencia_observada_conocida"].fillna(False).astype(bool)
+    )
+    diario["observaciones_esperadas"] = (
+        86_400 / diario["intervalo_moda_segundos"]
+    ).where(diario["cobertura_evaluable"])
     diario["cobertura_observada_pct"] = (
         100 * diario["observaciones_validas"] / diario["observaciones_esperadas"]
-    ).round(2)
-    diario["cobertura_evaluable"] = diario["intervalo_moda_segundos"].notna()
+    ).round(2).where(diario["cobertura_evaluable"])
     diario["temperatura_diaria_c"] = pd.Series(
         pd.NA,
         index=diario.index,

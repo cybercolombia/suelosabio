@@ -1,21 +1,21 @@
 # Estado del pipeline: temperatura ambiente
 
-**Actualizado:** 22 de julio de 2026  
-**Estado:** piloto pendiente  
+**Actualizado:** 25 de julio de 2026
+**Estado:** piloto v2 pendiente de repeticion
 **Fuente:** `sbwg-7ju4`  
 **Alcance objetivo:** Boyaca y Cundinamarca, 2024-2025
 
-- [P] **01 Crudo:** 2024-2025 fue reportado y observado en las auditorias; falta reconciliacion integral de descargas.
+- [P] **01 Crudo:** las 48 particiones de 2024-2025 fueron observadas estructuralmente; falta reconciliacion integral de lotes y fechas internas.
 - [X] **02 Auditoria cruda:** ambos departamentos y ambos anos tienen evidencia; deben conservarse febrero de 2025 y meses contrastantes como pruebas de cobertura.
-- [P] **Contrato:** `TemperatureRules.py` implementa media diaria, estadisticos auxiliares, deduplicacion, conflictos y rango operativo; falta validarlo con una corrida real.
-- [ ] **03 Diario por sensor:** ejecutar primero enero-febrero de 2025 en ambos departamentos y verificar manifiestos `COMPLETA`.
-- [ ] **04 Auditoria diaria:** validar calendario, cobertura, extremos, amplitud y sensores paralelos del piloto.
+- [P] **Contrato:** la v1 valido estadisticos y trazabilidad, pero mezclaba saltos entre dias con cadencia. `temperatura_diaria_v2` corrige esa inferencia y deja frecuencias desconocidas como no evaluables.
+- [P] **03 Diario por sensor:** cuatro particiones v1 terminaron `COMPLETA`; deben sobrescribirse enero-febrero de 2025, ambos departamentos, con la v2.
+- [P] **04 Auditoria diaria:** la v1 confirmo el hueco del 5 al 25 de febrero y detecto el error de cadencia. `auditoria_temperatura_diaria_v2` esta implementada y pendiente de corrida.
 - [ ] **05 Curado por estacion:** disenar reglas termicas a partir del piloto; el consolidador de precipitacion esta prohibido.
-- [ ] **Escala 2024-2025:** procesar 48 particiones solo despues de aprobar 04 y 05.
+- [ ] **Escala 2024-2025:** bloqueada hasta aprobar la repeticion v2 de 03-04 y un piloto de 05.
 - [ ] **06 Geografia:** pendiente de consolidacion diaria para conocer su catalogo de estaciones.
 - [ ] **07 Municipio diario:** pendiente.
 - [ ] **08 Indicadores por periodo:** pendiente.
 
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y
-[`../climate_audits/02_datos_crudos/auditoria_temperatura_2024_2025.md`](../climate_audits/02_datos_crudos/auditoria_temperatura_2024_2025.md).
+[`../climate_audits/04_series_diarias/auditoria_piloto_temperatura_ambiente_2025.md`](../climate_audits/04_series_diarias/auditoria_piloto_temperatura_ambiente_2025.md).

@@ -10,7 +10,7 @@ from typing import Any
 import pandas as pd
 
 
-AUDIT_VERSION = "auditoria_temperatura_diaria_v1"
+AUDIT_VERSION = "auditoria_temperatura_diaria_v2"
 CLAVE_DIARIA = ("departamento", "codigoestacion", "codigosensor", "fecha")
 COLUMNAS_REQUERIDAS = (
     "variable",
@@ -79,7 +79,11 @@ def validar_capa_diaria(diario: pd.DataFrame) -> pd.DataFrame:
     return tabla
 
 
-def _estado_cobertura(fila: pd.Series, umbral_cobertura_pct: float) -> str:
+def _estado_cobertura(
+    fila: pd.Series,
+    umbral_cobertura_pct: float,
+    tolerancia_superior_pct: float,
+) -> str:
     if not fila["es_dia_observado"]:
         return "SIN_OBSERVACION"
     if not bool(fila.get("cobertura_evaluable", False)):
@@ -87,7 +91,7 @@ def _estado_cobertura(fila: pd.Series, umbral_cobertura_pct: float) -> str:
     cobertura = fila.get("cobertura_observada_pct")
     if pd.isna(cobertura):
         return "NO_EVALUABLE"
-    if cobertura > 100:
+    if cobertura > tolerancia_superior_pct:
         return "MAYOR_100_REVISAR"
     if cobertura < umbral_cobertura_pct:
         return "COBERTURA_BAJA"
@@ -97,9 +101,12 @@ def _estado_cobertura(fila: pd.Series, umbral_cobertura_pct: float) -> str:
 def construir_calendario(
     diario: pd.DataFrame,
     umbral_cobertura_pct: float = 90.0,
+    tolerancia_superior_pct: float = 102.0,
 ) -> pd.DataFrame:
     if not 0 < umbral_cobertura_pct <= 100:
         raise ValueError("El umbral de cobertura debe estar entre 0 y 100.")
+    if tolerancia_superior_pct < 100:
+        raise ValueError("La tolerancia superior de cobertura debe ser al menos 100.")
 
     bloques = []
     claves_particion = ["variable", "dataset_id", "departamento", "anio", "mes"]
@@ -150,8 +157,12 @@ def construir_calendario(
         _estado_cobertura,
         axis=1,
         umbral_cobertura_pct=umbral_cobertura_pct,
+        tolerancia_superior_pct=tolerancia_superior_pct,
     )
     calendario["umbral_cobertura_candidato_pct"] = float(umbral_cobertura_pct)
+    calendario["tolerancia_cobertura_superior_pct"] = float(
+        tolerancia_superior_pct
+    )
     return calendario.sort_values(list(CLAVE_DIARIA)).reset_index(drop=True)
 
 
@@ -184,7 +195,11 @@ def resumir_particiones(
                 "filas_observadas": len(observado),
                 "filas_ausentes": int(calendario_mes["es_dia_ausente"].sum()),
                 "cobertura_mediana_pct": cobertura.median(),
-                "dias_cobertura_mayor_100": int(cobertura.gt(100).sum()),
+                "dias_cobertura_mayor_100": int(
+                    calendario_mes["estado_cobertura_candidato"]
+                    .eq("MAYOR_100_REVISAR")
+                    .sum()
+                ),
                 "dias_cobertura_baja": int(
                     calendario_mes["estado_cobertura_candidato"]
                     .eq("COBERTURA_BAJA")
@@ -256,6 +271,7 @@ def detectar_valores_sospechosos(
     umbral_minimo_c: float = -10.0,
     umbral_maximo_c: float = 45.0,
     umbral_amplitud_c: float = 25.0,
+    tolerancia_cobertura_superior_pct: float = 102.0,
 ) -> pd.DataFrame:
     if umbral_minimo_c >= umbral_maximo_c:
         raise ValueError("El umbral minimo debe ser menor que el maximo.")
@@ -280,7 +296,13 @@ def detectar_valores_sospechosos(
         tabla["amplitud_termica_observada_c"].gt(umbral_amplitud_c),
         "AMPLITUD_DIARIA_MUY_ALTA",
     )
-    agregar(tabla["cobertura_observada_pct"].gt(100), "COBERTURA_MAYOR_100")
+    agregar(
+        tabla["cobertura_evaluable"].fillna(False)
+        & tabla["cobertura_observada_pct"].gt(
+            tolerancia_cobertura_superior_pct
+        ),
+        "COBERTURA_MAYOR_100",
+    )
     if "conflictos_excluidos" in tabla.columns:
         agregar(tabla["conflictos_excluidos"].gt(0), "CONFLICTOS_EXCLUIDOS")
     tabla["motivos_revision"] = motivos
@@ -292,6 +314,8 @@ def detectar_valores_sospechosos(
 def comparar_sensores_paralelos(
     diario: pd.DataFrame,
     tolerancia_c: float = 1.0,
+    umbral_cobertura_pct: float = 90.0,
+    tolerancia_cobertura_superior_pct: float = 102.0,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     comparaciones = []
     claves_grupo = ["variable", "dataset_id", "departamento", "codigoestacion"]
@@ -302,6 +326,7 @@ def comparar_sensores_paralelos(
                 "fecha",
                 "temperatura_principal_observada_c",
                 "cobertura_observada_pct",
+                "cobertura_evaluable",
             ]
             izquierda = grupo.loc[grupo["codigosensor"].eq(sensor_a), columnas]
             derecha = grupo.loc[grupo["codigosensor"].eq(sensor_b), columnas]
@@ -321,11 +346,32 @@ def comparar_sensores_paralelos(
                 "temperatura_principal_observada_c_b",
             ]
             comparacion["ambos_observados"] = comparacion[valores].notna().all(axis=1)
+            cobertura_evaluable = (
+                comparacion["cobertura_evaluable_a"].fillna(False)
+                & comparacion["cobertura_evaluable_b"].fillna(False)
+            )
+            cobertura_suficiente = (
+                comparacion["cobertura_observada_pct_a"].between(
+                    umbral_cobertura_pct,
+                    tolerancia_cobertura_superior_pct,
+                    inclusive="both",
+                )
+                & comparacion["cobertura_observada_pct_b"].between(
+                    umbral_cobertura_pct,
+                    tolerancia_cobertura_superior_pct,
+                    inclusive="both",
+                )
+            ).fillna(False)
+            comparacion["diferencia_evaluable"] = (
+                comparacion["ambos_observados"]
+                & cobertura_evaluable
+                & cobertura_suficiente
+            )
             comparacion["diferencia_abs_c"] = (
                 comparacion[valores[0]] - comparacion[valores[1]]
             ).abs()
             comparacion["concuerdan_tolerancia"] = (
-                comparacion["ambos_observados"]
+                comparacion["diferencia_evaluable"]
                 & comparacion["diferencia_abs_c"].le(tolerancia_c)
             )
             comparaciones.append(comparacion)
@@ -336,6 +382,7 @@ def comparar_sensores_paralelos(
         "dias_union",
         "dias_ambos_observados",
         "dias_solo_un_sensor",
+        "dias_diferencia_evaluable",
         "dias_concuerdan_tolerancia",
         "diferencia_abs_mediana_c",
         "diferencia_abs_max_c",
@@ -347,9 +394,12 @@ def comparar_sensores_paralelos(
         "fecha",
         "temperatura_principal_observada_c_a",
         "cobertura_observada_pct_a",
+        "cobertura_evaluable_a",
         "temperatura_principal_observada_c_b",
         "cobertura_observada_pct_b",
+        "cobertura_evaluable_b",
         "ambos_observados",
+        "diferencia_evaluable",
         "diferencia_abs_c",
         "concuerdan_tolerancia",
     ]
@@ -363,7 +413,7 @@ def comparar_sensores_paralelos(
     filas_resumen = []
     claves_par = claves_grupo + ["sensor_a", "sensor_b"]
     for identificador, grupo in detalle.groupby(claves_par, sort=True):
-        solapados = grupo.loc[grupo["ambos_observados"]]
+        solapados = grupo.loc[grupo["diferencia_evaluable"]]
         correlacion = pd.NA
         columnas_valor = [
             "temperatura_principal_observada_c_a",
@@ -381,11 +431,16 @@ def comparar_sensores_paralelos(
                 "dias_union": len(grupo),
                 "dias_ambos_observados": int(grupo["ambos_observados"].sum()),
                 "dias_solo_un_sensor": int((~grupo["ambos_observados"]).sum()),
+                "dias_diferencia_evaluable": int(
+                    grupo["diferencia_evaluable"].sum()
+                ),
                 "dias_concuerdan_tolerancia": int(
                     grupo["concuerdan_tolerancia"].sum()
                 ),
-                "diferencia_abs_mediana_c": grupo["diferencia_abs_c"].median(),
-                "diferencia_abs_max_c": grupo["diferencia_abs_c"].max(),
+                "diferencia_abs_mediana_c": solapados[
+                    "diferencia_abs_c"
+                ].median(),
+                "diferencia_abs_max_c": solapados["diferencia_abs_c"].max(),
                 "correlacion": correlacion,
             }
         )
@@ -395,13 +450,18 @@ def comparar_sensores_paralelos(
 def auditar_temperatura_diaria(
     diario: pd.DataFrame,
     umbral_cobertura_pct: float = 90.0,
+    tolerancia_cobertura_superior_pct: float = 102.0,
     umbral_minimo_c: float = -10.0,
     umbral_maximo_c: float = 45.0,
     umbral_amplitud_c: float = 25.0,
     tolerancia_sensores_c: float = 1.0,
 ) -> DailyTemperatureAuditResult:
     validado = validar_capa_diaria(diario)
-    calendario = construir_calendario(validado, umbral_cobertura_pct)
+    calendario = construir_calendario(
+        validado,
+        umbral_cobertura_pct,
+        tolerancia_superior_pct=tolerancia_cobertura_superior_pct,
+    )
     resumen_particiones = resumir_particiones(calendario, validado)
     resumen_pares = resumir_pares(calendario)
     sospechosos = detectar_valores_sospechosos(
@@ -409,10 +469,13 @@ def auditar_temperatura_diaria(
         umbral_minimo_c=umbral_minimo_c,
         umbral_maximo_c=umbral_maximo_c,
         umbral_amplitud_c=umbral_amplitud_c,
+        tolerancia_cobertura_superior_pct=tolerancia_cobertura_superior_pct,
     )
     comparaciones, resumen_paralelos = comparar_sensores_paralelos(
         validado,
         tolerancia_c=tolerancia_sensores_c,
+        umbral_cobertura_pct=umbral_cobertura_pct,
+        tolerancia_cobertura_superior_pct=tolerancia_cobertura_superior_pct,
     )
     metricas = {
         "audit_version": AUDIT_VERSION,
@@ -422,6 +485,9 @@ def auditar_temperatura_diaria(
         "filas_revision": len(sospechosos),
         "pares_sensores_paralelos": len(resumen_paralelos),
         "umbral_cobertura_candidato_pct": float(umbral_cobertura_pct),
+        "tolerancia_cobertura_superior_pct": float(
+            tolerancia_cobertura_superior_pct
+        ),
         "umbral_minimo_c": float(umbral_minimo_c),
         "umbral_maximo_c": float(umbral_maximo_c),
         "umbral_amplitud_c": float(umbral_amplitud_c),

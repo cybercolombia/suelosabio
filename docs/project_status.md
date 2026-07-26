@@ -1,6 +1,6 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 24 de julio de 2026
+**Actualizado:** 25 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
@@ -52,7 +52,7 @@ departamentos, cinco anos y doce meses.
 | Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
 | Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
 | Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
-| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados por auditorias | Ambos departamentos; 2024 y 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; no escalar aun |
+| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados estructuralmente | Ambos departamentos; 2024 y 2025 | Piloto v1 auditado; contratos v2 listos para repetir cuatro particiones | Alta utilidad; no escalar aun |
 | Temperatura minima | `afdg-3zpb` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
 | Temperatura maxima | `ccvq-rp9s` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
 
@@ -77,8 +77,8 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 |---|---|---|
 | 01 Descarga | `clima_crudo` | Validado para cuatro variables disponibles |
 | 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
-| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion 2024-2025 completa en 48 particiones; temperatura implementada y pendiente de piloto real |
-| 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; temperatura implementada y pendiente de piloto real |
+| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion 2024-2025 completa; temperatura ambiente tiene piloto v1 completo y requiere repetir cuatro particiones con v2 |
+| 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; piloto v1 de temperatura ambiente auditado y v2 pendiente de corrida |
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
 | 06 Geografia | `geografia_curada` | Precipitacion ejecutada: 111 candidatos sin alertas y 15 revisiones; poligonos pendientes |
@@ -100,8 +100,8 @@ umbrales y criterios de calidad.
 
 ## Prioridades actuales
 
-1. Ejecutar y auditar pilotos reales de temperatura ambiente de enero-febrero
-   de 2025 antes de definir su consolidacion.
+1. Repetir con los contratos v2 las cuatro particiones piloto de temperatura
+   ambiente de enero-febrero de 2025 antes de definir su consolidacion.
 2. Curar las variables adicionales aprobadas para 2024-2025; precipitacion ya
    termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el

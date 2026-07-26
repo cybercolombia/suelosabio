@@ -42,7 +42,7 @@ manifiesto y el nombre de la nueva auditoria.
 - Dias observados y ausentes sin reemplazar `NaN` por cero.
 - Fechas observadas minima y maxima por estacion-sensor.
 - Cobertura diaria frente al umbral candidato.
-- Coberturas superiores a 100 % para revision de cadencia.
+- Coberturas superiores a la tolerancia configurada para revision de cadencia.
 - Totales diarios, intervalos altos y extremos p99 candidatos para revision.
 - Patrones con observaciones positivas persistentes.
 - Comparacion de sensores paralelos por fecha y tolerancia.

@@ -1,6 +1,6 @@
 # Estado del pipeline climatico por variable
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 25 de julio de 2026
 **Estado:** vigente  
 **Alcance operativo:** Boyaca y Cundinamarca, 2024-2025
 
@@ -23,7 +23,7 @@ cientifica esten aprobados.
 | Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Geografia | 07 Municipio | 08 Periodo |
 |---|---|---|---|---|---|---|---|---|---|
 | [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[P]` | `[ ]` | `[ ]` |
-| [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Humedad](humedad.md) | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |

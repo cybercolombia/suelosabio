@@ -16,3 +16,4 @@ observado y deteccion de meses completamente ausentes.
 
 - [Piloto diario de precipitacion, enero y febrero de 2025](auditoria_piloto_diario_precipitacion_2025.md)
 - [Cierre diario de precipitacion 2024-2025](auditoria_cierre_diario_precipitacion_2024_2025.md)
+- [Piloto diario de temperatura ambiente, enero y febrero de 2025](auditoria_piloto_temperatura_ambiente_2025.md)

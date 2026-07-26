@@ -162,6 +162,72 @@ class TemperatureRulesTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requiere la fuente"):
             procesar_temperatura(pd.DataFrame([fila]), spec)
 
+    def test_no_infiere_cadencia_entre_dias_separados(self):
+        filas = [
+            observacion("temperatura_ambiente", "2025-01-01 00:00:00", 10.0),
+            observacion("temperatura_ambiente", "2025-01-04 00:00:00", 15.0),
+            observacion("temperatura_ambiente", "2025-01-08 00:00:00", 20.0),
+        ]
+
+        resultado = procesar_temperatura(
+            pd.DataFrame(filas), self.spec("temperatura_ambiente")
+        )
+
+        self.assertTrue(resultado.cadencias["intervalo_moda_segundos"].isna().all())
+        self.assertFalse(resultado.diario["cobertura_evaluable"].any())
+        self.assertTrue(resultado.diario["observaciones_esperadas"].isna().all())
+        self.assertTrue(resultado.diario["cobertura_observada_pct"].isna().all())
+
+    def test_cadencia_no_reconocida_no_produce_cobertura(self):
+        filas = [
+            observacion("temperatura_ambiente", "2025-01-01 00:00:00", 10.0),
+            observacion("temperatura_ambiente", "2025-01-01 00:43:00", 15.0),
+            observacion("temperatura_ambiente", "2025-01-01 01:26:00", 20.0),
+        ]
+
+        resultado = procesar_temperatura(
+            pd.DataFrame(filas), self.spec("temperatura_ambiente")
+        )
+        diario = resultado.diario.iloc[0]
+
+        self.assertEqual(diario["intervalo_moda_segundos"], 2580)
+        self.assertFalse(diario["cadencia_observada_conocida"])
+        self.assertFalse(diario["cobertura_evaluable"])
+        self.assertTrue(pd.isna(diario["observaciones_esperadas"]))
+        self.assertTrue(pd.isna(diario["cobertura_observada_pct"]))
+
+    def test_calcula_cadencia_por_dia_si_el_sensor_cambia_frecuencia(self):
+        filas = [
+            observacion("temperatura_ambiente", "2025-01-01 00:00:00", 10.0),
+            observacion("temperatura_ambiente", "2025-01-01 01:00:00", 15.0),
+            observacion("temperatura_ambiente", "2025-01-01 02:00:00", 20.0),
+            observacion("temperatura_ambiente", "2025-01-02 00:00:00", 10.0),
+            observacion("temperatura_ambiente", "2025-01-02 00:10:00", 15.0),
+            observacion("temperatura_ambiente", "2025-01-02 00:20:00", 20.0),
+        ]
+
+        resultado = procesar_temperatura(
+            pd.DataFrame(filas), self.spec("temperatura_ambiente")
+        )
+        diario = resultado.diario.set_index("fecha")
+
+        self.assertEqual(
+            diario.loc[pd.Timestamp("2025-01-01"), "intervalo_moda_segundos"],
+            3600,
+        )
+        self.assertEqual(
+            diario.loc[pd.Timestamp("2025-01-02"), "intervalo_moda_segundos"],
+            600,
+        )
+        self.assertEqual(
+            diario.loc[pd.Timestamp("2025-01-01"), "observaciones_esperadas"],
+            24,
+        )
+        self.assertEqual(
+            diario.loc[pd.Timestamp("2025-01-02"), "observaciones_esperadas"],
+            144,
+        )
+
 
 class TemperatureNotebookIntegrationTest(unittest.TestCase):
     def test_procesador_despacha_temperatura_ambiente(self):
@@ -213,7 +279,7 @@ class TemperatureNotebookIntegrationTest(unittest.TestCase):
             )
 
         self.assertEqual(resumen["estado"], "completa")
-        self.assertEqual(resumen["regla_version"], "temperatura_diaria_v1")
+        self.assertEqual(resumen["regla_version"], "temperatura_diaria_v2")
         self.assertAlmostEqual(salida.iloc[0]["temperatura_media_observada_c"], 15.0)
 
 
