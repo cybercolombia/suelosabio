@@ -1,6 +1,6 @@
 # Estado del pipeline: precipitacion
 
-**Actualizado:** 24 de julio de 2026
+**Actualizado:** 28 de julio de 2026
 **Estado:** en proceso  
 **Fuente:** `s54a-sgyg`  
 **Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
@@ -144,7 +144,7 @@ Contrato y evidencia:
 
 ## 06. Geografia de estaciones
 
-**Estado de etapa:** `[P]` auditoria implementada; asignacion canonica pendiente.
+**Estado de etapa:** `[P]` contrato espacial v2 implementado; corrida pendiente.
 
 - [X] Implementado `06_ClimateGeographyAudit.ipynb` con ejecucion protegida.
 - [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
@@ -153,10 +153,12 @@ Contrato y evidencia:
 - [X] Ejecutado y persistido el cierre geografico
   `estaciones_precipitacion_2024_2025_v1`.
 - [X] Verificadas 126 estaciones unicas: 111 verdes y 15 para revision.
-- [ ] Resolver 15 estaciones candidatas a revision.
-- [ ] Conseguir `.dbf` y `.prj` compatibles con `Div_Pol.shp`, o un GeoPackage,
-  GeoJSON o GeoParquet equivalente.
-- [ ] Validar puntos contra poligonos y aprobar la asignacion canonica.
+- [X] Conseguido y validado `DivipolaGeo.gpkg`: 239 poligonos validos en
+  `EPSG:4326`, concordantes con DIVIPOLA.
+- [X] Implementado punto-en-poligono y salida canonica separada.
+- [P] Prevalidacion local: 116 asignaciones canonicas y 10 revisiones.
+- [ ] Ejecutar y persistir `estaciones_precipitacion_2024_2025_v2` en Drive.
+- [ ] Resolver, excluir o documentar las 10 estaciones no canonicas.
 
 Contrato:
 
@@ -165,7 +167,7 @@ Contrato:
 
 ## 07. Municipio diario
 
-**Estado de etapa:** `[ ]` bloqueado por la compuerta geografica.
+**Estado de etapa:** `[ ]` pendiente de la corrida geografica v2.
 
 - [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
 - [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
@@ -181,9 +183,9 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Pausar precipitacion antes de 07 mientras se consiguen poligonos completos.
-2. Resolver los cuatro alias DIVIPOLA con una tabla explicita y trazable.
-3. Revisar espacialmente los municipios multiples y diferencias de coordenadas.
+1. Ejecutar 06 v2 y comprobar 116 asignaciones canonicas y 10 revisiones.
+2. Revisar los siete conflictos entre catalogo IDEAM y poligono.
+3. Revisar los dos puntos cercanos a limites y excluir explicitamente Bogota.
 4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
 
 ## Plan de ejecucion del paso 03

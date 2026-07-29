@@ -284,11 +284,12 @@ solo precipitacion tiene consolidacion implementada. Temperatura no debe usar
 **Salida:** catalogo de estaciones, asignaciones candidatas, revisiones, mapa y
 manifiesto en `geografia_curada`.
 
-El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes. Puede
-producir puntos y candidatos con los catalogos tabulares disponibles, pero no
-declara una asignacion canonica solo por coincidencia de texto. La compuerta
-antes de 07 exige resolver las revisiones y validar espacialmente con poligonos
-municipales completos. El contrato operativo se detalla en
+El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes y
+valida los puntos IDEAM contra poligonos municipales. No declara una asignacion
+canonica solo por coincidencia de texto: exige un unico poligono y ausencia de
+contradiccion con un codigo conocido. El paso 07 consume solo asignaciones
+canonicas; las revisiones permanecen excluidas y trazables. El contrato
+operativo se detalla en
 [`climate_geography_audit.md`](climate_geography_audit.md).
 
 ### 07. Agregar a municipio-dia

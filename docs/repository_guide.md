@@ -1,6 +1,6 @@
 # Guia del repositorio
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 28 de julio de 2026
 **Estado:** inventario vigente; revision de codigo pendiente
 
 Esta guia orienta a personas y asistentes de IA. Clasifica los archivos por su
@@ -16,7 +16,7 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
-| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Auditar estaciones, DIVIPOLA y mapa de puntos | Activo; poligonos pendientes |
+| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | Activo; contrato espacial v2 pendiente de corrida |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando

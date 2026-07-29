@@ -193,12 +193,12 @@ geografia_curada/canonica=<version>/
 | Productor | `06_ClimateGeographyAudit.ipynb` |
 | Granularidad | Estacion; municipio |
 | Consumidor | Paso 07 |
-| Estado | Auditoria de puntos implementada; punto-en-poligono pendiente |
+| Estado | Punto-en-poligono implementado; corrida v2 y revisiones pendientes |
 
-La primera salida contiene candidatos de catalogo y nunca los llama canonicos.
-La segunda requiere una capa completa de poligonos, punto-en-poligono y revision
-de excepciones. Ambas conservan codigo DANE, coordenadas, fuente, periodo,
-metodo y evidencia.
+La primera salida conserva la auditoria historica de candidatos. La segunda
+valida 239 poligonos y contiene solamente estaciones con asignacion espacial
+canonica; las excepciones permanecen en una tabla de revision. Ambas conservan
+codigo DANE, coordenadas, fuente, periodo, metodo y evidencia.
 
 ### 07. Clima municipal diario
 

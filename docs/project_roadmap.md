@@ -1,6 +1,6 @@
 # Roadmap de extremo a extremo de RAIZ
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 28 de julio de 2026
 **Estado:** vigente
 **Alcance territorial:** Boyaca y Cundinamarca
 
@@ -41,7 +41,7 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
 | 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Precipitacion 2024-2025 completa |
 | 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | Precipitacion completa; otras pendientes |
-| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | Auditoria implementada; poligonos pendientes |
+| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | Contrato v2 implementado; corrida pendiente |
 | 7. Municipio diario | `clima_municipal` | Llaves unicas y cobertura espacial visible | Pendiente |
 | 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Pendiente |
 | 9. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |
