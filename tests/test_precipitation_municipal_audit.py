@@ -166,6 +166,7 @@ class ClimateMunicipalAuditNotebookTest(unittest.TestCase):
 
         self.assertFalse(namespace["EJECUTAR_AUDITORIA_MUNICIPAL"])
         self.assertFalse(namespace["EJECUTAR_MAPA_ESTACIONES_AQUITANIA"])
+        self.assertFalse(namespace["EJECUTAR_HISTOGRAMA_AQUITANIA"])
         self.assertIsNone(namespace["resultado_auditoria_municipal"])
         self.assertEqual(
             namespace["AUDIT_VERSION"],

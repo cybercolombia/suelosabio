@@ -105,6 +105,13 @@ El mapa muestra codigo, nombre, altitud, precipitacion diaria y marca de
 revision. Es una visualizacion diagnostica: no modifica la regla municipal ni
 guarda un nuevo artefacto.
 
+La celda siguiente, protegida con
+`EJECUTAR_HISTOGRAMA_AQUITANIA=False`, compara los acumulados diarios de esas
+tres estaciones durante los 15 dias anteriores y posteriores al evento. Incluye
+una serie temporal para conservar el orden de las fechas y un histograma comun
+para comparar distribuciones. La columna `precipitacion_diaria_mm` representa
+acumulado diario, no maximo subdiario.
+
 ## Compuerta
 
 El estado esperado de esta auditoria es
