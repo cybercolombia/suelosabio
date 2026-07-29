@@ -186,8 +186,20 @@ cobertura pendiente.
 - [X] Verificadas llaves unicas y semantica de valores validos y `NaN`.
 - [X] Cuantificada cobertura espacial: 84 municipios con estacion canonica
   utilizable y 155 sin ella.
-- [P] Revisar cobertura temporal, dispersion multiestacion y sensibilidad
-  media-mediana antes de habilitar indicadores.
+- [X] Cuantificada cobertura temporal agregada: 25.856 de 37.651 municipio-dias
+  con estacion esperada fueron validos (68,67 %).
+- [X] Identificados 11.703 municipio-dias sin datos aceptados, 92 con cobertura
+  insuficiente y 5.096 validos con multiples estaciones.
+- [P] Auditar los 92 dias con cobertura insuficiente y los 5.096 dias
+  multiestacion.
+- [ ] Medir dispersion, diferencias media-mediana y sensibilidad de la regla
+  municipal en los dias multiestacion.
+- [ ] Definir el umbral minimo de cobertura temporal para construir
+  indicadores por periodo.
+- [ ] Cruzar cobertura municipal con EVA y clasificar municipios utilizables,
+  insuficientes y sin evidencia climatica.
+- [ ] Decidir la estrategia frente a municipios sin cobertura. Hasta entonces
+  permanecen en `NaN`: no se imputan ni se eliminan en silencio.
 
 Contrato:
 
@@ -203,10 +215,14 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Revisar cobertura temporal y dispersion del producto municipio-dia.
-2. Definir el umbral minimo de cobertura para indicadores por periodo.
-3. Resolver en paralelo las nueve estaciones con revision geografica pendiente.
-4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
+1. Ejecutar una auditoria reproducible sobre los 92 dias con cobertura
+   insuficiente y los 5.096 dias multiestacion.
+2. Comparar media y mediana, revisar rango e IQR y decidir si la regla v1 se
+   mantiene.
+3. Definir cobertura minima por periodo y cruzar los municipios con EVA.
+4. Solo despues habilitar 08 para acumulados, dias de lluvia, extremos y rachas.
+5. Resolver en paralelo las nueve estaciones con revision geografica pendiente.
+6. Avanzar en paralelo con temperatura sin copiar reglas de precipitacion.
 
 ## Plan de ejecucion del paso 03
 
