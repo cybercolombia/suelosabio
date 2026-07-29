@@ -2,6 +2,10 @@
 
 **Fecha de verificación:** 11 de julio de 2026
 
+> **Vigencia:** las fuentes, coberturas y calculos conservan valor como evidencia.
+> La seleccion de cultivo y de una unica variable climatica permanece pendiente;
+> consulte [`project_status.md`](project_status.md).
+
 ## Conclusión
 
 El dataset `2pnw-mmge` no es la fuente agrícola más reciente. Su cobertura real
@@ -266,14 +270,13 @@ rendimiento consolidado = producción total / área cosechada total
 Esta operación sirve para construir el target, pero esas dos columnas no deben
 permanecer después como features del modelo.
 
-## Recomendación para la entrega
+## Recomendacion tecnica actual
 
 1. Usar la Base Agrícola UPRA 2019–2025 como fuente principal del target.
 2. Trabajar primero solo Boyacá y Cundinamarca.
-3. Adoptar papa como candidato principal y la familia de temperatura como
-   variable climática provisional.
-4. Construir el piloto solo con 2019–2025; esto reduce el histórico climático que
-   habría que preparar.
+3. Conservar papa y maiz como candidatos hasta comparar cobertura y granularidad.
+4. Preparar el cruce principal con la ventana comun 2021-2025 y evaluar si el
+   cambio metodologico aconseja modelar solo 2022-2025.
 5. Reservar la unión con 2006–2018 como mejora posterior, porque exige homologar
    columnas, códigos, cultivos y metodología.
 6. Usar separación temporal para evaluar: por ejemplo, entrenar con años
@@ -282,17 +285,15 @@ permanecer después como features del modelo.
 7. Mostrar una sensibilidad antes y después de 2022 para detectar el posible
    efecto del cambio metodológico.
 
-Si la temperatura no ofrece cobertura suficiente por estación y periodo, la
-alternativa recomendada es **maíz + precipitación** o, conservando papa,
-**papa + precipitación**. No se propone incorporar varias familias climáticas a
-la vez antes de validar que una sola supera el baseline. La justificación y las
-fuentes se detallan en
-[Candidatos de variables climáticas para el MVP](climate_dataset_candidates.md).
+La seleccion climatica no se cierra aqui. Puede incluir varias familias si cada
+una tiene cobertura, reglas validadas y una contribucion evaluable frente al
+baseline. La justificacion y las fuentes se detallan en
+[Candidatos de variables climaticas](climate_dataset_candidates.md).
 
 ## Consecuencia para el proyecto
 
 El target agrícola ya no obliga a detenerse en 2018. La ventana moderna oficial
 2019–2025 se cruza con las fuentes climáticas recientes y contiene suficientes
 observaciones municipales para un MVP. El cuello de botella pasa a ser escoger y
-preparar una variable climática compatible, no encontrar rendimiento agrícola
+preparar variables climaticas compatibles, no encontrar rendimiento agricola
 actualizado.

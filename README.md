@@ -1,5 +1,5 @@
 # rAIz
-Plataforma para analírica de datos climáticos e inteligencia de suelos para ayudar al campo colombiano a anticipar riesgos, reducir pérdidas y mejorar la productividad agrícola.
+Plataforma para analítica de datos climáticos e inteligencia de suelos para ayudar al campo colombiano a anticipar riesgos, reducir pérdidas y mejorar la productividad agrícola.
 
 ## Descripción del proyecto
 
@@ -24,3 +24,11 @@ Desarrollar una solución de IA que ayude a agricultores y actores rurales a tom
 - Mayor seguridad alimentaria y resiliencia económica para comunidades agrícolas
 
 > El proyecto une ciencia de datos, aprendizaje automático y conocimiento agrícola para transformar información en decisiones prácticas y sostenibles.
+
+## Documentacion
+
+El alcance y el estado siguen en descubrimiento. Antes de ejecutar notebooks o
+proponer cambios, consulte el [mapa de documentacion](docs/README.md) y el
+[estado vigente del proyecto](docs/project_status.md).
+
+El flujo del equipo se describe en [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -1,5 +1,13 @@
 # Estrategia exploratoria para datos climaticos
 
+**Estado:** referencia metodologica vigente
+**Alcance y fases:** [`project_status.md`](project_status.md) y
+[`project_roadmap.md`](project_roadmap.md)
+
+La secuencia operativa, sus compuertas de calidad y la politica de datos
+faltantes se mantienen en
+[`climate_pipeline_guide.md`](climate_pipeline_guide.md).
+
 Este documento resume una estrategia inicial para trabajar variables climaticas en el
 proyecto RAIZ. No define todavia el dataset maestro agricola ni el modelo final:
 su objetivo es ordenar la exploracion antes de reducir o integrar datos.
@@ -19,7 +27,11 @@ Antes de conectar estos datos con rendimiento agricola, conviene entender:
 - Diferencias entre datasets aparentemente similares.
 - Variables y sensores disponibles.
 
-## Capas de trabajo propuestas
+## Capas de trabajo
+
+Los nombres fisicos y contratos vigentes se detallan en
+[`data_artifacts.md`](data_artifacts.md). Las siguientes capas explican su
+proposito conceptual.
 
 ### 1. Datos crudos
 
@@ -86,6 +98,34 @@ Variables derivadas candidatas:
 - Humedad relativa media y percentiles por periodo.
 - Indicadores de eventos extremos.
 
+### Reduccion diaria a municipio-periodo
+
+La capa diaria no se reemplaza: se conserva como fuente trazable y se construye
+otra tabla de caracteristicas. El orden correcto evita que una estacion con mayor
+frecuencia o cobertura reciba mas peso:
+
+```text
+estacion-sensor-dia -> estacion-dia -> municipio-dia -> municipio-periodo
+```
+
+| Variable | Agregaciones candidatas por semestre o periodo |
+|---|---|
+| Precipitacion | Total, dias con lluvia, intensidad media en dias lluviosos, p95/p99, maximo 1/3/5/7 dias, racha seca y racha humeda |
+| Temperatura | Media, minima, maxima, desviacion, p10/p90, dias frios/calientes, grados-dia y rachas extremas |
+| Humedad relativa | Media, minima, maxima, desviacion, p10/p90, dias bajo/sobre umbral y persistencia |
+| Presion atmosferica | Media, desviacion, rango, p05/p95 y cambios diarios; interpretar el nivel junto con altitud |
+| Velocidad del viento | Media, maxima, p90/p95/p99, dias fuertes, dias de calma y persistencia |
+
+Todas las variables deben conservar dias esperados, dias observados, porcentaje
+de cobertura, brecha consecutiva maxima, estaciones utilizadas y calidad del
+periodo. No se corrige una suma incompleta multiplicandola automaticamente por el
+inverso de la cobertura.
+
+Para no esconder la distribucion temporal dentro del semestre, se conserva un
+perfil mensual o bloques inicio-mitad-fin. El semestre calendario se usa solo si
+coincide con `Periodo` de EVA; cuando exista informacion del cultivo se deben
+evaluar tambien ventanas de siembra, desarrollo y cosecha.
+
 ## Formato recomendado para datos procesados
 
 Para datasets grandes se recomienda usar Parquet en lugar de CSV.
@@ -102,11 +142,13 @@ Ejemplo de estructura:
 
 ```text
 eco2026_processed/
-  precipitacion/
-    dataset_id=s54a-sgyg/
-      departamento=ANTIOQUIA/
-        anio=2026/
-          part-001.parquet
+  clima_crudo/
+    variable=precipitacion/
+      fuente=s54a-sgyg/
+        departamento=CUNDINAMARCA/
+          anio=2026/
+            mes=01/
+              part-00000.parquet
 ```
 
 Esta estructura permite trabajar en Colab con subconjuntos manejables sin cargar
@@ -142,10 +184,9 @@ Los departamentos priorizados para el proyecto son:
 
 - Cundinamarca.
 - Boyaca.
-- Antioquia.
 
 Decision operativa: para analisis exploratorios serios se deben descargar los
-datos de los tres departamentos priorizados a Parquet y auditar localmente sobre
+datos de los dos departamentos priorizados a Parquet y auditar localmente sobre
 esos archivos. La descarga debe hacerse por particiones controladas, por ejemplo
 departamento + ano + mes.
 
@@ -158,13 +199,78 @@ Las primeras auditorias sobre Parquet deben revisar:
 - Frecuencia temporal entre observaciones.
 - Distribucion de valores observados.
 
+## Auditoria diagnostica y secuencia de limpieza
+
+La auditoria de datos climaticos crudos debe ser de solo lectura. Su objetivo es
+producir evidencia y recomendaciones para el procesamiento, no corregir los
+Parquet originales. Los hallazgos deben distinguir entre problemas criticos,
+advertencias e informacion descriptiva.
+
+La frecuencia no se debe inferir solamente a partir del numero de registros por
+estacion. Debe calcularse con las diferencias entre timestamps consecutivos para
+cada combinacion de `codigoestacion` y `codigosensor`, porque una misma estacion
+puede contener sensores con cadencias diferentes.
+
+Antes de construir registros diarios se debe diagnosticar y definir reglas para:
+
+- Tipos de datos, unidades y fechas no interpretables.
+- Nulos y valores fisicamente sospechosos.
+- Duplicados exactos.
+- Duplicados de clave con el mismo valor.
+- Conflictos con igual estacion, sensor y fecha pero valores diferentes.
+- Cambios de municipio, coordenadas o unidad dentro de una estacion o sensor.
+- Frecuencia observada y cobertura minima necesaria para considerar valido un dia.
+
+Las reglas de agregacion diaria dependen de la variable y no pertenecen a la
+auditoria generica. Tampoco se deben imputar observaciones subdiarias antes de
+agregar sin una justificacion especifica: esto podria fabricar precipitacion,
+alterar promedios o esconder fallas de cobertura. Los dias faltantes y la
+continuidad se evaluan de nuevo despues de construir la capa diaria. Cualquier
+imputacion posterior debe conservar una bandera de calidad y evitar fuga temporal
+durante el modelado.
+
+### Responsabilidad de cada notebook del pipeline
+
+```text
+01 descarga -> 02 auditoria cruda -> reglas por variable
+            -> 03 diario por sensor -> 04 auditoria diaria
+            -> 05 diario consolidado por estacion -> 06 geografia
+            -> 07 agregado municipal -> 08 indicadores por periodo
+```
+
+- `01_ClimateDataDownloader.ipynb` conserva las observaciones crudas
+  particionadas por departamento, ano y mes.
+- `02_ClimateDataAudit.ipynb` diagnostica la fuente cruda. Sus hallazgos sobre
+  unidad, cadencia, duplicados, conflictos, geografia y rangos permiten proponer
+  un contrato distinto para cada variable; no modifica los datos.
+- `03_ClimateDailyProcessor.ipynb` aplica las reglas preliminares de la variable
+  y produce una fila por estacion, sensor y dia.
+- `04_ClimateDailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
+  ausencias, cobertura, extremos y sensores paralelos para confirmar o ajustar
+  el contrato.
+- `05_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
+  una fila canonica por estacion y dia.
+- `06_ClimateGeographyAudit.ipynb` audita estaciones y DIVIPOLA, produce el mapa
+  de puntos y deja explicitas las asignaciones que requieren poligonos.
+- El futuro `07_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el
+  historico diario consolidado y la asignacion estacion-municipio esten
+  validados.
+- El futuro paso 08 construira indicadores municipio-periodo sin reemplazar las
+  capas diarias trazables.
+
+La infraestructura de lectura, particiones, manifiestos y escrituras seguras es
+reutilizable. Las reglas semanticas no lo son automaticamente: precipitacion se
+acumula, mientras que temperatura, humedad, presion y viento requieren analizar
+y definir sus propias agregaciones y controles.
+
 ## Nota preliminar sobre precipitacion
 
 Los datasets `s54a-sgyg` y `m84s-22dd` tienen columnas muy similares para
 precipitacion. En consultas exploratorias pequenas, filtradas por estacion y
 ventanas de cinco dias entre 2017 y 2026, ambos datasets mostraron datos
-practicamente equivalentes en los departamentos priorizados para el proyecto:
-Cundinamarca, Boyaca y Antioquia.
+practicamente equivalentes en las muestras historicas consultadas de Cundinamarca,
+Boyaca y Antioquia. El alcance actual del proyecto se limita a Cundinamarca y
+Boyaca.
 
 La principal diferencia observada hasta ahora es temporal:
 
@@ -204,6 +310,12 @@ Antes de construir agregaciones climaticas se debe auditar:
 - Interpretacion correcta de `valorobservado` para precipitacion.
 
 Para precipitacion, la hipotesis de trabajo es construir primero una capa diaria
-por estacion, con suma diaria y conteo de observaciones validas. Esta hipotesis
-debe validarse con la documentacion de la fuente y con patrones observados en los
-datos.
+por estacion y conservar conteos y metricas de cobertura. La suma diaria solo es
+valida si se confirma que `valorobservado` representa incrementos comparables y
+no un acumulado del sensor. Esta semantica debe validarse con la documentacion de
+la fuente, las unidades y los patrones observados en los datos.
+
+El procesamiento preliminar se detalla en
+[`climate_daily_processing.md`](climate_daily_processing.md). El contrato
+estacion-dia ya validado, incluida la ventana de cobertura, se documenta en
+[`climate_daily_consolidation.md`](climate_daily_consolidation.md).

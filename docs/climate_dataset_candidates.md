@@ -1,13 +1,16 @@
-# Candidatos de variables climáticas para el MVP
+# Candidatos de variables climaticas
 
 **Fecha de verificación:** 11 de julio de 2026
 
+> **Vigencia:** el catalogo de fuentes y sus cautelas sigue siendo referencia.
+> La seleccion final de variables permanece abierta; consulte
+> [`project_status.md`](project_status.md) para las decisiones actuales.
+
 ## Objetivo
 
-Identificar variables que puedan cruzarse con EVA 2019–2025 para Boyacá y
-Cundinamarca sin ampliar innecesariamente el alcance. La prioridad no es reunir
-muchas fuentes, sino escoger una familia climática agronómicamente explicable y
-procesable dentro del tiempo disponible.
+Identificar variables que puedan cruzarse con EVA 2019-2025 para Boyaca y
+Cundinamarca. No se trata de incorporar todas las fuentes disponibles: cada
+variable debe aportar una hipotesis agronomica, cobertura y calidad verificadas.
 
 ## Recomendación ejecutiva
 
@@ -23,15 +26,16 @@ primera variable explicativa del rendimiento. No se encontró en datos.gov.co un
 serie nacional operativa de humedad del suelo o radiación solar comparable con
 las fuentes IDEAM por estación.
 
-Con dos días disponibles, se recomienda escoger **una sola familia climática** y
-trabajarla con IDEAM si la cobertura y el tiempo de procesamiento lo permiten.
-NASA POWER se conserva como contingencia por su facilidad de acceso, pero no como
-primera opción para un modelo municipal en una región montañosa.
+El proyecto puede preparar varias familias climaticas. Su entrada al modelo se
+decidira mediante cobertura, interpretacion y comparacion incremental contra el
+baseline. NASA POWER se conserva como contingencia, no como primera opcion para
+un modelo municipal en una region montanosa.
 
 ## Fuentes IDEAM en datos.gov.co
 
-Todas las fuentes de esta tabla pertenecen a la Oficina de Informática del IDEAM,
-tienen 12 columnas y presentan observaciones por estación.
+Todas las fuentes de esta tabla pertenecen a la Oficina de Informatica del IDEAM
+y presentan observaciones por estacion. Los Parquet descargados tienen las doce
+columnas de la fuente mas `dataset_id`, agregado para trazabilidad.
 
 | Variable | ID | Inicio cacheado | Último registro verificado en Boyacá y Cundinamarca | Prioridad |
 |---|---|---|---|---|
@@ -99,17 +103,21 @@ con mejor cobertura EVA y la historia climática más fácil de defender:
 | Caña | Precipitación | Total y distribución anual | Temperatura | Alto volumen, pero su consolidación productiva es más compleja |
 | Tomate | Temperatura | Media, mínimas y máximas | Humedad relativa | El manejo, riego e invernaderos pueden dominar la señal climática disponible |
 
-### Decisión provisional
+### Lectura actual
 
 Si el cultivo del MVP es **papa**, la primera familia a evaluar debe ser
 **temperatura**. Temperatura ambiente, mínima y máxima cuentan como una sola
 familia física y pueden generar varias features sin ampliar conceptualmente el
 alcance.
 
-La precipitación queda como segunda opción para papa y como primera para maíz,
-arveja o frijol. Humedad relativa solo debería entrar si reemplaza a las
-anteriores por mejor cobertura o si aporta una hipótesis concreta; no se propone
-sumarla automáticamente al modelo.
+La precipitacion es relevante para papa y primera candidata para maiz, arveja o
+frijol. Humedad relativa puede complementar temperatura y precipitacion si aporta
+una hipotesis concreta y cobertura suficiente. Presion y viento permanecen como
+variables secundarias hasta demostrar valor adicional.
+
+Preparar varias variables no obliga a usarlas todas. El modelado debe comparar
+familias y combinaciones mediante ablacion, regularizacion y evaluacion temporal,
+evitando agregar columnas solo porque estan disponibles.
 
 Esta recomendación sigue siendo condicional a la cobertura efectiva por estación
 durante 2019–2025. La mejor variable agronómica no sirve si deja demasiados
@@ -206,17 +214,15 @@ representación climática municipal fina del altiplano cundiboyacense.
 Para evitar solicitudes repetidas, conviene descargar por región o identificar
 celdas únicas y luego asignar cada municipio a la celda más cercana.
 
-## Ruta sugerida para los dos días restantes
+## Ruta actual de evaluacion
 
-1. Adoptar papa como candidato principal y maíz como alternativa.
-2. Perfilar temperatura ambiente, mínima y máxima de IDEAM para 2019–2025.
-3. Construir agregados por semestre o año, según `Periodo` y ciclo del cultivo.
-4. Si temperatura resulta inviable por cobertura o descarga, evaluar
-   precipitación como reemplazo, no como suma automática de variables.
-5. Usar NASA POWER solo si las fuentes IDEAM no permiten construir el piloto a
-   tiempo y documentar explícitamente su resolución espacial.
-6. Entrenar el modelo con una sola familia climática y compararlo contra el
-   baseline.
+1. Auditar cada fuente candidata con el paso 02.
+2. Definir y probar reglas diarias propias antes de habilitarla en 03-05.
+3. Construir indicadores compatibles con el periodo y ciclo del cultivo.
+4. Medir cobertura municipal y temporal antes de incorporarla al dataset maestro.
+5. Comparar cada familia y sus combinaciones contra el baseline.
+
+El orden completo se mantiene en [`project_roadmap.md`](project_roadmap.md).
 
 ## Fuentes que no se priorizan
 
