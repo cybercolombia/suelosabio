@@ -1,7 +1,7 @@
 # Agregacion municipal diaria de precipitacion
 
 **Actualizado:** 29 de julio de 2026
-**Estado:** contrato v1 implementado y validado localmente; corrida en Colab pendiente
+**Estado:** corrida oficial completa y validada; revision cientifica de cobertura pendiente
 **Alcance:** Boyaca y Cundinamarca, 2024-2025
 
 `07_ClimateMunicipalAggregator.ipynb` transforma la capa de precipitacion
@@ -82,24 +82,36 @@ eco2026_processed/
 El producto principal contiene 48 particiones, una por departamento, ano y mes.
 La llave es `codigo_municipio + fecha`.
 
-## Prevalidacion local
+## Corrida oficial en Colab
 
-La ejecucion completa con las entradas reales termino en aproximadamente
-17 segundos y produjo:
+La ejecucion oficial termino el 29 de julio de 2026 en 51,64 segundos con el
+commit `e76b1f6d00f94a998325e66499e75ddea3b488f0`. Produjo:
 
 - 174.709 filas: 239 municipios por 731 dias.
-- 84 municipios con al menos una estacion canonica y 155 sin red.
+- 84 municipios con al menos una estacion canonica utilizable y 155 sin una
+  estacion canonica utilizable en este dataset y periodo.
 - 25.856 municipio-dias validos.
 - 20.760 filas validas con una estacion y 5.096 multiestacion.
 - 11.703 filas con estaciones esperadas, pero sin datos aceptados.
 - 92 filas con algun dato y cobertura inferior a 50 %.
 - 23.753 filas de municipios con red, pero sin estacion esperada en esa fecha.
 - 113.305 filas de municipios sin estaciones canonicas.
-- 48 Parquet mensuales, resumen, reporte y manifiesto persistidos en una prueba
-  temporal.
+- 48 Parquet mensuales, resumen, reporte, grafica y manifiesto persistidos.
+- Cero duplicados en la llave `codigo_municipio + fecha`.
+- Cero valores principales presentes en estados no validos y cero valores
+  nulos en estados validos.
 
-La gran cantidad de filas sin red es una medicion de cobertura espacial, no un
-error de ejecucion.
+Los 84 municipios representan 35,15 % de los 239 municipios objetivo; los 155
+sin estacion canonica utilizable representan 64,85 %. Esta cifra no demuestra
+que jamas haya existido una estacion IDEAM en esos municipios: significa que
+ninguna estacion del dataset de precipitacion, dentro de 2024-2025, supero
+simultaneamente los controles de disponibilidad, calidad y geografia canonica.
+
+Entre los 84 municipios con red, 25.856 de 37.651 dias con alguna estacion
+esperada fueron validos, una cobertura agregada de 68,67 %. La cobertura no es
+uniforme: Quetame tiene una estacion canonica, pero cero dias aceptados en la
+ventana evaluada. Por eso `municipios_con_estacion_canonica` no debe
+interpretarse como `municipios_con_serie_completa`.
 
 ## Ejecucion segura
 
@@ -114,8 +126,11 @@ error de ejecucion.
 
 ## Compuerta antes de 08
 
-La corrida debe confirmar llaves unicas y las cifras de control anteriores.
-Luego se deben revisar:
+La integridad estructural y la semantica de `NaN` ya fueron verificadas. La
+auditoria oficial esta en
+[`climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md`](climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md).
+
+Antes de construir indicadores se deben revisar:
 
 - los 92 municipio-dias con cobertura insuficiente;
 - los rangos e IQR de municipios multiestacion;

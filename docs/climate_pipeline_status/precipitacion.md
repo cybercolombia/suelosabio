@@ -172,7 +172,8 @@ Contrato:
 
 ## 07. Municipio diario
 
-**Estado de etapa:** `[P]` contrato v1 implementado y prevalidado localmente.
+**Estado de etapa:** `[P]` producto oficial completo; compuerta cientifica de
+cobertura pendiente.
 
 - [X] Definida mediana no ponderada como estadistica principal del piloto.
 - [X] Implementado calendario de 239 municipios para 2024-2025.
@@ -181,24 +182,30 @@ Contrato:
   estaciones contribuyentes.
 - [X] Mantenido `NaN` sin imputacion cuando no existe evidencia suficiente.
 - [X] Prevalidada persistencia local: 48 particiones y 174.709 filas.
-- [ ] Ejecutar y auditar la corrida oficial en Colab.
+- [X] Ejecutada la corrida oficial en Colab con 48 particiones y 174.709 filas.
+- [X] Verificadas llaves unicas y semantica de valores validos y `NaN`.
+- [X] Cuantificada cobertura espacial: 84 municipios con estacion canonica
+  utilizable y 155 sin ella.
+- [P] Revisar cobertura temporal, dispersion multiestacion y sensibilidad
+  media-mediana antes de habilitar indicadores.
 
 Contrato:
 
 - [`../climate_municipal_aggregation.md`](../climate_municipal_aggregation.md)
+- [`../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md`](../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md)
 
 ## 08. Indicadores por periodo
 
-**Estado de etapa:** `[ ]` pendiente de 07.
+**Estado de etapa:** `[ ]` pendiente de la compuerta cientifica de 07.
 
 - [ ] Definir indicadores por periodo agricola: acumulado, dias con lluvia, intensidad y brechas.
 - [ ] Conservar `NaN` cuando la cobertura sea insuficiente; no extrapolar acumulados.
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar el piloto 07 en Colab y comprobar las cifras de prevalidacion.
-2. Revisar en paralelo los siete conflictos entre catalogo IDEAM y poligono.
-3. Revisar los dos puntos cercanos a limites; Bogota ya esta excluida.
+1. Revisar cobertura temporal y dispersion del producto municipio-dia.
+2. Definir el umbral minimo de cobertura para indicadores por periodo.
+3. Resolver en paralelo las nueve estaciones con revision geografica pendiente.
 4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
 
 ## Plan de ejecucion del paso 03

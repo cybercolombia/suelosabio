@@ -82,7 +82,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
 | 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
-| 07 Municipio diario | `clima_municipal` | Piloto de precipitacion implementado y prevalidado; corrida Colab pendiente |
+| 07 Municipio diario | `clima_municipal` | Precipitacion oficial completa: 48 particiones, 84 de 239 municipios con estacion canonica utilizable; revision cientifica pendiente |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
 | 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |

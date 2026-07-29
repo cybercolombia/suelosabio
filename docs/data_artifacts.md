@@ -223,7 +223,7 @@ clima_municipal/
 | Productor | `07_ClimateMunicipalAggregator.ipynb` |
 | Granularidad | Municipio + dia |
 | Consumidor | Paso 08 |
-| Estado | Contrato v1 y persistencia validados localmente; corrida Colab pendiente |
+| Estado | Corrida oficial completa: 48 particiones y 174.709 filas; revision cientifica pendiente |
 
 Conserva estaciones esperadas, observadas y validas, cobertura, dispersion,
 calidad y metodo. La mediana no ponderada es el valor piloto; media y extremos

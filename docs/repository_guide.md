@@ -17,7 +17,7 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
 | `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
-| `ClimatePipeline/07_ClimateMunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Piloto protegido; corrida Colab pendiente |
+| `ClimatePipeline/07_ClimateMunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Corrida oficial completa; revision cientifica pendiente |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
