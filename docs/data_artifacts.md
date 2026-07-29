@@ -184,6 +184,8 @@ geografia_curada/ejecucion=<version>/
 
 geografia_curada/canonica=<version>/
   estaciones_municipio.parquet
+  estaciones_revision.parquet
+  estaciones_excluidas.parquet
   divipola_municipios_geometria.parquet
   manifest.json
 ```
@@ -193,11 +195,12 @@ geografia_curada/canonica=<version>/
 | Productor | `06_ClimateGeographyAudit.ipynb` |
 | Granularidad | Estacion; municipio |
 | Consumidor | Paso 07 |
-| Estado | Punto-en-poligono implementado; corrida v2 y revisiones pendientes |
+| Estado | V2 verificada; v3 separa revisiones de exclusiones de alcance |
 
 La primera salida conserva la auditoria historica de candidatos. La segunda
 valida 239 poligonos y contiene solamente estaciones con asignacion espacial
-canonica; las excepciones permanecen en una tabla de revision. Ambas conservan
+canonica; los conflictos permanecen en revision y Bogota D.C. queda en una
+tabla de exclusiones. Ambas conservan
 codigo DANE, coordenadas, fuente, periodo, metodo y evidencia.
 
 ### 07. Clima municipal diario

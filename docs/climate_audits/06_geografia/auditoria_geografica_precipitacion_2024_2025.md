@@ -1,81 +1,68 @@
 # Auditoria geografica de precipitacion 2024-2025
 
-**Fecha de ejecucion:** 24 de julio de 2026
+**Fecha de ejecucion espacial:** 29 de julio de 2026
 **Fuente climatica:** `s54a-sgyg`
-**Contrato geografico:** `climate_station_geography_v1`
-**Estado:** `COMPLETA_SIN_POLIGONOS`
-**Commit de ejecucion:** `04b1bd6af7b713f9e886b4efb66d39a28e5ef48b`
+**Contrato ejecutado:** `climate_station_geography_v2`
+**Estado:** `COMPLETA_CON_REVISION_PENDIENTE`
+**Commit de ejecucion:** `ba260da553d360ea4eede188b5fc261e4d78a953`
 
 ## Entrada y productos
 
 La corrida leyo las 48 particiones y 53.128 filas estacion-dia del cierre
-`cierre_precipitacion_2024_2025_v2`. Escribio en la carpeta personal
-`eco2026_processed/geografia_curada`, sin modificar `eco2026`.
+`cierre_precipitacion_2024_2025_v2`. Valido la capa
+`Boyaca_Cundinamarca_Municipios` de `DivipolaGeo.gpkg` y escribio fuera de la
+carpeta compartida.
 
 Productos persistidos:
 
 - Catalogo de 126 estaciones climaticas.
-- 126 candidatos estacion-municipio.
-- 15 estaciones para revision.
-- Catalogo de 239 municipios objetivo.
-- Resumen por departamento.
-- Mapa HTML, reporte y manifiesto.
+- 116 asignaciones estacion-municipio canonicas.
+- 10 estaciones no canonicas con evidencia para revision o exclusion.
+- 239 municipios DIVIPOLA y 239 geometrías municipales validas.
+- Resumen, mapa HTML, reporte y manifiesto.
 
 ## Reconciliacion
 
 | Control | Resultado |
 |---|---:|
-| Estaciones climaticas | 126 |
-| Estaciones unicas | 126 |
-| Duplicados por codigo | 0 |
+| Estaciones climaticas unicas | 126 |
 | Estaciones encontradas en IDEAM | 126 |
-| Coordenadas IDEAM faltantes | 0 |
-| Candidatos sin alertas, verdes | 111 |
-| Candidatos para revision, naranjas | 15 |
-| DIVIPOLA resuelta por nombre | 122 |
-| Asignaciones canonicas | 0 |
+| Asignaciones canonicas | 116 |
+| Municipios con estacion canonica | 84 |
+| Catalogo y poligono coinciden | 112 |
+| Catalogo resuelto solo por poligono | 4 |
+| Conflictos catalogo-poligono | 7 |
+| Puntos sin poligono contenedor | 3 |
+| Estaciones no canonicas | 10 |
+| Poligonos municipales validos | 239 |
 
-Boyaca contiene 67 estaciones, cuatro en revision. Cundinamarca contiene 59,
-once en revision.
+Las 116 asignaciones canonicas se distribuyen en 59 estaciones de Boyaca y 57
+de Cundinamarca. No hay codigos de Bogota dentro del catalogo canonico.
 
-## Motivos de revision
+## Casos no canonicos
 
-Los motivos no son excluyentes:
+Los diez casos se separan conceptualmente en:
 
-| Motivo | Estaciones | Interpretacion |
-|---|---:|---|
-| `COORDENADA_DIFIERE` | 9 | Diferencia mayor a 0,001 grados entre clima e IDEAM |
-| `DIVIPOLA_NO_RESUELTA` | 4 | Variante o error nominal sin alias aprobado |
-| `MUNICIPIO_MULTIPLE` | 2 | La fuente climatica reporto mas de un municipio |
-| `DEPARTAMENTO_DISCREPANTE` | 1 | La descarga y el catalogo IDEAM difieren |
-| `FUERA_ALCANCE_GEOGRAFICO` | 1 | Estacion IDEAM ubicada en Bogota |
+- Siete conflictos entre el municipio del catalogo IDEAM y el poligono.
+- Dos estaciones de Boyaca muy cercanas a un limite, pero sin poligono
+  contenedor: `0024035360` y `0024035502`.
+- Una estacion fuera del alcance: `2120500204`, IDEAM Puente Aranda, pertenece
+  a Bogota D.C. aunque la descarga la agrupo bajo Cundinamarca.
 
-Las nueve diferencias de coordenadas representan aproximadamente entre 0,14 km
-y 2,06 km. No se corrigen automaticamente: una diferencia puede ser una
-actualizacion de catalogo, redondeo, desplazamiento de sensor o error.
-
-Los cuatro nombres no resueltos son candidatos claros para una tabla de alias,
-pero requieren aprobacion explicita:
-
-- `Villa De Leiva` frente a `VILLA DE LEYVA`, dos estaciones.
-- `Pisva` frente a `PISBA`, una estacion.
-- `Ubate` frente a `VILLA DE SAN DIEGO DE UBATE`, una estacion.
-
-Los dos municipios multiples son:
-
-- `0023067060`: `LA PENA | NIMAIMA`; IDEAM indica La Pena.
-- `0035027100`: `CHIPAQUE | UNE`; IDEAM indica Chipaque.
-
-La estacion `2120500204`, IDEAM Puente Aranda, pertenece a Bogota aunque fue
-descargada dentro de Cundinamarca. Debe excluirse del alcance o tratarse mediante
-una excepcion documentada.
+Bogota no es un conflicto pendiente ni una candidata de Cundinamarca. El
+contrato `climate_station_geography_v3` la conserva en
+`estaciones_excluidas.parquet`; las otras nueve permanecen en
+`estaciones_revision.parquet`.
 
 ## Decision
 
-La auditoria tabular y el mapa se aprueban. La tabla de candidatos sirve para
-revision, pero no para agregar clima por municipio. El paso 07 permanece
-bloqueado hasta conseguir poligonos municipales completos, ejecutar
-punto-en-poligono y publicar una asignacion canonica versionada.
+La corrida v2 se conserva como evidencia reproducible. El paso 06 v3 debe
+ejecutarse en una carpeta nueva para confirmar:
 
-Mientras se resuelve esta compuerta, precipitacion puede pausarse y el equipo
-puede avanzar en paralelo con los pilotos diarios de temperatura.
+- 116 asignaciones canonicas.
+- 9 estaciones en revision geografica.
+- 1 estacion excluida por alcance.
+
+El paso 07 puede diseñarse usando exclusivamente `estaciones_municipio.parquet`.
+No debe incorporar estaciones en revision ni exclusiones de alcance hasta que
+exista una resolucion versionada.

@@ -1,7 +1,7 @@
 # Auditoria geografica climatica
 
-**Actualizado:** 28 de julio de 2026
-**Estado:** contrato espacial v2 implementado; corrida persistida pendiente
+**Actualizado:** 29 de julio de 2026
+**Estado:** corrida espacial v2 verificada; contrato v3 pendiente de corrida
 **Alcance:** estaciones de precipitacion de Boyaca y Cundinamarca, 2024-2025
 
 `06_ClimateGeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
@@ -26,7 +26,7 @@ Salida personal:
 
 ```text
 /content/drive/MyDrive/eco2026_processed/
-  geografia_curada/canonica=estaciones_precipitacion_2024_2025_v2/
+  geografia_curada/canonica=estaciones_precipitacion_2024_2025_v3/
 ```
 
 El notebook comprueba que la ruta de salida no pertenezca a `eco2026`.
@@ -42,34 +42,41 @@ El notebook comprueba que la ruta de salida no pertenezca a `eco2026`.
 
 ## Contrato actual
 
-`climate_station_geography_v2` conserva codigo de estacion como texto, valida
+`climate_station_geography_v3` conserva codigo de estacion como texto, valida
 los 239 poligonos contra DIVIPOLA y ejecuta punto-en-poligono con las
 coordenadas oficiales IDEAM.
 
 Una estacion se declara canonica solamente cuando intersecta un unico poligono,
 el departamento esta en alcance y el codigo espacial no contradice un codigo
 de catalogo conocido. Los conflictos permanecen en
-`estaciones_revision.parquet`.
+`estaciones_revision.parquet`. Las estaciones fuera de Boyaca y Cundinamarca,
+incluida Bogota D.C. aunque la descarga la haya agrupado bajo Cundinamarca,
+quedan en `estaciones_excluidas.parquet` y no cuentan como revisiones
+pendientes.
 
-## Prevalidacion local v2
+## Cierre espacial v2
 
 El GeoPackage contiene una capa `Boyaca_Cundinamarca_Municipios` con CRS
 `EPSG:4326`, 239 `MultiPolygon` validos y 239 codigos compuestos unicos:
 123 municipios de Boyaca y 116 de Cundinamarca. Los codigos concuerdan
 exactamente con DIVIPOLA.
 
-La prueba completa sobre las 126 estaciones produjo:
+La corrida persistida el 29 de julio de 2026 sobre las 126 estaciones produjo:
 
 - 112 puntos donde poligono y catalogo coinciden.
 - 4 nombres no resueltos por catalogo que el poligono resuelve.
 - 7 conflictos entre municipio de catalogo y municipio espacial.
 - 3 puntos sin poligono contenedor, incluido uno fuera del alcance.
-- 116 asignaciones canonicas y 10 estaciones para revision.
+- 116 asignaciones canonicas y 10 estaciones no canonicas.
+- 84 municipios representados por al menos una estacion canonica.
+- Ninguna estacion de Bogota dentro del catalogo canonico.
 
-Estas cifras son una expectativa de control. El estado oficial se actualizara
-despues de persistir la corrida v2 en Drive.
+Los diez casos no canonicos se componen de siete conflictos catalogo-poligono,
+dos puntos cercanos a limites sin poligono contenedor y una estacion de Bogota
+D.C. fuera del alcance. Esta ultima motivó el contrato v3: deja de contarse como
+revision y se conserva como exclusion explicita.
 
-## Cierre ejecutado
+## Cierre historico sin poligonos
 
 La ejecucion `estaciones_precipitacion_2024_2025_v1` termino el 24 de julio de
 2026 con estado `COMPLETA_SIN_POLIGONOS`:
@@ -87,7 +94,7 @@ La evidencia resumida esta en
 
 ## Compuerta antes de 07
 
-Despues de ejecutar y persistir v2, el paso 07 puede consumir exclusivamente
+Despues de ejecutar y persistir v3, el paso 07 puede consumir exclusivamente
 las filas de `estaciones_municipio.parquet`, que contienen
-`asignacion_canonica=True`. Las diez estaciones en revision no se eliminan,
-pero tampoco se agregan silenciosamente a un municipio.
+`asignacion_canonica=True`. Las nueve estaciones en revision y la exclusion de
+Bogota no se eliminan, pero tampoco se agregan silenciosamente a un municipio.

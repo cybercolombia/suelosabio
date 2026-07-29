@@ -281,14 +281,16 @@ solo precipitacion tiene consolidacion implementada. Temperatura no debe usar
 ### 06. Auditar la geografia de estaciones
 
 **Entrada:** historia `clima_diario_curado`, catalogo IDEAM y DIVIPOLA.
-**Salida:** catalogo de estaciones, asignaciones candidatas, revisiones, mapa y
-manifiesto en `geografia_curada`.
+**Salida:** catalogo de estaciones, asignaciones candidatas, revisiones,
+exclusiones de alcance, mapa y manifiesto en `geografia_curada`.
 
 El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes y
 valida los puntos IDEAM contra poligonos municipales. No declara una asignacion
 canonica solo por coincidencia de texto: exige un unico poligono y ausencia de
 contradiccion con un codigo conocido. El paso 07 consume solo asignaciones
-canonicas; las revisiones permanecen excluidas y trazables. El contrato
+canonicas; las revisiones y exclusiones permanecen separadas y trazables.
+Bogota D.C. queda fuera del alcance aun si la fuente la agrupa bajo
+Cundinamarca. El contrato
 operativo se detalla en
 [`climate_geography_audit.md`](climate_geography_audit.md).
 

@@ -11,7 +11,7 @@ from typing import Any
 import pandas as pd
 
 
-GEOGRAPHY_VERSION = "climate_station_geography_v2"
+GEOGRAPHY_VERSION = "climate_station_geography_v3"
 DEPARTAMENTOS_OBJETIVO = {
     "BOYACA": "15",
     "CUNDINAMARCA": "25",
@@ -61,6 +61,7 @@ class GeographyAuditResult:
     catalogo_climatico: pd.DataFrame
     estaciones_candidatas: pd.DataFrame
     estaciones_revision: pd.DataFrame
+    estaciones_excluidas: pd.DataFrame
     divipola_objetivo: pd.DataFrame
     resumen: pd.DataFrame
     metricas: dict[str, Any]
@@ -88,6 +89,14 @@ def _normalizar_departamento_catalogo(valor: Any) -> str:
         "BOGOTA DC": "BOGOTA D C",
     }
     return alias.get(nombre, nombre)
+
+
+def _motivo_exclusion_alcance(departamento_normalizado: str) -> str:
+    if departamento_normalizado == "BOGOTA D C":
+        return "BOGOTA_D_C_EXCLUIDA_DEL_ALCANCE"
+    if departamento_normalizado not in DEPARTAMENTOS_OBJETIVO:
+        return "DEPARTAMENTO_FUERA_DEL_ALCANCE"
+    return ""
 
 
 def _separar_etiquetas(serie: pd.Series) -> list[str]:
@@ -375,6 +384,12 @@ def incorporar_asignaciones_espaciales(
         resultado["codigo_departamento_poligono"]
     ).fillna(False)
     en_alcance = resultado["departamento_ideam_en_alcance"].fillna(False)
+    resultado["motivo_exclusion_alcance"] = resultado[
+        "departamento_ideam_norm"
+    ].map(_motivo_exclusion_alcance)
+    resultado["excluida_alcance"] = resultado[
+        "motivo_exclusion_alcance"
+    ].ne("")
     resultado["poligono_coincide_catalogo"] = (
         una & catalogo_conocido & codigo_coincide
     )
@@ -430,17 +445,19 @@ def incorporar_asignaciones_espaciales(
         return "|".join(alertas)
 
     resultado["motivos_revision_geografica"] = resultado.apply(motivos, axis=1)
-    resultado["requiere_revision_geografica"] = ~resultado[
-        "asignacion_canonica"
-    ]
-    resultado["estado_asignacion"] = resultado[
-        "asignacion_canonica"
-    ].map(
-        {
-            True: "ASIGNACION_CANONICA",
-            False: "REQUIERE_REVISION_ESPACIAL",
-        }
+    resultado["requiere_revision_geografica"] = (
+        ~resultado["asignacion_canonica"]
+        & ~resultado["excluida_alcance"]
     )
+    resultado["estado_asignacion"] = "REQUIERE_REVISION_ESPACIAL"
+    resultado.loc[
+        resultado["asignacion_canonica"],
+        "estado_asignacion",
+    ] = "ASIGNACION_CANONICA"
+    resultado.loc[
+        resultado["excluida_alcance"],
+        "estado_asignacion",
+    ] = "EXCLUIDA_FUERA_ALCANCE"
     return resultado
 
 
@@ -662,6 +679,10 @@ def cruzar_catalogos(
     cruce["departamento_ideam_en_alcance"] = cruce[
         "departamento_ideam_norm"
     ].isin(DEPARTAMENTOS_OBJETIVO)
+    cruce["motivo_exclusion_alcance"] = cruce[
+        "departamento_ideam_norm"
+    ].map(_motivo_exclusion_alcance)
+    cruce["excluida_alcance"] = cruce["motivo_exclusion_alcance"].ne("")
 
     columnas_div = [
         "codigo_departamento",
@@ -703,12 +724,19 @@ def cruzar_catalogos(
         return "|".join(alertas)
 
     cruce["motivos_revision_geografica"] = cruce.apply(motivos, axis=1)
-    cruce["requiere_revision_geografica"] = cruce[
-        "motivos_revision_geografica"
-    ].ne("")
-    cruce["estado_asignacion"] = cruce["requiere_revision_geografica"].map(
-        {True: "CANDIDATO_REQUIERE_REVISION", False: "CANDIDATO_CATALOGO_OK"}
+    cruce["requiere_revision_geografica"] = (
+        cruce["motivos_revision_geografica"].ne("")
+        & ~cruce["excluida_alcance"]
     )
+    cruce["estado_asignacion"] = "CANDIDATO_CATALOGO_OK"
+    cruce.loc[
+        cruce["requiere_revision_geografica"],
+        "estado_asignacion",
+    ] = "CANDIDATO_REQUIERE_REVISION"
+    cruce.loc[
+        cruce["excluida_alcance"],
+        "estado_asignacion",
+    ] = "EXCLUIDA_FUERA_ALCANCE"
     return cruce.drop(columns=["cruce_ideam"]), div
 
 
@@ -739,6 +767,7 @@ def auditar_geografia(
     revisiones = candidatos.loc[
         candidatos["requiere_revision_geografica"]
     ].copy()
+    excluidas = candidatos.loc[candidatos["excluida_alcance"]].copy()
     codigos_objetivo = set(DEPARTAMENTOS_OBJETIVO.values())
     div_objetivo = div_completa.loc[
         div_completa["codigo_departamento"].isin(codigos_objetivo)
@@ -751,6 +780,7 @@ def auditar_geografia(
             encontradas_ideam=("catalogo_ideam_encontrado", "sum"),
             divipola_resuelta=("divipola_resuelta", "sum"),
             requieren_revision=("requiere_revision_geografica", "sum"),
+            excluidas_alcance=("excluida_alcance", "sum"),
             varios_municipios=(
                 "municipios_reportados_cantidad",
                 lambda serie: int(serie.gt(1).sum()),
@@ -777,6 +807,7 @@ def auditar_geografia(
             candidatos["divipola_resuelta"].sum()
         ),
         "estaciones_revision": len(revisiones),
+        "estaciones_excluidas_alcance": len(excluidas),
         "estaciones_fuera_alcance": int(
             (~candidatos["departamento_ideam_en_alcance"]).sum()
         ),
@@ -823,6 +854,7 @@ def auditar_geografia(
         catalogo_climatico=catalogo,
         estaciones_candidatas=candidatos,
         estaciones_revision=revisiones,
+        estaciones_excluidas=excluidas,
         divipola_objetivo=div_objetivo,
         resumen=resumen,
         metricas=metricas,

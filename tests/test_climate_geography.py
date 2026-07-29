@@ -157,6 +157,15 @@ class ClimateGeographyTest(unittest.TestCase):
             "DEPARTAMENTO_DISCREPANTE",
             fila["motivos_revision_geografica"],
         )
+        self.assertTrue(fila["excluida_alcance"])
+        self.assertFalse(fila["requiere_revision_geografica"])
+        self.assertEqual(
+            fila["motivo_exclusion_alcance"],
+            "BOGOTA_D_C_EXCLUIDA_DEL_ALCANCE",
+        )
+        self.assertEqual(fila["estado_asignacion"], "EXCLUIDA_FUERA_ALCANCE")
+        self.assertEqual(len(resultado.estaciones_revision), 0)
+        self.assertEqual(len(resultado.estaciones_excluidas), 1)
 
     def test_catalogo_ideam_rechaza_codigos_repetidos(self):
         ideam = pd.DataFrame(
@@ -224,6 +233,12 @@ class ClimateGeographyTest(unittest.TestCase):
             resultado.loc["S3", "motivos_revision_geografica"],
         )
         self.assertFalse(resultado.loc["S4", "asignacion_canonica"])
+        self.assertTrue(resultado.loc["S4", "excluida_alcance"])
+        self.assertFalse(resultado.loc["S4", "requiere_revision_geografica"])
+        self.assertEqual(
+            resultado.loc["S4", "estado_asignacion"],
+            "EXCLUIDA_FUERA_ALCANCE",
+        )
         self.assertIn(
             "SIN_POLIGONO_CONTENEDOR",
             resultado.loc["S4", "motivos_revision_geografica"],
