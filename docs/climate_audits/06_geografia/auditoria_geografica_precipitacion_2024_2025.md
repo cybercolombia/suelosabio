@@ -2,9 +2,9 @@
 
 **Fecha de ejecucion espacial:** 29 de julio de 2026
 **Fuente climatica:** `s54a-sgyg`
-**Contrato ejecutado:** `climate_station_geography_v2`
+**Contrato ejecutado:** `climate_station_geography_v3`
 **Estado:** `COMPLETA_CON_REVISION_PENDIENTE`
-**Commit de ejecucion:** `ba260da553d360ea4eede188b5fc261e4d78a953`
+**Commit de ejecucion:** `a0ce33708cb7ea9fb51c1b866202af6588e17f2c`
 
 ## Entrada y productos
 
@@ -17,7 +17,7 @@ Productos persistidos:
 
 - Catalogo de 126 estaciones climaticas.
 - 116 asignaciones estacion-municipio canonicas.
-- 10 estaciones no canonicas con evidencia para revision o exclusion.
+- 9 estaciones en revision y 1 exclusion de alcance.
 - 239 municipios DIVIPOLA y 239 geometrías municipales validas.
 - Resumen, mapa HTML, reporte y manifiesto.
 
@@ -33,7 +33,8 @@ Productos persistidos:
 | Catalogo resuelto solo por poligono | 4 |
 | Conflictos catalogo-poligono | 7 |
 | Puntos sin poligono contenedor | 3 |
-| Estaciones no canonicas | 10 |
+| Estaciones en revision | 9 |
+| Estaciones excluidas por alcance | 1 |
 | Poligonos municipales validos | 239 |
 
 Las 116 asignaciones canonicas se distribuyen en 59 estaciones de Boyaca y 57
@@ -50,14 +51,13 @@ Los diez casos se separan conceptualmente en:
   a Bogota D.C. aunque la descarga la agrupo bajo Cundinamarca.
 
 Bogota no es un conflicto pendiente ni una candidata de Cundinamarca. El
-contrato `climate_station_geography_v3` la conserva en
+contrato ejecutado `climate_station_geography_v3` la conserva en
 `estaciones_excluidas.parquet`; las otras nueve permanecen en
 `estaciones_revision.parquet`.
 
 ## Decision
 
-La corrida v2 se conserva como evidencia reproducible. El paso 06 v3 debe
-ejecutarse en una carpeta nueva para confirmar:
+La corrida v2 se conserva como evidencia historica. La corrida v3 confirmo:
 
 - 116 asignaciones canonicas.
 - 9 estaciones en revision geografica.

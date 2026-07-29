@@ -195,7 +195,7 @@ geografia_curada/canonica=<version>/
 | Productor | `06_ClimateGeographyAudit.ipynb` |
 | Granularidad | Estacion; municipio |
 | Consumidor | Paso 07 |
-| Estado | V2 verificada; v3 separa revisiones de exclusiones de alcance |
+| Estado | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
 
 La primera salida conserva la auditoria historica de candidatos. La segunda
 valida 239 poligonos y contiene solamente estaciones con asignacion espacial

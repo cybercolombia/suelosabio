@@ -1,7 +1,7 @@
 # Auditoria geografica climatica
 
 **Actualizado:** 29 de julio de 2026
-**Estado:** corrida espacial v2 verificada; contrato v3 pendiente de corrida
+**Estado:** corrida espacial v3 verificada; cierre operativo aprobado
 **Alcance:** estaciones de precipitacion de Boyaca y Cundinamarca, 2024-2025
 
 `06_ClimateGeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
@@ -94,7 +94,8 @@ La evidencia resumida esta en
 
 ## Compuerta antes de 07
 
-Despues de ejecutar y persistir v3, el paso 07 puede consumir exclusivamente
+La corrida v3 persistida confirmo 116 asignaciones canonicas, 9 revisiones y
+1 exclusion de alcance. El paso 07 puede consumir exclusivamente
 las filas de `estaciones_municipio.parquet`, que contienen
 `asignacion_canonica=True`. Las nueve estaciones en revision y la exclusion de
 Bogota no se eliminan, pero tampoco se agregan silenciosamente a un municipio.

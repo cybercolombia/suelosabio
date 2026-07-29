@@ -144,7 +144,7 @@ Contrato y evidencia:
 
 ## 06. Geografia de estaciones
 
-**Estado de etapa:** `[P]` corrida v2 verificada; contrato de alcance v3 pendiente.
+**Estado de etapa:** `[X]` cierre espacial v3 verificado.
 
 - [X] Implementado `06_ClimateGeographyAudit.ipynb` con ejecucion protegida.
 - [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
@@ -160,8 +160,10 @@ Contrato y evidencia:
   116 asignaciones canonicas y 10 estaciones no canonicas.
 - [X] Confirmado que Bogota no entra al catalogo canonico.
 - [X] Implementada v3 para separar una exclusion de alcance de las revisiones.
-- [ ] Ejecutar y persistir `estaciones_precipitacion_2024_2025_v3` en Drive.
-- [ ] Resolver o documentar las 9 estaciones en revision geografica.
+- [X] Ejecutado y persistido `estaciones_precipitacion_2024_2025_v3` en Drive:
+  116 asignaciones canonicas, 9 revisiones y 1 exclusion.
+- [P] Resolver o documentar las 9 estaciones en revision geografica en
+  paralelo; no ingresan al paso 07 mientras sigan pendientes.
 
 Contrato:
 
@@ -170,7 +172,7 @@ Contrato:
 
 ## 07. Municipio diario
 
-**Estado de etapa:** `[ ]` pendiente de la corrida geografica v3.
+**Estado de etapa:** `[ ]` listo para diseño con 116 estaciones canonicas.
 
 - [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
 - [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
@@ -186,10 +188,10 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar 06 v3 y comprobar 116 asignaciones canonicas, 9 revisiones y
-   1 exclusion de alcance.
-2. Revisar los siete conflictos entre catalogo IDEAM y poligono.
-3. Revisar los dos puntos cercanos a limites y excluir explicitamente Bogota.
+1. Diseñar el piloto 07 de agregacion estacion-dia a municipio-dia usando solo
+   las 116 estaciones canonicas.
+2. Revisar en paralelo los siete conflictos entre catalogo IDEAM y poligono.
+3. Revisar los dos puntos cercanos a limites; Bogota ya esta excluida.
 4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
 
 ## Plan de ejecucion del paso 03

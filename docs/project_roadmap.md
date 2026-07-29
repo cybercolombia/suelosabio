@@ -41,7 +41,7 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
 | 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Precipitacion 2024-2025 completa |
 | 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | Precipitacion completa; otras pendientes |
-| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | V2 verificada; contrato v3 pendiente de corrida |
+| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | V3 verificada; cierre operativo |
 | 7. Municipio diario | `clima_municipal` | Llaves unicas y cobertura espacial visible | Pendiente |
 | 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Pendiente |
 | 9. Agricultura | EVA curada | Target y granularidad verificadas | Pendiente |

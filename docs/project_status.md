@@ -36,8 +36,8 @@ historicas de descarga y rendimiento de la API.
   una sola; cada variable debe justificar utilidad, cobertura y calidad.
 - Confirmar el archivo EVA compartido, su hoja, granularidad y reglas de
   consolidacion.
-- Ejecutar la asignacion geografica v3 y resolver las estaciones que
-  contradicen el poligono o quedan fuera de cobertura.
+- Resolver en paralelo las nueve estaciones geograficas no canonicas; no
+  ingresan al agregado municipal mientras sigan pendientes.
 - Definir periodos climaticos compatibles con EVA y con el ciclo de cada cultivo.
 - Definir baseline, modelos, validacion temporal y metricas.
 
@@ -64,7 +64,7 @@ garantiza cobertura interna, calidad ni continuidad temporal.
 | Dominio | Evidencia actual | Estado vigente |
 |---|---|---|
 | Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
-| Geografia | Catalogos IDEAM, DIVIPOLA y 239 poligonos municipales validados | V2 verificada: 116 canonicas y 10 no canonicas; v3 separa 9 revisiones y 1 exclusion |
+| Geografia | Catalogos IDEAM, DIVIPOLA y 239 poligonos municipales validados | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
 | Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
 | Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
 
@@ -81,7 +81,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; piloto v1 de temperatura ambiente auditado y v2 pendiente de corrida |
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
-| 06 Geografia | `geografia_curada` | V1 preservada; v2 verificada; v3 pendiente de corrida para excluir Bogota explicitamente |
+| 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
 | 07 Municipio diario | `clima_municipal` | No implementado |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
 | 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
@@ -106,8 +106,8 @@ umbrales y criterios de calidad.
    termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Ejecutar el paso 06 v3 y resolver las nueve revisiones espaciales; Bogota
-   permanece trazable como exclusion de alcance.
+4. Diseñar el piloto del paso 07 con las 116 estaciones canonicas y resolver
+   en paralelo las nueve revisiones espaciales.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
 6. Implementar 07 y 08 solo despues de cerrar la asignacion geografica canonica.
