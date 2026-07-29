@@ -1,6 +1,6 @@
 # Estado del pipeline climatico por variable
 
-**Actualizado:** 25 de julio de 2026
+**Actualizado:** 29 de julio de 2026
 **Estado:** vigente  
 **Alcance operativo:** Boyaca y Cundinamarca, 2024-2025
 
@@ -22,7 +22,7 @@ cientifica esten aprobados.
 
 | Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Geografia | 07 Municipio | 08 Periodo |
 |---|---|---|---|---|---|---|---|---|---|
-| [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[P]` | `[ ]` | `[ ]` |
+| [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[P]` | `[ ]` |
 | [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
 | [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
@@ -35,9 +35,9 @@ observadas o reportadas, pero falta una reconciliacion de integridad que revise
 partes consecutivas, ultimo lote, fechas internas y manifiestos para todo el
 alcance.
 
-El estado `[P]` de geografia para precipitacion significa que el catalogo y la
-auditoria estan implementados, pero todavia no existe una asignacion canonica
-validada con poligonos municipales completos.
+El estado `[P]` de municipio para precipitacion significa que el contrato 07 y
+su persistencia fueron validados localmente, pero falta ejecutar y revisar la
+corrida oficial en Colab.
 
 ## Regla de actualizacion
 

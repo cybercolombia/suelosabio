@@ -17,6 +17,7 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
 | `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
+| `ClimatePipeline/07_ClimateMunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Piloto protegido; corrida Colab pendiente |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
@@ -31,6 +32,7 @@ un nombre en configuracion.
 | `PrecipitationDailyAudit.py` | Calendario y diagnostico diario de precipitacion |
 | `PrecipitationDailyConsolidation.py` | Contrato estacion-dia de precipitacion |
 | `ClimateGeography.py` | Cruce trazable de estaciones, catalogo IDEAM y DIVIPOLA |
+| `PrecipitationMunicipalAggregation.py` | Contrato estacion-dia a municipio-dia de precipitacion |
 | `TemperatureRules.py` | Contratos diarios de temperatura ambiente, minima y maxima |
 | `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
 | `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
@@ -43,6 +45,7 @@ un nombre en configuracion.
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |
 | `tests/test_climate_geography.py` | Cruce geografico y proteccion del notebook 06 |
+| `tests/test_precipitation_municipal_aggregation.py` | Agregacion municipal y proteccion del notebook 07 |
 | `tests/test_temperature_processing.py` | Contratos y despacho de temperatura |
 | `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
 | `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |

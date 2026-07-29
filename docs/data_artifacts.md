@@ -206,20 +206,29 @@ codigo DANE, coordenadas, fuente, periodo, metodo y evidencia.
 ### 07. Clima municipal diario
 
 ```text
-clima_municipal/variable=<variable>/municipio_dia.parquet
-clima_municipal/variable=<variable>/quality_report.md
-clima_municipal/variable=<variable>/manifest.json
+clima_municipal/
+  variable=precipitacion/
+    fuente=s54a-sgyg/
+      agregacion=precipitacion_municipio_dia_2024_2025_v1/
+        departamento=<departamento>/anio=<anio>/mes=<mes>/
+          precipitacion_municipio_dia.parquet
+        resumen_municipios.parquet
+        cobertura_municipal_diaria.html
+        AgregacionMunicipal_precipitacion_2024_2025.md
+        manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `07_ClimateMunicipalAggregator.ipynb` |
+| Productor | `07_ClimateMunicipalAggregator.ipynb` |
 | Granularidad | Municipio + dia |
 | Consumidor | Paso 08 |
-| Estado | Planeado |
+| Estado | Contrato v1 y persistencia validados localmente; corrida Colab pendiente |
 
 Conserva estaciones esperadas, observadas y validas, cobertura, dispersion,
-calidad y metodo. Las estaciones nunca se suman para construir precipitacion.
+calidad y metodo. La mediana no ponderada es el valor piloto; media y extremos
+permanecen disponibles. Las estaciones nunca se suman para construir
+precipitacion.
 
 ### 08. Indicadores climaticos por periodo
 

@@ -82,7 +82,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
 | 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
-| 07 Municipio diario | `clima_municipal` | No implementado |
+| 07 Municipio diario | `clima_municipal` | Piloto de precipitacion implementado y prevalidado; corrida Colab pendiente |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
 | 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
@@ -106,11 +106,11 @@ umbrales y criterios de calidad.
    termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Diseñar el piloto del paso 07 con las 116 estaciones canonicas y resolver
-   en paralelo las nueve revisiones espaciales.
+4. Ejecutar y auditar en Colab el piloto 07 ya implementado; resolver en
+   paralelo las nueve revisiones espaciales.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
-6. Implementar 07 y 08 solo despues de cerrar la asignacion geografica canonica.
+6. Cerrar la auditoria de 07 antes de implementar indicadores del paso 08.
 
 El orden completo y sus compuertas se mantienen en
 [`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre

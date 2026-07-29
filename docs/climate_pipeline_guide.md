@@ -303,6 +303,13 @@ Este paso combina estaciones despues de la reduccion diaria. Conserva numero de
 estaciones esperadas y observadas, dispersion, calidad y ausencias; no convierte
 `NaN` en cero ni usa estaciones en revision como si estuvieran confirmadas.
 
+Para precipitacion, el contrato piloto construye los 239 municipios y usa la
+mediana no ponderada cuando al menos 50 % de las estaciones esperadas en esa
+fecha tienen valor aceptado. Conserva tambien media, extremos, desviacion, IQR y
+rango. Los municipios sin red permanecen en el calendario con `NaN`; esto hace
+visible la cobertura espacial antes del cruce con EVA. El contrato se detalla en
+[`climate_municipal_aggregation.md`](climate_municipal_aggregation.md).
+
 ### 08. Construir indicadores municipio-periodo
 
 **Entrada:** `clima_municipal`.

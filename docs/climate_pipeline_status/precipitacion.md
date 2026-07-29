@@ -172,12 +172,20 @@ Contrato:
 
 ## 07. Municipio diario
 
-**Estado de etapa:** `[ ]` listo para diseño con 116 estaciones canonicas.
+**Estado de etapa:** `[P]` contrato v1 implementado y prevalidado localmente.
 
-- [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
-- [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
-- [ ] Conservar estaciones esperadas, observadas, dispersion y calidad.
-- [ ] Mantener `NaN` cuando no exista evidencia suficiente.
+- [X] Definida mediana no ponderada como estadistica principal del piloto.
+- [X] Implementado calendario de 239 municipios para 2024-2025.
+- [X] Implementada cobertura contra estaciones esperadas en cada fecha.
+- [X] Conservadas media, mediana, extremos, desviacion, IQR, rango y codigos de
+  estaciones contribuyentes.
+- [X] Mantenido `NaN` sin imputacion cuando no existe evidencia suficiente.
+- [X] Prevalidada persistencia local: 48 particiones y 174.709 filas.
+- [ ] Ejecutar y auditar la corrida oficial en Colab.
+
+Contrato:
+
+- [`../climate_municipal_aggregation.md`](../climate_municipal_aggregation.md)
 
 ## 08. Indicadores por periodo
 
@@ -188,8 +196,7 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Diseñar el piloto 07 de agregacion estacion-dia a municipio-dia usando solo
-   las 116 estaciones canonicas.
+1. Ejecutar el piloto 07 en Colab y comprobar las cifras de prevalidacion.
 2. Revisar en paralelo los siete conflictos entre catalogo IDEAM y poligono.
 3. Revisar los dos puntos cercanos a limites; Bogota ya esta excluida.
 4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
