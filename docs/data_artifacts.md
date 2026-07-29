@@ -25,7 +25,7 @@ project_status
   -> auditorias_clima_diario
   -> clima_diario_curado
   -> geografia_curada
-  -> clima_municipal -> indicadores_climaticos
+  -> clima_municipal -> auditorias_clima_municipal -> indicadores_climaticos
   + agricultura_curada
   -> dataset_maestro
   -> model_runs -> artifacts -> aplicacion
@@ -229,6 +229,37 @@ Conserva estaciones esperadas, observadas y validas, cobertura, dispersion,
 calidad y metodo. La mediana no ponderada es el valor piloto; media y extremos
 permanecen disponibles. Las estaciones nunca se suman para construir
 precipitacion.
+
+### 07.1 Auditoria municipal diaria
+
+```text
+auditorias_clima_municipal/
+  variable=precipitacion/
+    fuente=s54a-sgyg/
+      auditoria=cierre_precipitacion_municipal_2024_2025_v1/
+        cobertura_municipios.parquet
+        cobertura_periodos.parquet
+        cobertura_insuficiente.parquet
+        multiestacion_dias.parquet
+        resumen_multiestacion.parquet
+        sensibilidad_media_mediana_anual.parquet
+        sensibilidad_umbrales_lluvia.parquet
+        *.html
+        AuditoriaMunicipal_precipitacion_2024_2025.md
+        manifest.json
+```
+
+| Propiedad | Valor |
+|---|---|
+| Productor | `07_ClimateMunicipalAudit.ipynb` |
+| Granularidad | Municipio, municipio-periodo y municipio-dia multiestacion |
+| Consumidor | Decision humana y paso 08 |
+| Estado | Implementado y prevalidado localmente; corrida Colab pendiente |
+
+Es una auditoria de solo lectura. Los acumulados de media y mediana usan los
+mismos dias validos y no extrapolan ausencias. Un estado
+`COMPLETA_CON_REVISION_PENDIENTE` confirma que la auditoria termino, no que la
+regla municipal ya fue aprobada.
 
 ### 08. Indicadores climaticos por periodo
 

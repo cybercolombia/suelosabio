@@ -190,10 +190,13 @@ cobertura pendiente.
   con estacion esperada fueron validos (68,67 %).
 - [X] Identificados 11.703 municipio-dias sin datos aceptados, 92 con cobertura
   insuficiente y 5.096 validos con multiples estaciones.
-- [P] Auditar los 92 dias con cobertura insuficiente y los 5.096 dias
-  multiestacion.
-- [ ] Medir dispersion, diferencias media-mediana y sensibilidad de la regla
-  municipal en los dias multiestacion.
+- [X] Implementada auditoria reproducible de los 92 dias con cobertura
+  insuficiente y los 5.096 dias multiestacion.
+- [X] Prevalidada localmente la dispersion, diferencias media-mediana,
+  sensibilidad de umbrales y cobertura por periodo.
+- [P] Ejecutar y persistir la auditoria municipal oficial en Colab.
+- [ ] Revisar Aquitania y Puerto Salgar, donde la sensibilidad anual
+  media-mediana es material.
 - [ ] Definir el umbral minimo de cobertura temporal para construir
   indicadores por periodo.
 - [ ] Cruzar cobertura municipal con EVA y clasificar municipios utilizables,
@@ -204,6 +207,7 @@ cobertura pendiente.
 Contrato:
 
 - [`../climate_municipal_aggregation.md`](../climate_municipal_aggregation.md)
+- [`../climate_municipal_audit.md`](../climate_municipal_audit.md)
 - [`../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md`](../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md)
 
 ## 08. Indicadores por periodo
@@ -215,10 +219,9 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar una auditoria reproducible sobre los 92 dias con cobertura
-   insuficiente y los 5.096 dias multiestacion.
-2. Comparar media y mediana, revisar rango e IQR y decidir si la regla v1 se
-   mantiene.
+1. Ejecutar `07_ClimateMunicipalAudit.ipynb` en Colab y persistir su salida.
+2. Revisar Aquitania y Puerto Salgar, comparar media y mediana y decidir si la
+   regla v1 se mantiene.
 3. Definir cobertura minima por periodo y cruzar los municipios con EVA.
 4. Solo despues habilitar 08 para acumulados, dias de lluvia, extremos y rachas.
 5. Resolver en paralelo las nueve estaciones con revision geografica pendiente.

@@ -310,6 +310,11 @@ rango. Los municipios sin red permanecen en el calendario con `NaN`; esto hace
 visible la cobertura espacial antes del cruce con EVA. El contrato se detalla en
 [`climate_municipal_aggregation.md`](climate_municipal_aggregation.md).
 
+Antes del paso 08, `07_ClimateMunicipalAudit.ipynb` revisa cobertura por mes,
+semestre y ano, brechas sin valor, dias con cobertura insuficiente y
+sensibilidad media-mediana. Es una auditoria de solo lectura y su contrato se
+detalla en [`climate_municipal_audit.md`](climate_municipal_audit.md).
+
 ### 08. Construir indicadores municipio-periodo
 
 **Entrada:** `clima_municipal`.

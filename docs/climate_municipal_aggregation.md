@@ -137,5 +137,8 @@ Antes de construir indicadores se deben revisar:
 - la sensibilidad de media frente a mediana;
 - la cobertura temporal por municipio que finalmente aparezca en EVA.
 
+Estas revisiones se ejecutan con `07_ClimateMunicipalAudit.ipynb` y se
+documentan en [`climate_municipal_audit.md`](climate_municipal_audit.md).
+
 Solo despues se definen acumulados, dias de lluvia, extremos, rachas y ventanas
 semestrales o de ciclo agricola.

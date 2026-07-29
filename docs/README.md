@@ -37,6 +37,7 @@ estado vigente del proyecto.
 | [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 05 de precipitacion: estacion-dia | Contrato validado |
 | [`climate_geography_audit.md`](climate_geography_audit.md) | Paso 06: catalogo, asignaciones candidatas y mapa | Operacion y compuerta geografica |
 | [`climate_municipal_aggregation.md`](climate_municipal_aggregation.md) | Paso 07: precipitacion municipio-dia | Contrato piloto y operacion |
+| [`climate_municipal_audit.md`](climate_municipal_audit.md) | Paso 07: cobertura y sensibilidad municipal | Operacion y compuerta cientifica |
 | [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 04 de temperatura | Operacion y limites |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
 
