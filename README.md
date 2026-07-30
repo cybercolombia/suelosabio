@@ -5,20 +5,74 @@ geográficos, y pronosticar el rendimiento de cultivos. La primera versión se
 concentra en papa, en los diez municipios con mayor área sembrada de Boyacá y
 los diez de Cundinamarca, para los semestres A y B de 2026.
 
-## Ruta de lectura del resultado
+## Del problema al pronóstico de 2026
 
-Los tres elementos principales de la solución están enlazados directamente:
+1. **Problema.** El proyecto busca anticipar el rendimiento agrícola, medido en
+   toneladas cosechadas por hectárea, para apoyar el seguimiento territorial y
+   productivo. La primera versión pronostica el rendimiento de papa en los
+   semestres A y B de 2026.
 
-| Pregunta | Documento |
-|---|---|
-| ¿Qué problema se resolvió y qué proceso se siguió? | [Proceso completo: fuentes, auditoría, integración temporal y geografía](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md) |
-| ¿Qué modelo se eligió y por qué? | [Modelo seleccionado y comparación con los demás métodos](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md#7-modelo-utilizado-y-razón-de-la-elección) |
-| ¿Cuáles fueron los resultados? | [Pronóstico municipal para 2026 y conclusiones](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md#8-resultado-del-pronóstico-para-2026) |
+2. **Datos utilizados.** Se integraron las Evaluaciones Agropecuarias
+   Municipales (EVA) de la Unidad de Planificación Rural Agropecuaria (UPRA),
+   con historia agrícola de 2019 a 2025; datos abiertos de estaciones del
+   Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM);
+   clima diario de NASA POWER entre 2019 y 2026; códigos DIVIPOLA del
+   Departamento Administrativo Nacional de Estadística (DANE); y polígonos
+   municipales para la validación espacial.
 
-El detalle reproducible de las variables, representaciones, modelos y métricas
-está en
-[Dataset y pronóstico](docs/data_pipeline/forecast.md) y
-[Resultados técnicos](notebooks/CropForecasting/RESULTS.md).
+3. **Necesidad de homogeneización.** Las fuentes no tenían la misma frecuencia,
+   estructura ni identificación territorial. El clima llegaba en observaciones
+   subdiarias o diarias, mientras que EVA reportaba cultivos por semestre o
+   año. Además, los nombres de municipios, unidades y coberturas podían variar.
+   Por eso se auditaron y limpiaron las fuentes, se usó el código DANE como
+   llave común, el clima se consolidó primero a municipio × día y después se
+   resumió por semestre, y EVA se conservó como
+   municipio × cultivo × período. No se inventaron datos agrícolas diarios.
+
+4. **Dataset para entrenamiento.** Se generó un conjunto tabular de 2.366 filas
+   y 56 columnas, con llave
+   `codigo_municipio + año + semestre + cultivo`. Reúne historia de rendimiento
+   y área sembrada, geografía, tiempo y 33 indicadores climáticos semestrales.
+   Las variables históricas se calculan únicamente con años anteriores para
+   evitar fuga de información. Las filas de 2019–2025 se usan para entrenar y
+   evaluar; las de 2026 no contienen el rendimiento real y son las filas que se
+   pronostican.
+
+5. **Territorio seleccionado.** El alcance comprende Boyacá y Cundinamarca. En
+   cada departamento se eligieron los diez municipios con mayor área sembrada
+   reciente de papa, con presencia en 2024 y 2025 y suficiente historia de
+   rendimiento. El resultado cubre 20 municipios y dos semestres, para un total
+   de 40 pronósticos.
+
+6. **Cultivo seleccionado.** Se eligió la papa porque fue el cultivo semestral
+   con mayor área sembrada acumulada entre 2022 y 2024: 373.478,17 hectáreas en
+   155 municipios. Como referencia, el maíz acumuló 75.073,81 hectáreas. La papa
+   también cuenta con observaciones municipales semestrales entre 2019 y 2025,
+   necesarias para evaluar el pronóstico respetando el orden temporal.
+
+7. **Modelo seleccionado.** Se eligió la persistencia por municipio y semestre,
+   denominada también **último rendimiento**. El modelo supone que el
+   rendimiento de un municipio en un semestre será parecido al último valor
+   conocido para esa misma combinación. Aunque es sencillo, obtuvo el menor
+   error absoluto medio en la validación reciente: 2,302 toneladas por
+   hectárea en 2024–2025. Superó en esa métrica a regresiones, ensambles de
+   árboles y una red neuronal, y reduce el riesgo de sobreajustar series con un
+   máximo de catorce observaciones semestrales por municipio.
+
+8. **Resultado para 2026.** El rendimiento medio pronosticado es:
+
+| Departamento | Semestre A | Semestre B |
+|---|---:|---:|
+| Boyacá | 22,58 t/ha | 24,27 t/ha |
+| Cundinamarca | 26,43 t/ha | 25,58 t/ha |
+
+Estos valores son pronósticos y todavía no pueden compararse con el rendimiento
+real de 2026. El semestre B combina 27 días climáticos observados con 157 días
+completados mediante la climatología 2019–2025 disponible a la fecha de corte.
+
+El proceso, las auditorías, las gráficas, los mapas, la comparación de modelos y
+los resultados municipales se explican en el
+[documento detallado de resultados](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md).
 
 ## Estado del proyecto
 
