@@ -96,6 +96,22 @@ dispersion y las estaciones contribuyentes.
 6. Ejecutar nuevamente desde la configuracion hasta el final.
 7. Volver a dejar la bandera en `False` antes de guardar el notebook.
 
+## Exploracion cartografica de Aquitania
+
+La ultima celda del notebook queda protegida con
+`EJECUTAR_MAPA_ESTACIONES_AQUITANIA=False`. Al activarla, dibuja el poligono de
+Aquitania y las tres estaciones que aportaron al caso del 5 de julio de 2024.
+El mapa muestra codigo, nombre, altitud, precipitacion diaria y marca de
+revision. Es una visualizacion diagnostica: no modifica la regla municipal ni
+guarda un nuevo artefacto.
+
+La celda siguiente, protegida con
+`EJECUTAR_HISTOGRAMA_AQUITANIA=False`, compara los acumulados diarios de esas
+tres estaciones durante los 15 dias anteriores y posteriores al evento. Incluye
+una serie temporal para conservar el orden de las fechas y un histograma comun
+para comparar distribuciones. La columna `precipitacion_diaria_mm` representa
+acumulado diario, no maximo subdiario.
+
 ## Compuerta
 
 El estado esperado de esta auditoria es
