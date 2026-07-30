@@ -1,0 +1,27 @@
+name: Limpieza de notebooks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - dev
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  notebook-cleanliness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Obtener repositorio
+        uses: actions/checkout@v4
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Limpiar estado de ejecución en la copia de CI
+        run: python scripts/notebook_outputs.py --fix
+      - name: Comprobar que ningún notebook necesitó cambios
+        run: git diff --exit-code -- '*.ipynb'
