@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: limpiar-salidas-notebooks
+        name: Limpiar salidas y contadores de notebooks
+        entry: python3 scripts/notebook_outputs.py --fix
+        language: system
+        files: \.ipynb$
+        pass_filenames: true

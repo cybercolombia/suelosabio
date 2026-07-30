@@ -9,7 +9,10 @@ from typing import Iterable
 import numpy as np
 import pandas as pd
 
-from CropYieldProcessing import BUSINESS_KEY, TARGET_KEY, normalize_eva
+try:
+    from .CropYieldProcessing import BUSINESS_KEY, TARGET_KEY, normalize_eva
+except ImportError:  # Compatibilidad con notebooks que cargan el módulo directamente.
+    from CropYieldProcessing import BUSINESS_KEY, TARGET_KEY, normalize_eva
 
 
 AGGREGATION_VERSION = "cultivo_municipio_periodo_v1"

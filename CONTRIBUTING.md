@@ -47,6 +47,20 @@ se realiza cuando el equipo considera estable la integración.
 - Ejecutar primero con un subconjunto y verificar entradas y salidas.
 - Los crudos de Drive son inmutables; toda limpieza crea una capa nueva.
 
+Antes de confirmar cambios, elimine salidas, contadores de ejecución y estado de
+widgets:
+
+```bash
+python3 scripts/notebook_outputs.py --fix
+python3 scripts/notebook_outputs.py
+```
+
+El hook local puede instalarse con `pre-commit install`; limpia automáticamente
+los notebooks modificados. La integración continua repite la limpieza en una
+copia del repositorio y falla si detecta una diferencia, para impedir que las
+salidas guardadas entren en `dev` o `main`. El tamaño o número de líneas de un
+archivo `.ipynb` no sustituye esta validación estructural.
+
 ## Documentación
 
 - Actualizar `docs/project_status.md` cuando cambie alcance o estado.

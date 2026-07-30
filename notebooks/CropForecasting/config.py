@@ -4,15 +4,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-import sys
 
-
-REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
-CLIMATE_PIPELINE_ROOT = REPOSITORY_ROOT / "notebooks" / "ClimatePipeline"
-if str(CLIMATE_PIPELINE_ROOT) not in sys.path:
-    sys.path.insert(0, str(CLIMATE_PIPELINE_ROOT))
-
-from DatasetConfig import DatasetConfig, cargar_configuracion_datasets  # noqa: E402
+from notebooks.ClimatePipeline.DatasetConfig import (
+    DatasetConfig,
+    cargar_configuracion_datasets,
+)
 
 
 EVA_FILENAME = "20260526_BaseAgricola20192025.xlsx"

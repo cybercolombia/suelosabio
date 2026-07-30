@@ -6,11 +6,10 @@ import argparse
 from datetime import datetime, timezone
 import json
 from pathlib import Path
-import shutil
-from urllib.request import urlopen
 
 import joblib
 import pandas as pd
+import requests
 
 from .climate import (
     CLIMATE_END,
@@ -39,14 +38,35 @@ from .eva import (
 from .modeling import metric_breakdown, run_temporal_backtesting
 
 
-def download_eva_if_missing(target: Path) -> Path:
+def download_eva_if_missing(
+    target: Path,
+    *,
+    request_get=requests.get,
+) -> Path:
     target.parent.mkdir(parents=True, exist_ok=True)
     if target.exists() and target.stat().st_size > 1_000_000:
         return target
     temporary = target.with_suffix(".xlsx.tmp")
-    with urlopen(EVA_DOWNLOAD_URL, timeout=180) as response, temporary.open("wb") as out:
-        shutil.copyfileobj(response, out)
-    temporary.replace(target)
+    try:
+        with request_get(
+            EVA_DOWNLOAD_URL,
+            stream=True,
+            timeout=(10, 180),
+            verify=True,
+        ) as response:
+            response.raise_for_status()
+            with temporary.open("wb") as output:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        output.write(chunk)
+        if temporary.stat().st_size <= 1_000_000:
+            raise ValueError(
+                "La descarga EVA es menor o igual a 1 MB; se descarta por incompleta."
+            )
+        temporary.replace(target)
+    except Exception:
+        temporary.unlink(missing_ok=True)
+        raise
     return target
 
 

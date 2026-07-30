@@ -4,19 +4,14 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-import sys
 from typing import Iterable
 import unicodedata
 
 import pandas as pd
 
-from .config import CLIMATE_PIPELINE_ROOT
-
-
-if str(CLIMATE_PIPELINE_ROOT) not in sys.path:
-    sys.path.insert(0, str(CLIMATE_PIPELINE_ROOT))
-
-from CropMunicipalChange import aggregate_crop_municipal_period  # noqa: E402
+from notebooks.ClimatePipeline.CropMunicipalChange import (
+    aggregate_crop_municipal_period,
+)
 
 
 EVA_SHEET = "BasePagina"
