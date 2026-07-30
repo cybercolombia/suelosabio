@@ -2,9 +2,10 @@
 
 **Fecha de verificación:** 11 de julio de 2026
 
-> **Vigencia:** las fuentes, coberturas y calculos conservan valor como evidencia.
-> La seleccion de cultivo y de una unica variable climatica permanece pendiente;
-> consulte [`project_status.md`](project_status.md).
+> **Estado:** investigación histórica conservada como evidencia. La fuente y el
+> cultivo finales están documentados en
+> [`data_pipeline/agriculture.md`](../../data_pipeline/agriculture.md) y
+> [`data_pipeline/forecast.md`](../../data_pipeline/forecast.md).
 
 ## Conclusión
 

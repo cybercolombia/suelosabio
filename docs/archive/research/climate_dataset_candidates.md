@@ -2,9 +2,10 @@
 
 **Fecha de verificación:** 11 de julio de 2026
 
-> **Vigencia:** el catalogo de fuentes y sus cautelas sigue siendo referencia.
-> La seleccion final de variables permanece abierta; consulte
-> [`project_status.md`](project_status.md) para las decisiones actuales.
+> **Estado:** investigación histórica conservada como evidencia. La selección
+> final ya está documentada en
+> [`data_pipeline/climate.md`](../../data_pipeline/climate.md) y
+> [`data_pipeline/forecast.md`](../../data_pipeline/forecast.md).
 
 ## Objetivo
 
@@ -222,7 +223,8 @@ celdas únicas y luego asignar cada municipio a la celda más cercana.
 4. Medir cobertura municipal y temporal antes de incorporarla al dataset maestro.
 5. Comparar cada familia y sus combinaciones contra el baseline.
 
-El orden completo se mantiene en [`project_roadmap.md`](project_roadmap.md).
+El orden completo se mantiene en
+[`project_roadmap.md`](../../project_roadmap.md).
 
 ## Fuentes que no se priorizan
 

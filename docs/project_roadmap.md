@@ -34,21 +34,21 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 
 | Fase | Producto principal | Compuerta | Estado |
 |---|---|---|---|
-| 0. Alcance | Pregunta, cultivos y variables acordados | El equipo comparte el mismo objetivo | En proceso |
-| 1. Inventario | Matriz de disponibilidad | Rutas y periodos sin ambiguedad | Clima parcial |
-| 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Precipitacion validada; temperatura en piloto; otras parciales |
-| 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Precipitacion validada; temperatura implementada |
-| 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Precipitacion validada; temperatura pendiente de corrida |
-| 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Precipitacion 2024-2025 completa |
-| 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | Precipitacion completa; otras pendientes |
-| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | V3 verificada; cierre operativo |
-| 7. Municipio diario | `clima_municipal` y auditoria | Llaves, cobertura y sensibilidad visibles | Agregacion completa; auditoria implementada, corrida Colab pendiente |
+| 0. Alcance | Pregunta, cultivos y variables acordados | El equipo comparte el mismo objetivo | Cerrado para papa 2026 |
+| 1. Inventario | Matriz de disponibilidad | Rutas y periodos sin ambiguedad | Seis variables 2024–2025; humedad parcial |
+| 2. Auditoria cruda | Evidencia y contrato candidato | Semantica y calidad defendibles | Completa para seis variables; humedad bloqueada |
+| 3. Diario por sensor | `clima_diario_sensor` | Llave y trazabilidad verificadas | Completa para seis variables |
+| 4. Auditoria diaria | `auditorias_clima_diario` | Cobertura y sensores evaluados | Completa para seis variables |
+| 5. Consolidacion | `clima_diario_curado` | Una fila por estacion-dia con calidad | Completa para seis variables |
+| 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | 48 particiones por variable |
+| 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | Completa por variable; revisiones trazables |
+| 7. Municipio diario | `clima_municipal` y auditoria | Llaves, cobertura y sensibilidad visibles | Completa para seis variables; precipitación en revisión científica |
 | 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Completo para NASA POWER 2019-2026 |
 | 9. Agricultura | EVA curada y agregado municipal | Target, granularidad y geografía verificadas | Corridas completas; revisión taxonómica pendiente |
 | 10. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Completo v1 para papa |
 | 11. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Completo; baseline temporal fue superior por MAE |
-| 12. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
-| 13. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
+| 12. Publicacion | Artefactos versionados | Contrato de consumo validado | Modelo y pronósticos v1 publicados en Drive |
+| 13. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Narrativa lista; demo de aplicación pendiente |
 
 ## Fase 0. Cerrar una pregunta viable
 
@@ -73,9 +73,10 @@ hallazgos automaticamente en reglas. Para habilitar una variable se confirma:
 - Rangos, patrones sospechosos y estabilidad geografica.
 - Regla diaria defendible y versionada.
 
-La salida tecnica es un modulo con pruebas, como `PrecipitationRules.py` o
-`TemperatureRules.py`. Temperatura ya tiene contrato para piloto; humedad,
-presion y viento todavia necesitan contratos propios antes del 03.
+La salida tecnica es un modulo con pruebas, como `PrecipitationRules.py`,
+`TemperatureRules.py` o `ScalarClimateRules.py`. Precipitación, las tres
+temperaturas, presión y viento completaron el ciclo. Humedad todavía necesita un
+contrato propio antes del 03.
 
 ## Fases 3, 4 y 5. Construir clima diario
 
@@ -99,9 +100,9 @@ presion y viento todavia necesitan contratos propios antes del 03.
 - Conserva desacuerdos y ausencias como `NaN`.
 - Registra calidad, motivos, parametros y procedencia.
 
-Los tres pasos forman un ciclo por variable. El piloto de precipitacion no
-habilita automaticamente las demas. Temperatura dispone de 03 y 04, pero su
-paso 05 permanece pendiente hasta revisar pilotos reales.
+Los tres pasos forman un ciclo por variable. Que seis variables hayan terminado
+no habilita automáticamente humedad: su auditoría y contrato siguen siendo una
+compuerta independiente.
 
 ## Fase 5.1. Escalar 2024-2025
 

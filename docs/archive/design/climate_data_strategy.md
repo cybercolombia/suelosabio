@@ -1,12 +1,12 @@
 # Estrategia exploratoria para datos climaticos
 
-**Estado:** referencia metodologica vigente
-**Alcance y fases:** [`project_status.md`](project_status.md) y
-[`project_roadmap.md`](project_roadmap.md)
+**Estado:** histórico; sustituido por la documentación consolidada SCRUM-18
+**Alcance y fases vigentes:** [`project_status.md`](../../project_status.md) y
+[`project_roadmap.md`](../../project_roadmap.md)
 
 La secuencia operativa, sus compuertas de calidad y la politica de datos
 faltantes se mantienen en
-[`climate_pipeline_guide.md`](climate_pipeline_guide.md).
+[`climate_pipeline_guide.md`](../../climate_pipeline_guide.md).
 
 Este documento resume una estrategia inicial para trabajar variables climaticas en el
 proyecto RAIZ. No define todavia el dataset maestro agricola ni el modelo final:
@@ -30,7 +30,7 @@ Antes de conectar estos datos con rendimiento agricola, conviene entender:
 ## Capas de trabajo
 
 Los nombres fisicos y contratos vigentes se detallan en
-[`data_artifacts.md`](data_artifacts.md). Las siguientes capas explican su
+[`data_artifacts.md`](../../data_artifacts.md). Las siguientes capas explican su
 proposito conceptual.
 
 ### 1. Datos crudos
@@ -315,7 +315,6 @@ valida si se confirma que `valorobservado` representa incrementos comparables y
 no un acumulado del sensor. Esta semantica debe validarse con la documentacion de
 la fuente, las unidades y los patrones observados en los datos.
 
-El procesamiento preliminar se detalla en
-[`climate_daily_processing.md`](climate_daily_processing.md). El contrato
-estacion-dia ya validado, incluida la ventana de cobertura, se documenta en
-[`climate_daily_consolidation.md`](climate_daily_consolidation.md).
+El procesamiento y el contrato vigentes se resumen en
+[`data_pipeline/climate.md`](../../data_pipeline/climate.md). Las guías piloto
+originales fueron retiradas en SCRUM-18 después de consolidar sus decisiones.

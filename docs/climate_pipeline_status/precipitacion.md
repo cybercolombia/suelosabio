@@ -1,17 +1,17 @@
 # Estado del pipeline: precipitacion
 
-**Actualizado:** 28 de julio de 2026
-**Estado:** en proceso  
+**Actualizado:** 30 de julio de 2026
+**Estado:** ciclo 01–07 ejecutado; revisión científica pendiente
 **Fuente:** `s54a-sgyg`  
 **Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
 
 ## Resumen ejecutivo
 
-El contrato diario de precipitacion fue validado de extremo a extremo en cuatro
-particiones piloto. Las **48 particiones mensuales** del objetivo 2024-2025
-terminaron el paso 03 y producen 42.190 filas estacion-sensor-dia. El paso 04
-termino sobre las 48, diagnostico un cambio temporal de escala y el paso 05 v2
-ya genero y reconcilio la capa diaria curada.
+El contrato diario de precipitación fue validado y escalado a las **48
+particiones mensuales** del objetivo 2024–2025. Los pasos 03–06 terminaron y el
+paso 07 materializó y auditó 174.709 filas municipio-día. La auditoría municipal
+quedó `COMPLETA_CON_REVISION_PENDIENTE`: el producto existe, pero aún deben
+aprobarse decisiones de cobertura y sensibilidad antes del paso 08.
 
 ```mermaid
 flowchart LR
@@ -22,17 +22,20 @@ flowchart LR
     P04 --> G{Calibrar o aislar<br/>3505500121/0240}
     G --> R05[Reglas 05 v2<br/>validadas]
     R05 --> P05[05 Curado estacion-dia<br/>completo]
-    P05 --> CURADO[(Precipitacion diaria<br/>curada 2024-2025)]
+    P05 --> P06[06 Geografia<br/>canonica v3]
+    P06 --> P07[07 Municipio-dia<br/>auditado]
+    P07 --> G07{Revision cientifica<br/>pendiente}
 
     classDef done fill:#e8f0e8,stroke:#315a3b,color:#17351e;
     classDef progress fill:#fff1cc,stroke:#9b6a00,color:#4f3600;
     classDef pending fill:#eeeeee,stroke:#666666,color:#333333;
-    class P01,P02,R03,P03,P04,G,R05,P05,CURADO done;
+    class P01,P02,R03,P03,P04,G,R05,P05,P06,P07 done;
+    class G07 progress;
 ```
 
-La variable completo el curado diario 2024-2025 y no necesita repetir descarga,
-procesamiento ni auditoria. La capa puede pasar al diseno del paso 06, que
-requiere geografia canonica y reglas de agregacion municipal.
+La variable no necesita repetir descarga, procesamiento, curado, geografía ni
+agregación municipal. El siguiente trabajo es revisar la auditoría ya persistida
+y fijar la compuerta científica del paso 08.
 
 ## 01. Descarga cruda
 
@@ -139,7 +142,7 @@ Evidencia:
 
 Contrato y evidencia:
 
-- [`../climate_daily_consolidation.md`](../climate_daily_consolidation.md)
+- [`../data_pipeline/climate.md`](../data_pipeline/climate.md)
 - [`../climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md`](../climate_audits/05_clima_curado/auditoria_curado_precipitacion_2024_2025.md)
 
 ## 06. Geografia de estaciones
@@ -194,7 +197,8 @@ cobertura pendiente.
   insuficiente y los 5.096 dias multiestacion.
 - [X] Prevalidada localmente la dispersion, diferencias media-mediana,
   sensibilidad de umbrales y cobertura por periodo.
-- [P] Ejecutar y persistir la auditoria municipal oficial en Colab.
+- [X] Ejecutada y persistida la auditoría municipal oficial en Colab el 29 de
+  julio de 2026, estado `COMPLETA_CON_REVISION_PENDIENTE`.
 - [ ] Revisar Aquitania y Puerto Salgar, donde la sensibilidad anual
   media-mediana es material.
 - [ ] Definir el umbral minimo de cobertura temporal para construir
@@ -219,7 +223,8 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar `07_2_Climate_Precipitation_MunicipalAudit.ipynb` en Colab y persistir su salida.
+1. Revisar la salida persistida de
+   `07_2_Climate_Precipitation_MunicipalAudit.ipynb`.
 2. Revisar Aquitania y Puerto Salgar, comparar media y mediana y decidir si la
    regla v1 se mantiene.
 3. Definir cobertura minima por periodo y cruzar los municipios con EVA.

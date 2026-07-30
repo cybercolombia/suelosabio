@@ -1,6 +1,6 @@
 # Catalogo de artefactos y dependencias
 
-**Actualizado:** 22 de julio de 2026
+**Actualizado:** 30 de julio de 2026
 **Estado:** vigente
 
 Las rutas de datos corresponden a `eco2026_processed` en Google Drive y no se
@@ -27,8 +27,9 @@ project_status
   -> geografia_curada
   -> clima_municipal -> auditorias_clima_municipal -> indicadores_climaticos
   + agricultura_curada
-  -> dataset_maestro
-  -> model_runs -> artifacts -> aplicacion
+  -> agricultura_municipal
+  -> crop_forecasting/datasets
+  -> crop_forecasting/models
 ```
 
 Un manifiesto `COMPLETA` significa que el productor termino y verifico sus
@@ -50,7 +51,7 @@ clima_crudo/
 | Granularidad | Observacion subdiaria por estacion-sensor |
 | Consumidores | Pasos 02 y 03 |
 | Regla | Inmutable; nunca se corrige en sitio |
-| Estado | Disponible estructuralmente 2021-2025 para precipitacion, humedad, presion y viento; temperatura 2024-2025 reportada y parcialmente verificada |
+| Estado | 48 particiones 2024–2025 verificadas para seis variables; humedad conserva crudos parciales sin contrato diario |
 
 La existencia de las 120 carpetas esperadas por variable no garantiza cobertura
 interna, calidad o continuidad.
@@ -69,7 +70,7 @@ auditorias_climaticas/
 | Productor | `02_Climate_Precipitation_DataAudit.ipynb` |
 | Granularidad | Resumen por corrida y tablas diagnosticas |
 | Consumidores | Reglas, alcance y documentacion |
-| Estado | Precipitacion amplia; temperatura 2024-2025 parcial; humedad Cundinamarca 2025; otras pendientes |
+| Estado | Ejecutada para precipitación, tres temperaturas, viento y presión; humedad parcial |
 
 Los Parquet completos permanecen en Drive. Las sintesis promovidas a Git viven
 en `docs/climate_audits/`.
@@ -86,7 +87,7 @@ tests/test_<variable>_processing.py
 | Productor | Desarrollo posterior a la auditoria 02 |
 | Consumidor | Paso 03 |
 | Contenido | Columnas, unidad, deduplicacion, rechazos, cadencia y agregacion diaria |
-| Estado | Precipitacion validada; temperatura en piloto; humedad, presion y viento bloqueadas por marcadores explicitos |
+| Estado | Implementado para precipitación, tres temperaturas, presión y viento; humedad conserva marcador bloqueante |
 
 Cambiar `VARIABLE_NOMBRE` no habilita una variable sin contrato y pruebas.
 
@@ -254,7 +255,7 @@ auditorias_clima_municipal/
 | Productor | `07_2_Climate_Precipitation_MunicipalAudit.ipynb` |
 | Granularidad | Municipio, municipio-periodo y municipio-dia multiestacion |
 | Consumidor | Decision humana y paso 08 |
-| Estado | Implementado y prevalidado localmente; corrida Colab pendiente |
+| Estado | Ejecutado en Colab el 29 de julio de 2026; `COMPLETA_CON_REVISION_PENDIENTE` |
 
 Es una auditoria de solo lectura. Los acumulados de media y mediana usan los
 mismos dias validos y no extrapolan ausencias. Un estado
@@ -268,14 +269,18 @@ indicadores_climaticos/variable=<variable>/municipio_periodo.parquet
 indicadores_climaticos/data_dictionary.md
 indicadores_climaticos/quality_report.md
 indicadores_climaticos/manifest.json
+
+crop_forecasting/datasets/version=papa_rendimiento_2026_v1/
+  indicadores_climaticos_observados.parquet
+  escenarios_climaticos_asof.parquet
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `08_ClimatePeriodFeatures.ipynb` |
+| Productor | Estaciones IDEAM: futuro `08_ClimatePeriodFeatures.ipynb`; pronóstico: `CropForecasting/climate.py` |
 | Granularidad | Municipio + ano + periodo |
 | Consumidor | Paso 10 |
-| Estado | Planeado |
+| Estado | Planeado para estaciones; ejecutado con NASA POWER 2019–2026 para el pronóstico |
 
 Conserva dias esperados, observados, cobertura y brecha maxima. Los indicadores
 dependen de variable y periodo agricola; no se reducen todos a una media.
@@ -344,55 +349,63 @@ rendimiento. Las comparaciones emparejan solamente A con A, B con B y anual con
 anual. La geometría permanece como dimensión canónica separada y se enlaza por
 código DANE, evitando repetir polígonos en cada fila temporal.
 
-### 10. Dataset maestro
+### 10. Dataset definitivo de pronóstico
 
 ```text
-dataset_maestro/version=<version>/
-  master_dataset.parquet
+crop_forecasting/datasets/version=papa_rendimiento_2026_v1/
+  dataset_definitivo.parquet
+  municipios_objetivo.parquet
+  indicadores_climaticos_observados.parquet
+  escenarios_climaticos_asof.parquet
+  resumen_dataset.parquet
+  incidencias_eva.parquet
   data_dictionary.md
-  join_report.md
   manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `10_MasterDatasetBuilder.ipynb` |
-| Granularidad | Municipio + ano + periodo + cultivo |
-| Consumidor | Paso 11 exclusivamente |
-| Estado | Planeado |
+| Productor | `notebooks/CropForecasting/01_Dataset_Definitivo_2026.ipynb` y módulos de `CropForecasting` |
+| Granularidad | Municipio + año + semestre + papa |
+| Consumidor | Entrenamiento, backtesting, gráficas y pronóstico |
+| Estado | Ejecutado: 2.366 filas, 56 columnas, 20 municipios objetivo |
 
-Conserva procedencia, variables, target, calidad y perdidas del cruce. Produccion
-y area auditan el target, pero no son features si rendimiento se calcula con ellas.
+La fuente agrícola final es el Excel UPRA 2019–2025. El clima proviene de NASA
+POWER diario. Producción y área cosechada no aparecen como predictores.
 
 ### 11. Corridas de modelado
 
 ```text
-model_runs/run=<id>/
-  metrics.json
-  predictions.parquet
-  feature_importance.csv
-  figures/
-  run_metadata.json
+crop_forecasting/models/version=papa_rendimiento_2026_v1/
+  leaderboard.csv
+  metricas_por_fold.csv
+  metricas_desagregadas.csv
+  predicciones_backtest.parquet
+  pronostico_2026.parquet
+  pronostico_2026.csv
+  modelo_final.joblib
+  manifest.json
 ```
 
-Cada corrida registra dataset maestro, corte temporal, baseline, features,
-parametros, metricas y commit. Su estado es planeado.
+| Propiedad | Valor |
+|---|---|
+| Productor | `02_Entrenamiento_Evaluacion_2026.ipynb` y `run_pipeline.py` |
+| Validación | Folds temporales 2021–2025; selección por 2024–2025 |
+| Modelo final | Último rendimiento del mismo municipio y semestre |
+| Estado | Ejecutado: 9 candidatos, 200 predicciones globales de backtesting y 40 pronósticos 2026 |
 
-### 12. Artefactos para aplicacion
+### 12. Resultados y figuras
 
 ```text
-artifacts/release=<version>/
-  model.joblib
-  model_metadata.json
-  metrics.json
-  predictions.parquet
-  feature_importance.csv
-  summary_by_department.csv
-  figures/
+notebooks/CropForecasting/RESULTS.md
+docs/data_pipeline/forecast.md
+docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md
+docs/presentation/assets/*.png
 ```
 
-El futuro `12_ArtifactsPublisher.ipynb` selecciona una corrida aprobada; no
-recalcula el pipeline. La aplicacion consume esta salida sin montar Drive.
+Las figuras versionadas se regeneran desde artefactos de Drive con
+`docs/presentation/generate_presentation_charts.py`. No sustituyen los Parquet,
+CSV, manifiestos ni el modelo serializado.
 
 ## Reglas de trazabilidad
 

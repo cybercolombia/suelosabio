@@ -1,6 +1,6 @@
 # Estado del pipeline climatico por variable
 
-**Actualizado:** 29 de julio de 2026
+**Actualizado:** 30 de julio de 2026
 **Estado:** vigente  
 **Alcance operativo:** Boyaca y Cundinamarca, 2024-2025
 
@@ -23,17 +23,17 @@ cientifica esten aprobados.
 | Variable | 01 Crudo | 02 Auditoria | Reglas | 03 Diario sensor | 04 Auditoria diaria | 05 Curado | 06 Geografia | 07 Municipio | 08 Periodo |
 |---|---|---|---|---|---|---|---|---|---|
 | [Precipitacion](precipitacion.md) | `[P]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[P]` | `[ ]` |
-| [Temperatura ambiente](temperatura_ambiente.md) | `[P]` | `[X]` | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Temperatura minima](temperatura_minima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Temperatura maxima](temperatura_maxima.md) | `[P]` | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Temperatura ambiente](temperatura_ambiente.md) | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[ ]` |
+| [Temperatura minima](temperatura_minima.md) | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[ ]` |
+| [Temperatura maxima](temperatura_maxima.md) | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[ ]` |
 | [Humedad](humedad.md) | `[P]` | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Presion atmosferica](presion_atmosferica.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
-| [Velocidad del viento](velocidad_viento.md) | `[P]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` | `[ ]` |
+| [Presion atmosferica](presion_atmosferica.md) | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[ ]` |
+| [Velocidad del viento](velocidad_viento.md) | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[X]` | `[ ]` |
 
-El estado `[P]` de los crudos significa que las carpetas esperadas fueron
-observadas o reportadas, pero falta una reconciliacion de integridad que revise
-partes consecutivas, ultimo lote, fechas internas y manifiestos para todo el
-alcance.
+Para las cinco variables escalares, `[X]` está respaldado por 48 particiones,
+auditorías, consolidación por estación, geografía canónica y capa municipio-día.
+Precipitación conserva `[P]` en 01 por su reconciliación histórica de partes y
+en 07 porque la auditoría científica municipal aún requiere revisión.
 
 El estado `[P]` de municipio para precipitacion significa que la agregacion
 oficial ya existe, pero su auditoria cientifica de cobertura y sensibilidad
@@ -70,12 +70,12 @@ el codigo ya este implementado para todas las variables.
 | Variable | Siguiente accion exacta | Compuerta que desbloquea |
 |---|---|---|
 | Precipitacion | Ejecutar `07_2_Climate_Precipitation_MunicipalAudit.ipynb` y revisar Aquitania/Puerto Salgar | Decision de regla municipal y paso 08 |
-| Temperatura ambiente | Repetir las cuatro particiones piloto con 03 v2 y ejecutar 04 v2 | Diseno de consolidacion termica 05 |
-| Temperatura minima | Verificar crudo 2024 con 02 y ejecutar piloto 03 de enero-febrero de 2025 | Auditoria diaria 04 |
-| Temperatura maxima | Verificar crudo 2024, ejecutar piloto 03 y revisar conflictos exportados | Auditoria diaria 04 |
+| Temperatura ambiente | Definir indicadores de período y umbral de cobertura | Paso 08 |
+| Temperatura minima | Definir extremos e indicadores de período | Paso 08 |
+| Temperatura maxima | Definir extremos e indicadores de período | Paso 08 |
 | Humedad | Completar 02 en ambos departamentos y anos | Contrato `HumidityRules.py` |
-| Presion atmosferica | Ejecutar 02 sobre meses contrastantes 2024-2025 | Contrato `AtmosphericPressureRules.py` |
-| Velocidad del viento | Ejecutar 02 sobre meses contrastantes 2024-2025 | Contrato `WindSpeedRules.py` |
+| Presion atmosferica | Definir indicadores de período y tratamiento de altura si aplica | Paso 08 |
+| Velocidad del viento | Definir indicadores de período y extremos | Paso 08 |
 
 ## Regla de actualizacion
 

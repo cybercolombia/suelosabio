@@ -11,18 +11,19 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 
 | Archivo | Responsabilidad | Estado |
 |---|---|---|
-| `ClimatePipeline/01_Climate_Precipitation_DataDownloader.ipynb` | Descargar Socrata por departamento, ano y mes | Activo y generico |
-| `ClimatePipeline/02_Climate_Precipitation_DataAudit.ipynb` | Auditar crudos y generar evidencia | Activo y generico |
-| `ClimatePipeline/03_Climate_Precipitation_DailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/04_Climate_Precipitation_DailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/05_Climate_Precipitation_DailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
-| `ClimatePipeline/06_Climate_Precipitation_GeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
-| `ClimatePipeline/07_Climate_Precipitation_MunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Corrida oficial completa; revision cientifica pendiente |
-| `ClimatePipeline/07_2_Climate_Precipitation_MunicipalAudit.ipynb` | Auditar cobertura y sensibilidad municipio-dia | Implementado; corrida Colab pendiente |
+| `ClimatePipeline/01_Climate_<Variable>_DataDownloader.ipynb` | Descargar Socrata por departamento, año y mes | Seis variables con 48 particiones 2024–2025 |
+| `ClimatePipeline/02_Climate_<Variable>_DataAudit.ipynb` | Auditar crudos y generar evidencia | Ejecutado para seis variables |
+| `ClimatePipeline/03_Climate_<Variable>_DailyProcessor.ipynb` | Producir estación-sensor-día | Ejecutado para seis variables |
+| `ClimatePipeline/04_Climate_<Variable>_DailyAudit.ipynb` | Auditar la capa diaria preliminar | Ejecutado para seis variables |
+| `ClimatePipeline/05_Climate_<Variable>_DailyConsolidator.ipynb` | Producir estación-día canónico | Ejecutado para seis variables |
+| `ClimatePipeline/06_Climate_<Variable>_GeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y polígonos | Ejecutado para seis variables |
+| `ClimatePipeline/07_Climate_<Variable>_MunicipalAggregator.ipynb` | Producir municipio-día con cobertura | Ejecutado para seis variables |
+| `ClimatePipeline/07_2_Climate_Precipitation_MunicipalAudit.ipynb` | Auditar cobertura y sensibilidad de precipitación | Ejecutado; revisión científica pendiente |
 
-Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
-pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
-un nombre en configuracion.
+`<Variable>` representa precipitación, temperatura ambiente, mínima, máxima,
+velocidad del viento o presión atmosférica. Los notebooks quedan protegidos por
+banderas `EJECUTAR_*` en `False` dentro de Git. Humedad no tiene notebooks 03–07
+porque su contrato sigue bloqueado.
 
 ## Modulos y pruebas activos
 
@@ -39,10 +40,14 @@ un nombre en configuracion.
 | `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
 | `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
 | `HumidityDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de humedad |
-| `AtmosphericPressureRules.py` | Marcador bloqueante hasta definir reglas de presion |
-| `AtmosphericPressureDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de presion |
-| `WindSpeedRules.py` | Marcador bloqueante hasta definir reglas de viento |
-| `WindSpeedDailyAudit.py` | Marcador bloqueante hasta definir la auditoria diaria de viento |
+| `ScalarClimateRules.py` | Contrato compartido de presión y viento |
+| `ScalarDailyAudit.py` | Auditoría diaria compartida de variables escalares |
+| `ScalarDailyConsolidation.py` | Consolidación estación-día compartida |
+| `ScalarMunicipalAggregation.py` | Agregado municipio-día compartido |
+| `AtmosphericPressureRules.py` | Despacho del contrato de presión |
+| `AtmosphericPressureDailyAudit.py` | Despacho de auditoría de presión |
+| `WindSpeedRules.py` | Despacho del contrato de viento |
+| `WindSpeedDailyAudit.py` | Despacho de auditoría de viento |
 | `tests/test_climate_processing.py` | Utilidades y reglas preliminares |
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |
@@ -106,14 +111,14 @@ Estos notebooks no son la fuente de verdad del pipeline nuevo. Tampoco deben
 borrarse hasta identificar datos curados, reglas o visualizaciones que aun no
 hayan sido promovidos.
 
-## Componentes planeados
+## Presentación y documentación consolidada
 
-Los nombres son contratos de roadmap, no archivos existentes:
-
-| Componente | Producto esperado |
+| Archivo | Uso |
 |---|---|
-| `07_Climate_Precipitation_MunicipalAggregator.ipynb` | Clima municipio-dia con cobertura espacial |
-| `12_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
+| `docs/data_pipeline/README.md` | Entrada al ciclo de clima, cultivos, geografía y pronóstico |
+| `docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md` | Documento listo para presentación |
+| `docs/presentation/generate_presentation_charts.py` | Regenera figuras desde artefactos reales |
+| `docs/documentation_review_scrum18.md` | Registro de documentos eliminados, archivados y preservados |
 
 ## Donde buscar cada respuesta
 
@@ -122,9 +127,11 @@ Los nombres son contratos de roadmap, no archivos existentes:
 | Que esta decidido hoy | `docs/project_status.md` |
 | Que sigue y de que depende | `docs/project_roadmap.md` |
 | Que archivo produce y consume cada fase | `docs/data_artifacts.md` |
-| Como se ejecuta un paso climatico | Documento `climate_daily_*` correspondiente |
+| Cómo funciona cada dominio de punta a punta | `docs/data_pipeline/README.md` |
+| Cómo se ejecuta un paso climático | `docs/climate_pipeline_guide.md` |
 | Que revelo una corrida | `docs/climate_audits/` y manifiesto en Drive |
-| Que fuentes climaticas existen | `docs/climate_dataset_candidates.md` |
-| Que fuente EVA y cultivos tienen cobertura | `docs/eva_dataset_research.md` |
-| Que modelo ganó y cuáles son los pronósticos 2026 | `notebooks/CropForecasting/RESULTS.md` |
+| Que fuentes climaticas se eligieron | `docs/data_pipeline/climate.md` y `forecast.md` |
+| Que fuente EVA y cultivos tienen cobertura | `docs/data_pipeline/agriculture.md` |
+| Que modelo ganó y cuáles son los pronósticos 2026 | `docs/data_pipeline/forecast.md` |
+| Qué presentar a una audiencia no técnica | `docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md` |
 | Como colaborar con Git y Colab | `CONTRIBUTING.md` |
