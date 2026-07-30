@@ -1,0 +1,2 @@
+# XGBoost se incorpora al benchmark cuando el runtime dispone de OpenMP.
+xgboost>=3.3

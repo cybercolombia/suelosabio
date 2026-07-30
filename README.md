@@ -32,3 +32,8 @@ proponer cambios, consulte el [mapa de documentacion](docs/README.md) y el
 [estado vigente del proyecto](docs/project_status.md).
 
 El flujo del equipo se describe en [CONTRIBUTING.md](CONTRIBUTING.md).
+
+El pipeline predictivo y sus notebooks están en
+[notebooks/CropForecasting](notebooks/CropForecasting/README.md); los resultados
+vigentes de rendimiento de papa 2026 se resumen en
+[RESULTS.md](notebooks/CropForecasting/RESULTS.md).
