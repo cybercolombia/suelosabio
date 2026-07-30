@@ -1,9 +1,9 @@
 # Mapa de documentación de RAIZ
 
-Este índice es la puerta de entrada para el equipo y para asistentes de
-inteligencia artificial. Antes de proponer código, alcance o modelos se debe leer
-[`project_status.md`](project_status.md), que es la fuente de verdad sobre el
-estado vigente del proyecto.
+Este índice organiza la documentación para el equipo y para asistentes de
+inteligencia artificial. Antes de proponer código, alcance o modelos se debe
+consultar [`project_status.md`](project_status.md), que registra el estado
+vigente del proyecto.
 
 ## Orden de lectura recomendado
 
@@ -12,7 +12,7 @@ estado vigente del proyecto.
 2. [`data_pipeline/README.md`](data_pipeline/README.md): ciclo consolidado de
    clima, cultivos, geografía y pronóstico.
 3. [`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md):
-   resumen pedagógico y gráficas para presentar resultados.
+   resultados, gráficas y mapas para presentación.
 4. [`climate_pipeline_guide.md`](climate_pipeline_guide.md): operación,
    compuertas, escalamiento y datos faltantes.
 5. [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md):
@@ -35,7 +35,7 @@ estado vigente del proyecto.
 | [`data_artifacts.md`](data_artifacts.md) | Productores, consumidores, rutas y estados | Contratos entre fases |
 | [`repository_guide.md`](repository_guide.md) | Notebooks, módulos y estado de revisión | Navegación del código |
 | [`data_pipeline/README.md`](data_pipeline/README.md) | Clima, agricultura, geografía y pronóstico | Entrada técnica consolidada |
-| [`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md) | Narrativa, gráficas, métricas y resultados | Presentación pedagógica |
+| [`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md) | Resultados, gráficas, mapas y métricas | Presentación técnica |
 | [`climate_pipeline_guide.md`](climate_pipeline_guide.md) | Pipeline 01-08, compuertas, escala y faltantes | Guía técnica principal |
 | [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md) | Estado paso a paso de cada variable | Seguimiento operativo |
 | [`climate_multivariable_pipeline.md`](climate_multivariable_pipeline.md) | Contratos por variable, inventario y ejecución 01-07 | Operación multivariable |
@@ -47,6 +47,7 @@ estado vigente del proyecto.
 | [`climate_audits/README.md`](climate_audits/README.md) | Índice de auditorías exportadas | Navegación de evidencia |
 | [`documentation_review_scrum18.md`](documentation_review_scrum18.md) | Redundancias revisadas y acciones ejecutadas | Registro de decisión SCRUM-18 |
 | [`language_review_scrum19.md`](language_review_scrum19.md) | Criterios y alcance de la revisión de lenguaje | Registro de decisión SCRUM-19 |
+| [`visualization_review_scrum20.md`](visualization_review_scrum20.md) | Mapas incorporados, fuentes y reglas de lectura | Registro de decisión SCRUM-20 |
 | [`releases/1.0.0.md`](releases/1.0.0.md) | Alcance, validación y limitaciones de la primera versión | Notas de Release 1.0.0 |
 
 ## Documentación histórica

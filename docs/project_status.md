@@ -2,7 +2,7 @@
 
 **Actualizado:** 30 de julio de 2026
 **Estado:** vigente
-**Propósito:** fuente de verdad para alcance, datos disponibles y prioridades
+**Propósito:** documento de referencia para alcance, datos disponibles y prioridades
 
 Este documento debe leerse antes de planes anteriores, conversaciones o
 recomendaciones preparadas para fechas límite ya vencidas.

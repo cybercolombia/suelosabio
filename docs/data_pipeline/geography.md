@@ -90,3 +90,16 @@ representan el municipio en los modelos tabulares. NASA POWER aporta una celda
 diaria por municipio y evita que la ausencia de una estación elimine municipios
 del entrenamiento. Esta malla es una fuente climática distinta; no reemplaza la
 auditoría de estaciones para usos observacionales locales.
+
+## Mapas de presentación
+
+La presentación utiliza la geometría municipal validada para mostrar:
+
+- estaciones con asignación canónica en las seis variables climáticas;
+- cultivo dominante entre los diez de mayor área sembrada;
+- áreas, producción y rendimiento de papa agregados por municipio;
+- producción de papa por año;
+- rendimiento de papa pronosticado para 2026-A y 2026-B.
+
+Las reglas de construcción y lectura están registradas en
+[`../visualization_review_scrum20.md`](../visualization_review_scrum20.md).

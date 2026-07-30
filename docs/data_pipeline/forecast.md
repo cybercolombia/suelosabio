@@ -122,12 +122,12 @@ Las métricas son:
 | Árboles extra, geografía + historia | 2,750 | 4,044 | 0,269 | 11,00 % |
 | Red neuronal, geografía + historia | 4,204 | 5,323 | −0,314 | 16,86 % |
 
-Ganó `último rendimiento` porque tuvo el menor MAE reciente. Ridge consiguió
-RMSE y R² ligeramente mejores, pero la regla del proyecto prioriza el error
-absoluto esperado. Elegir un modelo más complejo solo por su sofisticación habría
-empeorado esa métrica.
+`Último rendimiento` obtuvo el menor error absoluto medio reciente. Ridge
+consiguió una raíz del error cuadrático medio y un coeficiente de determinación
+ligeramente mejores. La selección aplicó la métrica primaria definida por el
+proyecto: error absoluto medio.
 
-## Por qué no se usó una serie de tiempo más robusta
+## Justificación del método seleccionado
 
 Modelos como ARIMA, Prophet o redes recurrentes suelen necesitar muchas
 observaciones regulares por entidad. Aquí cada municipio tiene como máximo
@@ -136,10 +136,9 @@ metodológico en EVA y el clima futuro B es parcialmente climatológico. Ajustar
 un modelo independiente por municipio sería inestable; agrupar todos como una
 sola serie ignoraría diferencias territoriales.
 
-El backtesting mostró además que la persistencia local es una señal fuerte y
-difícil de superar. La decisión no afirma que los métodos temporales complejos
-sean inferiores en general: afirma que no ganaron o no son identificables con
-esta cantidad y estructura de datos.
+La validación retrospectiva mostró que la persistencia local contiene señal
+predictiva. Con un máximo de catorce observaciones semestrales por municipio, los
+métodos temporales más complejos no ofrecieron evidencia de una mejora estable.
 
 ## Resultado 2026
 
@@ -159,3 +158,7 @@ Las bandas de la salida son el percentil 90 del error absoluto histórico. Son
 bandas empíricas, no intervalos probabilísticos calibrados. EVA 2026 todavía no
 contiene el target real, por lo que estas métricas describen el backtesting y no
 una validación del futuro.
+
+La ubicación de los 20 municipios y los valores pronosticados de cada semestre
+se presentan en el mapa reproducible de
+[`../presentation/RESULTADOS_PROCESO_DATOS_2026.md`](../presentation/RESULTADOS_PROCESO_DATOS_2026.md).

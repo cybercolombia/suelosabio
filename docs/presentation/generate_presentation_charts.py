@@ -1,4 +1,4 @@
-"""Genera las figuras reproducibles del resumen técnico SCRUM-18.
+"""Genera las figuras reproducibles del resumen técnico del proyecto.
 
 Las figuras se construyen exclusivamente desde los artefactos versionados del
 pipeline. El script no modifica los datasets de Google Drive.
@@ -13,7 +13,9 @@ import unicodedata
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import LinearSegmentedColormap, LogNorm, Normalize
+from matplotlib.patches import Patch
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 
@@ -28,6 +30,14 @@ DEFAULT_PROCESSED_ROOT = Path(
 PROCESSED_ROOT = Path(
     os.environ.get("ECO2026_PROCESSED_ROOT", DEFAULT_PROCESSED_ROOT)
 )
+DEFAULT_SHARED_ROOT = Path(
+    "/Users/eshernan/Library/CloudStorage/"
+    "GoogleDrive-eshernan@gmail.com/My Drive/eco2026"
+)
+SHARED_ROOT = Path(
+    os.environ.get("ECO2026_SHARED_ROOT", DEFAULT_SHARED_ROOT)
+)
+MUNICIPAL_GEOPACKAGE = SHARED_ROOT / "Boyaca_Cundinamarca_Municipios.gpkg"
 
 CLIMATE_VARIABLES = {
     "precipitacion": {
@@ -72,6 +82,19 @@ DEPARTMENT_COLORS = {
     "Boyacá": "#2166ac",
     "Cundinamarca": "#b2182b",
 }
+
+CROP_COLORS = [
+    "#1b9e77",
+    "#d95f02",
+    "#7570b3",
+    "#e7298a",
+    "#66a61e",
+    "#e6ab02",
+    "#a6761d",
+    "#1f78b4",
+    "#b2df8a",
+    "#fb9a99",
+]
 
 
 def _plain(value: object) -> str:
@@ -143,6 +166,117 @@ def _save(figure: plt.Figure, filename: str) -> None:
     plt.close(figure)
 
 
+def load_municipal_geography() -> gpd.GeoDataFrame:
+    if not MUNICIPAL_GEOPACKAGE.exists():
+        raise FileNotFoundError(
+            "No existe el GeoPackage municipal. Defina ECO2026_SHARED_ROOT con "
+            "la carpeta que contiene Boyaca_Cundinamarca_Municipios.gpkg."
+        )
+    municipalities = gpd.read_file(MUNICIPAL_GEOPACKAGE)
+    municipalities["codigo_municipio"] = (
+        municipalities["DPTO_CCDGO"].astype("string").str.zfill(2)
+        + municipalities["MPIO_CCDGO"].astype("string").str.zfill(3)
+    )
+    municipalities["departamento"] = (
+        municipalities["DEPTO"].map(_department_name)
+    )
+    municipalities["municipio"] = municipalities["MPIO_CNMBR"].str.title()
+    return municipalities[
+        ["codigo_municipio", "departamento", "municipio", "geometry"]
+    ].to_crs(9377)
+
+
+def _base_map(
+    axis: plt.Axes,
+    municipalities: gpd.GeoDataFrame,
+    *,
+    department: str | None = None,
+) -> gpd.GeoDataFrame:
+    selected = (
+        municipalities[municipalities["departamento"].eq(department)]
+        if department
+        else municipalities
+    )
+    selected.plot(
+        ax=axis,
+        color="#f2f2f2",
+        edgecolor="#bdbdbd",
+        linewidth=0.35,
+    )
+    selected.dissolve(by="departamento").boundary.plot(
+        ax=axis,
+        color="#525252",
+        linewidth=0.9,
+    )
+    axis.set_axis_off()
+    axis.set_aspect("equal")
+    return selected
+
+
+def _add_numeric_colorbar(
+    figure: plt.Figure,
+    axis: plt.Axes,
+    *,
+    cmap: str,
+    norm: Normalize,
+    label: str,
+) -> None:
+    scalar = matplotlib.cm.ScalarMappable(norm=norm, cmap=cmap)
+    scalar.set_array([])
+    colorbar = figure.colorbar(scalar, ax=axis, fraction=0.035, pad=0.015)
+    colorbar.set_label(label)
+
+
+def _plot_numeric_layer(
+    figure: plt.Figure,
+    axis: plt.Axes,
+    frame: gpd.GeoDataFrame,
+    *,
+    column: str,
+    title: str,
+    colorbar_label: str,
+    cmap: str = "YlOrRd",
+    logarithmic: bool = False,
+    norm: Normalize | None = None,
+) -> Normalize:
+    values = pd.to_numeric(frame[column], errors="coerce")
+    positive = values[values.gt(0)]
+    if norm is None:
+        if logarithmic and not positive.empty:
+            norm = LogNorm(vmin=float(positive.min()), vmax=float(positive.max()))
+        else:
+            valid = values.dropna()
+            norm = Normalize(
+                vmin=float(valid.min()) if not valid.empty else 0,
+                vmax=float(valid.max()) if not valid.empty else 1,
+            )
+    frame.plot(
+        ax=axis,
+        column=column,
+        cmap=cmap,
+        norm=norm,
+        edgecolor="#bdbdbd",
+        linewidth=0.35,
+        missing_kwds={"color": "#f2f2f2"},
+    )
+    frame.dissolve(by="departamento").boundary.plot(
+        ax=axis,
+        color="#525252",
+        linewidth=0.9,
+    )
+    axis.set_title(title)
+    axis.set_axis_off()
+    axis.set_aspect("equal")
+    _add_numeric_colorbar(
+        figure,
+        axis,
+        cmap=cmap,
+        norm=norm,
+        label=colorbar_label,
+    )
+    return norm
+
+
 def plot_one_month(climate: pd.DataFrame) -> None:
     daily = climate[
         climate["fecha"].between("2025-01-01", "2025-01-31")
@@ -176,7 +310,7 @@ def plot_one_month(climate: pd.DataFrame) -> None:
     for axis in axes[-1, :]:
         axis.set_xlabel("Día de enero de 2025")
     figure.suptitle(
-        "Un mes de clima municipal: mediana diaria de municipios con dato válido",
+        "Clima municipal en enero de 2025: mediana diaria de municipios con dato válido",
         fontsize=15,
     )
     figure.tight_layout()
@@ -265,7 +399,7 @@ def plot_february_gap(climate: pd.DataFrame) -> None:
     axis.set_xticks(np.arange(len(coverage.columns)), coverage.columns)
     axis.set_xlabel("Día de febrero de 2025")
     axis.set_title(
-        "Cobertura municipal diaria: la franja central evidencia el vacío de la fuente"
+        "Cobertura municipal diaria por variable, febrero de 2025"
     )
     colorbar = figure.colorbar(image, ax=axis, pad=0.02)
     colorbar.set_label("Municipios con dato válido (%)")
@@ -298,7 +432,7 @@ def plot_crop_periods(agriculture: pd.DataFrame) -> None:
         color=["#2166ac", "#67a9cf", "#bdbdbd"],
         width=0.68,
     )
-    axis.set_title("La fuente agrícola registra períodos, no observaciones diarias")
+    axis.set_title("Registros agrícolas por tipo de período")
     axis.set_xlabel("Año")
     axis.set_ylabel("Filas municipio × cultivo × período")
     axis.legend(title="Tipo de período", frameon=False, ncol=3)
@@ -335,6 +469,307 @@ def plot_crop_selection(agriculture: pd.DataFrame) -> None:
         )
     figure.tight_layout()
     _save(figure, "05_seleccion_cultivo_papa.png")
+
+
+def load_climate_stations() -> pd.DataFrame:
+    frames: list[pd.DataFrame] = []
+    for variable in CLIMATE_VARIABLES:
+        path = (
+            PROCESSED_ROOT
+            / "geografia_curada"
+            / f"canonica=estaciones_{variable}_2024_2025_v3"
+            / "estaciones_municipio.parquet"
+        )
+        data = pd.read_parquet(
+            path,
+            columns=[
+                "codigoestacion",
+                "LATITUD",
+                "LONGITUD",
+                "estado_asignacion",
+            ],
+        )
+        data["variable"] = variable
+        frames.append(data)
+    stations = pd.concat(frames, ignore_index=True)
+    stations = stations[
+        stations["estado_asignacion"].eq("ASIGNACION_CANONICA")
+        & stations["LATITUD"].notna()
+        & stations["LONGITUD"].notna()
+    ].copy()
+    return (
+        stations.groupby("codigoestacion", as_index=False)
+        .agg(
+            latitud=("LATITUD", "median"),
+            longitud=("LONGITUD", "median"),
+            variables=("variable", "nunique"),
+        )
+    )
+
+
+def plot_station_locations(
+    municipalities: gpd.GeoDataFrame,
+    stations: pd.DataFrame,
+) -> None:
+    points = gpd.GeoDataFrame(
+        stations,
+        geometry=gpd.points_from_xy(stations["longitud"], stations["latitud"]),
+        crs=4326,
+    ).to_crs(municipalities.crs)
+    figure, axis = plt.subplots(figsize=(10, 10))
+    _base_map(axis, municipalities)
+    norm = Normalize(vmin=1, vmax=len(CLIMATE_VARIABLES))
+    points.plot(
+        ax=axis,
+        column="variables",
+        cmap="viridis",
+        norm=norm,
+        markersize=14 + points["variables"] * 9,
+        edgecolor="white",
+        linewidth=0.35,
+        alpha=0.9,
+        zorder=3,
+    )
+    _add_numeric_colorbar(
+        figure,
+        axis,
+        cmap="viridis",
+        norm=norm,
+        label="Variables climáticas con asignación canónica",
+    )
+    axis.set_title(
+        f"Estaciones con asignación municipal canónica, 2024–2025 ({len(points)})"
+    )
+    figure.tight_layout()
+    _save(figure, "10_mapa_estaciones_climaticas.png")
+
+
+def _top_crops(agriculture: pd.DataFrame, count: int = 10) -> pd.Series:
+    valid = agriculture[agriculture["area_sembrada_ha"].gt(0)]
+    return (
+        valid.groupby("cultivo")["area_sembrada_ha"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(count)
+    )
+
+
+def plot_dominant_crops(
+    municipalities: gpd.GeoDataFrame,
+    agriculture: pd.DataFrame,
+) -> None:
+    ranking = _top_crops(agriculture)
+    selected = agriculture[agriculture["cultivo"].isin(ranking.index)].copy()
+    by_municipality = (
+        selected.groupby(["codigo_municipio", "cultivo"], as_index=False)[
+            "area_sembrada_ha"
+        ]
+        .sum()
+        .sort_values(
+            ["codigo_municipio", "area_sembrada_ha"],
+            ascending=[True, False],
+        )
+        .drop_duplicates("codigo_municipio")
+    )
+    mapped = municipalities.merge(by_municipality, on="codigo_municipio", how="left")
+    color_by_crop = {
+        crop: CROP_COLORS[position]
+        for position, crop in enumerate(ranking.index)
+    }
+    mapped["color"] = mapped["cultivo"].map(color_by_crop).fillna("#f2f2f2")
+
+    figure, axes = plt.subplots(1, 2, figsize=(17, 8))
+    ranking.sort_values().plot.barh(
+        ax=axes[0],
+        color=[color_by_crop[crop] for crop in ranking.sort_values().index],
+    )
+    axes[0].set_title("Diez cultivos con mayor área sembrada acumulada")
+    axes[0].set_xlabel("Hectáreas, 2022–2024")
+    axes[0].set_ylabel("")
+    axes[0].grid(axis="x", alpha=0.22)
+    axes[0].ticklabel_format(axis="x", style="plain")
+
+    mapped.plot(
+        ax=axes[1],
+        color=mapped["color"],
+        edgecolor="#bdbdbd",
+        linewidth=0.3,
+    )
+    mapped.dissolve(by="departamento").boundary.plot(
+        ax=axes[1],
+        color="#525252",
+        linewidth=0.9,
+    )
+    axes[1].set_title(
+        "Cultivo con mayor área sembrada acumulada en cada municipio"
+    )
+    axes[1].set_axis_off()
+    axes[1].set_aspect("equal")
+    axes[1].legend(
+        handles=[
+            Patch(facecolor=color_by_crop[crop], label=crop)
+            for crop in ranking.index
+        ],
+        title="Cultivos incluidos",
+        loc="lower left",
+        frameon=False,
+        fontsize=8,
+    )
+    figure.suptitle(
+        "Distribución municipal de los diez cultivos principales, 2022–2024",
+        fontsize=15,
+    )
+    figure.tight_layout()
+    _save(figure, "11_mapa_cultivos_principales.png")
+
+
+def _potato_records(agriculture: pd.DataFrame) -> pd.DataFrame:
+    return agriculture[
+        agriculture["cultivo"].astype("string").str.casefold().eq("papa")
+    ].copy()
+
+
+def plot_potato_municipal_totals(
+    municipalities: gpd.GeoDataFrame,
+    agriculture: pd.DataFrame,
+) -> None:
+    potato = _potato_records(agriculture)
+    totals = (
+        potato.groupby("codigo_municipio", as_index=False)
+        .agg(
+            area_sembrada_ha=("area_sembrada_ha", "sum"),
+            area_cosechada_ha=("area_cosechada_ha", "sum"),
+            produccion_t=("produccion_para_rendimiento_t", "sum"),
+            area_rendimiento_ha=("area_para_rendimiento_ha", "sum"),
+        )
+    )
+    totals["rendimiento_ponderado_t_ha"] = (
+        totals["produccion_t"] / totals["area_rendimiento_ha"]
+    )
+    mapped = municipalities.merge(totals, on="codigo_municipio", how="left")
+    figure, axes = plt.subplots(2, 2, figsize=(16, 14))
+    specifications = [
+        (
+            "area_sembrada_ha",
+            "Área sembrada acumulada",
+            "Hectáreas",
+            "YlGn",
+            True,
+        ),
+        (
+            "area_cosechada_ha",
+            "Área cosechada acumulada",
+            "Hectáreas",
+            "YlGn",
+            True,
+        ),
+        (
+            "produccion_t",
+            "Producción acumulada",
+            "Toneladas",
+            "YlOrRd",
+            True,
+        ),
+        (
+            "rendimiento_ponderado_t_ha",
+            "Rendimiento ponderado",
+            "Toneladas/hectárea",
+            "PuBuGn",
+            False,
+        ),
+    ]
+    for axis, (column, title, label, cmap, logarithmic) in zip(
+        axes.flat, specifications
+    ):
+        _plot_numeric_layer(
+            figure,
+            axis,
+            mapped,
+            column=column,
+            title=title,
+            colorbar_label=label,
+            cmap=cmap,
+            logarithmic=logarithmic,
+        )
+    figure.suptitle(
+        "Agregado municipal de papa, 2022–2024",
+        fontsize=15,
+    )
+    figure.tight_layout()
+    _save(figure, "12_mapa_agregado_municipal_papa.png")
+
+
+def _label_top_municipalities(
+    axis: plt.Axes,
+    frame: gpd.GeoDataFrame,
+    *,
+    column: str,
+    count: int = 5,
+) -> None:
+    top = frame.dropna(subset=[column]).nlargest(count, column).copy()
+    points = top.geometry.representative_point()
+    offsets = [(-32, -13), (32, -13), (28, 8), (0, 20), (-28, 8)]
+    for ((_, row), point, offset) in zip(top.iterrows(), points, offsets):
+        axis.annotate(
+            str(row["municipio"]).title(),
+            (point.x, point.y),
+            xytext=offset,
+            textcoords="offset points",
+            fontsize=6,
+            ha="center",
+            va="center",
+            color="#252525",
+            bbox={
+                "facecolor": "white",
+                "edgecolor": "none",
+                "alpha": 0.72,
+                "pad": 0.7,
+            },
+            arrowprops={
+                "arrowstyle": "-",
+                "color": "#737373",
+                "linewidth": 0.35,
+            },
+        )
+
+
+def plot_potato_production_by_year(
+    municipalities: gpd.GeoDataFrame,
+    agriculture: pd.DataFrame,
+) -> None:
+    potato = _potato_records(agriculture)
+    annual = (
+        potato.groupby(["codigo_municipio", "anio"], as_index=False)[
+            "produccion_para_rendimiento_t"
+        ]
+        .sum()
+        .rename(columns={"produccion_para_rendimiento_t": "produccion_t"})
+    )
+    positive = annual.loc[annual["produccion_t"].gt(0), "produccion_t"]
+    common_norm = LogNorm(vmin=float(positive.min()), vmax=float(positive.max()))
+    years = sorted(annual["anio"].dropna().astype(int).unique())
+    figure, axes = plt.subplots(1, len(years), figsize=(18, 7))
+    for axis, year in zip(np.atleast_1d(axes), years):
+        values = annual[annual["anio"].eq(year)].drop(columns="anio")
+        mapped = municipalities.merge(values, on="codigo_municipio", how="left")
+        _plot_numeric_layer(
+            figure,
+            axis,
+            mapped,
+            column="produccion_t",
+            title=str(year),
+            colorbar_label="Producción de papa (toneladas)",
+            cmap="YlOrRd",
+            logarithmic=True,
+            norm=common_norm,
+        )
+        _label_top_municipalities(axis, mapped, column="produccion_t")
+    figure.suptitle(
+        "Producción municipal de papa y cinco municipios principales por año",
+        fontsize=15,
+    )
+    figure.tight_layout()
+    _save(figure, "13_mapa_produccion_papa_por_anio.png")
 
 
 def forecasting_paths() -> tuple[Path, Path]:
@@ -395,7 +830,7 @@ def plot_yield_history(dataset: pd.DataFrame) -> None:
         axis.grid(alpha=0.22)
     axes[0].set_ylabel("Rendimiento de papa (toneladas/hectárea)")
     axes[0].legend(frameon=False)
-    figure.suptitle("Historia disponible para aprender y validar el pronóstico")
+    figure.suptitle("Rendimiento histórico municipal de papa, 2019–2025")
     figure.tight_layout()
     _save(figure, "06_rendimiento_historico_papa.png")
 
@@ -454,7 +889,9 @@ def plot_dataset_structure(dataset: pd.DataFrame) -> None:
         color=["#2166ac", "#bdbdbd", "#92c5de", "#b2182b"],
     )
     axes[1].set_ylabel("Filas")
-    axes[1].set_title(f"Dataset definitivo: {len(dataset):,} filas".replace(",", "."))
+    axes[1].set_title(
+        f"Conjunto de datos definitivo: {len(dataset):,} filas".replace(",", ".")
+    )
     axes[1].grid(axis="y", alpha=0.22)
     axes[1].tick_params(axis="x", rotation=18)
     for position, value in enumerate(row_counts.values):
@@ -561,6 +998,67 @@ def plot_forecast(forecast: pd.DataFrame) -> None:
     _save(figure, "09_pronostico_papa_2026.png")
 
 
+def plot_forecast_map(
+    municipalities: gpd.GeoDataFrame,
+    forecast: pd.DataFrame,
+) -> None:
+    prediction_column = "prediccion_rendimiento_t_ha"
+    norm = Normalize(
+        vmin=float(forecast[prediction_column].min()),
+        vmax=float(forecast[prediction_column].max()),
+    )
+    figure, axes = plt.subplots(2, 2, figsize=(15, 13))
+    for row, department in enumerate(["Boyacá", "Cundinamarca"]):
+        department_map = municipalities[
+            municipalities["departamento"].eq(department)
+        ]
+        for column, period in enumerate(["A", "B"]):
+            axis = axes[row, column]
+            selected = forecast[
+                forecast["departamento"].eq(department)
+                & forecast["tipo_periodo"].eq(period)
+            ][["codigo_municipio", prediction_column]]
+            mapped = department_map.merge(
+                selected,
+                on="codigo_municipio",
+                how="left",
+            )
+            _plot_numeric_layer(
+                figure,
+                axis,
+                mapped,
+                column=prediction_column,
+                title=f"{department} — semestre {period}",
+                colorbar_label="Rendimiento pronosticado (toneladas/hectárea)",
+                cmap="YlGnBu",
+                norm=norm,
+            )
+            targets = mapped[mapped[prediction_column].notna()].copy()
+            points = targets.geometry.representative_point()
+            axis.scatter(
+                points.x,
+                points.y,
+                s=9,
+                color="#252525",
+                zorder=3,
+            )
+            for (_, target), point in zip(targets.iterrows(), points):
+                axis.annotate(
+                    str(target["municipio"]).title(),
+                    (point.x, point.y),
+                    xytext=(2, 2),
+                    textcoords="offset points",
+                    fontsize=5.8,
+                    color="#252525",
+                )
+    figure.suptitle(
+        "Rendimiento de papa pronosticado por municipio, 2026",
+        fontsize=15,
+    )
+    figure.tight_layout()
+    _save(figure, "14_mapa_pronostico_rendimiento_2026.png")
+
+
 def main() -> None:
     if not PROCESSED_ROOT.exists():
         raise FileNotFoundError(
@@ -577,14 +1075,21 @@ def main() -> None:
         }
     )
 
+    municipalities = load_municipal_geography()
+
     climate = load_station_climate()
     plot_one_month(climate)
     plot_several_months(climate)
     plot_february_gap(climate)
+    stations = load_climate_stations()
+    plot_station_locations(municipalities, stations)
 
     agriculture = load_agriculture()
     plot_crop_periods(agriculture)
     plot_crop_selection(agriculture)
+    plot_dominant_crops(municipalities, agriculture)
+    plot_potato_municipal_totals(municipalities, agriculture)
+    plot_potato_production_by_year(municipalities, agriculture)
 
     dataset_root, model_root = forecasting_paths()
     dataset = pd.read_parquet(dataset_root / "dataset_definitivo.parquet")
@@ -594,6 +1099,7 @@ def main() -> None:
     plot_dataset_structure(dataset)
     plot_model_metrics(leaderboard)
     plot_forecast(forecast)
+    plot_forecast_map(municipalities, forecast)
     print(f"Figuras generadas en {OUTPUT_ROOT}")
 
 

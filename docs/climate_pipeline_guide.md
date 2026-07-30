@@ -9,7 +9,7 @@ Este documento es la entrada tecnica para integrantes y asistentes de IA que
 trabajen en el pipeline. No se debe habilitar una variable nueva copiando reglas
 de otra ni interpretar una celda ejecutada como prueba suficiente de calidad.
 
-## Por que existen dos auditorias
+## Función de las auditorías cruda y diaria
 
 Los datos cambian de significado al pasar de observaciones subdiarias a valores
 diarios. Por eso se audita antes y despues de transformar:
@@ -81,7 +81,7 @@ diagnosticar; `DailyConsolidation.py` decide seleccion de sensores, cobertura y
 cuarentenas. Una correccion de 05 no obliga a reprocesar 03 si la suma o
 estadistica diaria original sigue siendo trazable.
 
-## Del piloto a la escala completa
+## Validación piloto y ejecución completa
 
 Cada variable atraviesa dos ciclos. Auditar unos meses no autoriza por si solo
 la historia completa.

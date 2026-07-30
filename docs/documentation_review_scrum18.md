@@ -32,7 +32,7 @@ decisión.
 | `docs/data_pipeline/agriculture.md` | Descarga, auditoría, curación y agregado de cultivos |
 | `docs/data_pipeline/geography.md` | Estaciones, DIVIPOLA, polígonos y cruces |
 | `docs/data_pipeline/forecast.md` | Dataset, métodos, métricas y resultado 2026 |
-| `docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md` | Relato pedagógico con gráficas |
+| `docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md` | Presentación técnica con gráficas y mapas |
 
 ## Guías eliminadas
 

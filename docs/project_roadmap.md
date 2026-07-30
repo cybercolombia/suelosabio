@@ -1,4 +1,4 @@
-# Roadmap de extremo a extremo de RAIZ
+# Plan de trabajo y dependencias de RAIZ
 
 **Actualizado:** 30 de julio de 2026
 **Estado:** vigente
@@ -48,7 +48,7 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 10. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Completo v1 para papa |
 | 11. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Completo; baseline temporal fue superior por MAE |
 | 12. Publicacion | Artefactos versionados | Contrato de consumo validado | Modelo y pronósticos v1 publicados en Drive |
-| 13. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Narrativa lista; demo de aplicación pendiente |
+| 13. Aplicacion | Demostración y presentación | No procesa crudos al iniciar | Presentación lista; demostración de aplicación pendiente |
 
 ## Fase 0. Cerrar una pregunta viable
 
