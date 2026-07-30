@@ -1,8 +1,19 @@
-# Procesamiento de datos y pronóstico de rendimiento de papa, 2026
+# Análisis del proceso de datos climáticos, agrícolas y del pronóstico de papa para 2026
 
 **Documento para presentación**
 **Actualizado:** 30 de julio de 2026
 **Territorio:** Boyacá y Cundinamarca
+
+El documento incorpora cinco mapas dentro de las secciones donde se interpretan
+sus resultados:
+
+| Tema geográfico | Contenido del mapa | Sección |
+|---|---|---:|
+| Estaciones climáticas | Ubicación y cantidad de variables disponibles por estación | 7 |
+| Cultivos principales | Cultivo dominante por área sembrada en cada municipio | 9 |
+| Agregado municipal de papa | Área sembrada, área cosechada, producción y rendimiento | 11 |
+| Producción de papa por año | Distribución municipal y cinco productores principales de 2022 a 2024 | 11 |
+| Pronóstico 2026 | Rendimiento pronosticado por municipio, departamento y semestre | 16 |
 
 ## 1. Resumen de resultados
 
