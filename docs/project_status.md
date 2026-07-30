@@ -14,6 +14,9 @@ RAIZ pronostica el rendimiento municipal de papa para los semestres A y B de
 2024-2025 en Boyaca y los diez de Cundinamarca. El modelo se selecciona por MAE
 en backtesting temporal y se documenta en
 [`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md).
+SCRUM-18 consolida el ciclo técnico y la presentación en
+[`data_pipeline/README.md`](data_pipeline/README.md) y
+[`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md).
 
 ## Alcance confirmado
 
@@ -44,21 +47,19 @@ historicas de descarga y rendimiento de la API.
 
 ## Datos climaticos disponibles
 
-La estructura de Drive contiene 120 particiones mensuales por variable: dos
-departamentos, cinco anos y doce meses.
+| Variable | Dataset | Alcance verificado | Estado |
+|---|---|---|---|
+| Precipitacion | `s54a-sgyg` | 48 particiones 2024–2025 | 01–07 ejecutado; revisión científica municipal pendiente |
+| Temperatura ambiente | `sbwg-7ju4` | 48 particiones 2024–2025 | Municipio-día completo |
+| Temperatura minima | `afdg-3zpb` | 48 particiones 2024–2025 | Municipio-día completo |
+| Temperatura maxima | `ccvq-rp9s` | 48 particiones 2024–2025 | Municipio-día completo |
+| Velocidad del viento | `sgfv-3yp8` | 48 particiones 2024–2025 | Municipio-día completo |
+| Presion atmosferica | `62tk-nxj5` | 48 particiones 2024–2025 | Municipio-día completo |
+| Humedad | `uext-mhny` | Crudo y auditoría parcial | Bloqueada antes de 03 |
 
-| Variable | Dataset | Crudo 2021-2025 | Auditoria 02 | Reglas diarias | Estado |
-|---|---|---:|---|---|---|
-| Precipitacion | `s54a-sgyg` | Completo estructuralmente | Boyaca y Cundinamarca; 2021, 2023, 2024 y 2025 | 03-05 completos para 2024-2025 | Curada por estacion-dia |
-| Humedad | `uext-mhny` | Completo estructuralmente | Cundinamarca 2025 | Pendientes | Candidata |
-| Presion atmosferica | `62tk-nxj5` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
-| Velocidad del viento | `sgfv-3yp8` | Completo estructuralmente | Pendiente | Pendientes | Secundaria |
-| Temperatura ambiente | `sbwg-7ju4` | 2024-2025 confirmados estructuralmente | Ambos departamentos; 2024 y 2025 | Piloto v1 auditado; contratos v2 listos para repetir cuatro particiones | Alta utilidad; no escalar aun |
-| Temperatura minima | `afdg-3zpb` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
-| Temperatura maxima | `ccvq-rp9s` | 2024-2025 reportados; auditoria confirma 2025 | Ambos departamentos; 2025 | 03 y 04 disponibles; piloto pendiente | Alta utilidad; verificar 2024 |
-
-`Completo estructuralmente` significa que existen las carpetas esperadas; no
-garantiza cobertura interna, calidad ni continuidad temporal.
+La serie IDEAM conserva la brecha común del 5 al 25 de febrero de 2025 y los
+municipios sin estación como ausencia. Para el pronóstico, NASA POWER aporta una
+malla diaria completa 2019–2026; es una fuente distinta.
 
 ## Otros dominios del repositorio
 
@@ -76,14 +77,13 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 
 | Paso | Producto | Estado actual |
 |---|---|---|
-| 01 Descarga | `clima_crudo` | Validado para cuatro variables disponibles |
-| 02 Auditoria cruda | Evidencia para reglas por variable | Precipitacion y temperatura con evidencia; otras desiguales |
-| 03 Diario por sensor | `clima_diario_sensor` | Precipitacion 2024-2025 completa; temperatura ambiente tiene piloto v1 completo y requiere repetir cuatro particiones con v2 |
-| 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; piloto v1 de temperatura ambiente auditado y v2 pendiente de corrida |
-| 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
-| Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
-| 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
-| 07 Municipio diario | `clima_municipal` | Precipitacion oficial completa; auditoria de cobertura y sensibilidad implementada, corrida Colab pendiente |
+| 01 Descarga | `clima_crudo` | 48 particiones verificadas para seis variables; humedad parcial |
+| 02 Auditoria cruda | Evidencia para reglas por variable | Ejecutada para seis variables; humedad incompleta |
+| 03 Diario por sensor | `clima_diario_sensor` | Completo 2024–2025 para seis variables |
+| 04 Auditoria diaria | `auditorias_clima_diario` | Completa para seis variables |
+| 05 Consolidacion | `clima_diario_curado` | Completa por estación-día para seis variables |
+| 06 Geografia | `geografia_curada` | Canónica por variable; precipitación v3 conserva 9 revisiones y 1 exclusión |
+| 07 Municipio diario | `clima_municipal` | Completo para seis variables; precipitación auditada con revisión pendiente |
 | 08 Indicadores por periodo | `indicadores_climaticos` | Implementado para NASA POWER dentro de CropForecasting |
 | 09 EVA | Agricultura curada y municipal | Auditorías y agregados ejecutados; 13.692 targets, 9.377 comparaciones y geografía completa; revisión taxonómica pendiente |
 | Dataset maestro y modelo | Tabla analitica y artefactos | Completo v1: 2.366 filas, 20 municipios objetivo y 40 pronósticos 2026 |
@@ -101,7 +101,7 @@ umbrales y criterios de calidad.
 
 ## Prioridades actuales
 
-1. Revisar en Colab los tres notebooks de `notebooks/CropForecasting/`.
+1. Revisar la documentación y presentación consolidada de SCRUM-18.
 2. Validar el resultado de Cundinamarca-B y la incertidumbre empirica.
 3. Repetir el pronostico cuando NASA POWER publique mas dias de 2026-B.
 4. Validar contra EVA 2026 cuando UPRA publique las cifras oficiales.

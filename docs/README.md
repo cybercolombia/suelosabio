@@ -9,18 +9,19 @@ estado vigente del proyecto.
 
 1. [`project_status.md`](project_status.md): alcance confirmado, decisiones
    pendientes, datos disponibles y siguiente trabajo.
-2. [`climate_pipeline_guide.md`](climate_pipeline_guide.md): operacion,
+2. [`data_pipeline/README.md`](data_pipeline/README.md): ciclo consolidado de
+   clima, cultivos, geografía y pronóstico.
+3. [`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md):
+   resumen pedagógico y gráficas para presentar resultados.
+4. [`climate_pipeline_guide.md`](climate_pipeline_guide.md): operación,
    compuertas, escalamiento y datos faltantes.
-3. [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md):
+5. [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md):
    checklist de avance por variable.
-4. [`climate_multivariable_pipeline.md`](climate_multivariable_pipeline.md):
+6. [`climate_multivariable_pipeline.md`](climate_multivariable_pipeline.md):
    contratos y ejecución de temperatura, viento y presión.
-5. [`project_roadmap.md`](project_roadmap.md): fases, dependencias y compuertas.
-6. [`data_artifacts.md`](data_artifacts.md): entradas y salidas persistidas.
-7. [`repository_guide.md`](repository_guide.md): mapa de notebooks y modulos.
-8. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura climatica
-   y principios metodologicos.
-9. El documento operativo de la etapa que se vaya a ejecutar.
+7. [`project_roadmap.md`](project_roadmap.md): fases, dependencias y compuertas.
+8. [`data_artifacts.md`](data_artifacts.md): entradas y salidas persistidas.
+9. [`repository_guide.md`](repository_guide.md): mapa de notebooks y módulos.
 10. [`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md):
     evaluación temporal y pronósticos 2026.
 11. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
@@ -33,28 +34,28 @@ estado vigente del proyecto.
 | [`project_roadmap.md`](project_roadmap.md) | Ruta completa hasta aplicacion | Planificacion y dependencias |
 | [`data_artifacts.md`](data_artifacts.md) | Productores, consumidores, rutas y estados | Contratos entre fases |
 | [`repository_guide.md`](repository_guide.md) | Notebooks, modulos y estado de revision | Navegacion del codigo |
+| [`data_pipeline/README.md`](data_pipeline/README.md) | Clima, agricultura, geografía y pronóstico | Entrada técnica consolidada |
+| [`presentation/RESULTADOS_PROCESO_DATOS_2026.md`](presentation/RESULTADOS_PROCESO_DATOS_2026.md) | Narrativa, gráficas, métricas y resultados | Presentación pedagógica |
 | [`climate_pipeline_guide.md`](climate_pipeline_guide.md) | Pipeline 01-08, compuertas, escala y faltantes | Guia tecnica principal |
 | [`climate_pipeline_status/README.md`](climate_pipeline_status/README.md) | Estado paso a paso de cada variable | Seguimiento operativo |
 | [`climate_multivariable_pipeline.md`](climate_multivariable_pipeline.md) | Contratos por variable, inventario y ejecución 01-07 | Operación multivariable |
-| [`climate_data_strategy.md`](climate_data_strategy.md) | Estrategia y flujo climatico 01-08 | Referencia arquitectonica |
-| [`climate_daily_processing.md`](climate_daily_processing.md) | Paso 03 de precipitacion: estacion-sensor-dia | Operacion |
-| [`climate_daily_audit.md`](climate_daily_audit.md) | Paso 04 de precipitacion | Operacion y diagnostico |
-| [`climate_daily_consolidation.md`](climate_daily_consolidation.md) | Paso 05 de precipitacion: estacion-dia | Contrato validado |
 | [`climate_geography_audit.md`](climate_geography_audit.md) | Paso 06: catalogo, asignaciones candidatas y mapa | Operacion y compuerta geografica |
 | [`climate_municipal_aggregation.md`](climate_municipal_aggregation.md) | Paso 07: precipitacion municipio-dia | Contrato piloto y operacion |
 | [`climate_municipal_audit.md`](climate_municipal_audit.md) | Paso 07: cobertura y sensibilidad municipal | Operacion y compuerta cientifica |
-| [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 04 de temperatura | Operacion y limites |
 | [`crop_yield_pipeline.md`](crop_yield_pipeline.md) | Auditoría cruda, curación y auditoría del target EVA | Operación agrícola |
 | [`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md) | Modelo final, métricas y pronósticos de papa 2026 | Resultado predictivo vigente |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
+| [`documentation_review_scrum18.md`](documentation_review_scrum18.md) | Redundancias revisadas y acciones ejecutadas | Registro de decisión SCRUM-18 |
 
-## Investigacion y catalogos
+## Documentación histórica
 
-| Documento | Contenido | Vigencia |
+| Documento | Contenido | Estado |
 |---|---|---|
-| [`climate_dataset_candidates.md`](climate_dataset_candidates.md) | Fuentes climaticas, IDs y utilidad potencial | Catalogo vigente; alcance MVP antiguo |
-| [`eva_dataset_research.md`](eva_dataset_research.md) | Fuentes EVA, cobertura y cultivos candidatos | Evidencia vigente; seleccion final pendiente |
-| [`climate_audits/`](climate_audits/) | Resultados de corridas y hallazgos por variable | Evidencia historica reproducible |
+| [`archive/design/climate_data_strategy.md`](archive/design/climate_data_strategy.md) | Diseño exploratorio del pipeline | Archivado |
+| [`archive/research/climate_dataset_candidates.md`](archive/research/climate_dataset_candidates.md) | Investigación de fuentes climáticas | Archivado |
+| [`archive/research/eva_dataset_research.md`](archive/research/eva_dataset_research.md) | Investigación de fuentes EVA | Archivado |
+| `climate_daily_processing.md`, `climate_daily_audit.md`, `climate_daily_consolidation.md`, `temperature_daily_processing.md` | Guías piloto sustituidas | Eliminadas con aprobación del usuario |
+| [`climate_audits/`](climate_audits/) | Resultados de corridas y hallazgos | Conservar como evidencia reproducible |
 
 Las normas de ramas, notebooks y datos compartidos estan en
 [`CONTRIBUTING.md`](../CONTRIBUTING.md).
