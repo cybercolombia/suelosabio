@@ -9,11 +9,11 @@ from pathlib import Path
 import time
 from typing import Iterable
 from urllib.parse import urlencode
-from urllib.request import urlopen
 
 import geopandas as gpd
 import numpy as np
 import pandas as pd
+import requests
 
 
 NASA_ENDPOINT = "https://power.larc.nasa.gov/api/temporal/daily/point"
@@ -79,6 +79,7 @@ def _request_power(
     start: str,
     end: str,
     timeout: int = 120,
+    request_get=requests.get,
 ) -> dict:
     query = urlencode(
         {
@@ -92,8 +93,13 @@ def _request_power(
             "time-standard": "LST",
         }
     )
-    with urlopen(f"{NASA_ENDPOINT}?{query}", timeout=timeout) as response:
-        payload = json.load(response)
+    with request_get(
+        f"{NASA_ENDPOINT}?{query}",
+        timeout=(10, timeout),
+        verify=True,
+    ) as response:
+        response.raise_for_status()
+        payload = response.json()
     observed = set(payload.get("properties", {}).get("parameter", {}))
     if observed != set(NASA_PARAMETERS):
         raise ValueError(

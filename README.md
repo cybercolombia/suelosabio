@@ -1,10 +1,9 @@
 # rAIz
 
-rAIz es un proyecto de analítica agrícola que transforma datos climáticos,
-agrícolas y geográficos en productos auditables para estudiar y pronosticar el
-rendimiento de cultivos. La primera versión se concentra en papa, en los diez
-municipios con mayor área sembrada de Boyacá y los diez de Cundinamarca, para
-los semestres A y B de 2026.
+rAIz implementa procesos auditables para analizar datos climáticos, agrícolas y
+geográficos, y pronosticar el rendimiento de cultivos. La primera versión se
+concentra en papa, en los diez municipios con mayor área sembrada de Boyacá y
+los diez de Cundinamarca, para los semestres A y B de 2026.
 
 ## Estado del proyecto
 
@@ -54,6 +53,8 @@ científica.
 
 ![Comportamiento climático mensual de 2024 a 2025](docs/presentation/assets/02_clima_varios_meses.png)
 
+![Distribución municipal de los diez cultivos principales](docs/presentation/assets/11_mapa_cultivos_principales.png)
+
 El proceso completo, las reglas por variable y las gráficas de clima, cultivos y
 geografía se explican en el
 [resumen de resultados 2026](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md).
@@ -92,6 +93,8 @@ presenta el error relativo de forma balanceada.
 
 ![Pronóstico municipal de rendimiento de papa para 2026](docs/presentation/assets/09_pronostico_papa_2026.png)
 
+![Mapa del pronóstico municipal de rendimiento de papa](docs/presentation/assets/14_mapa_pronostico_rendimiento_2026.png)
+
 Estos valores son pronósticos, no resultados observados. El semestre 2026-A
 incorpora 181 días climáticos reales; 2026-B incorpora 27 días reales y 157 días
 de climatología 2019–2025 con corte al 30 de julio de 2026. El segmento más
@@ -104,7 +107,7 @@ EVA de 2026.
 - [Mapa de documentación](docs/README.md)
 - [Estado vigente y alcance](docs/project_status.md)
 - [Ciclo consolidado de datos](docs/data_pipeline/README.md)
-- [Resumen pedagógico y gráficas](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md)
+- [Resultados, gráficas y mapas](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md)
 - [Flujo de pronóstico](notebooks/CropForecasting/README.md)
 - [Evaluación y resultados detallados](notebooks/CropForecasting/RESULTS.md)
 - [Guía de colaboración](CONTRIBUTING.md)

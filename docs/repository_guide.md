@@ -107,8 +107,8 @@ Todo el código predictivo está aislado en `notebooks/CropForecasting/`.
 | `MeteoData.ipynb` | Exploracion meteorologica anterior | Heredado; alcance y salidas por auditar |
 | `SoilData.ipynb` | Analisis de laboratorio de suelos | Heredado; fuente, salidas y vigencia por auditar |
 
-Estos notebooks no son la fuente de verdad del pipeline nuevo. Tampoco deben
-borrarse hasta identificar datos curados, reglas o visualizaciones que aun no
+Estos notebooks no son la referencia operativa del flujo nuevo. Tampoco deben
+borrarse hasta identificar datos curados, reglas o visualizaciones que aún no
 hayan sido promovidos.
 
 ## Presentación y documentación consolidada
@@ -127,7 +127,7 @@ hayan sido promovidos.
 | Que esta decidido hoy | `docs/project_status.md` |
 | Que sigue y de que depende | `docs/project_roadmap.md` |
 | Que archivo produce y consume cada fase | `docs/data_artifacts.md` |
-| Cómo funciona cada dominio de punta a punta | `docs/data_pipeline/README.md` |
+| Cómo funciona cada dominio | `docs/data_pipeline/README.md` |
 | Cómo se ejecuta un paso climático | `docs/climate_pipeline_guide.md` |
 | Que revelo una corrida | `docs/climate_audits/` y manifiesto en Drive |
 | Que fuentes climaticas se eligieron | `docs/data_pipeline/climate.md` y `forecast.md` |

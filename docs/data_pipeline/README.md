@@ -3,8 +3,8 @@
 **Actualizado:** 30 de julio de 2026
 **Alcance:** Boyacá y Cundinamarca
 
-Esta carpeta es la entrada técnica vigente para entender cómo cada dominio pasa
-de fuente a producto analítico. Los reportes de `docs/climate_audits/` conservan
+Esta carpeta documenta la conversión de cada fuente en un producto analítico.
+Los reportes de `docs/climate_audits/` conservan
 la evidencia detallada de cada ejecución; no sustituyen estos contratos.
 
 ## Ruta de lectura
@@ -18,7 +18,7 @@ la evidencia detallada de cada ejecución; no sustituyen estos contratos.
 4. [Pronóstico](forecast.md): dataset definitivo, validación temporal,
    comparación de métodos y pronóstico de papa 2026.
 5. [Resumen para presentación](../presentation/RESULTADOS_PROCESO_DATOS_2026.md):
-   explicación pedagógica acompañada de gráficas reproducibles.
+   resultados acompañados de gráficas y mapas reproducibles.
 
 ## Capas y granularidades
 

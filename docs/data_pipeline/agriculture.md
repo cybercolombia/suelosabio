@@ -101,7 +101,7 @@ años se calculan diferencia absoluta y cambio porcentual de:
 Cada medida conserva su propio universo de validez. Un registro puede ser válido
 para área sembrada y no para rendimiento.
 
-## Por qué no se llevó cultivos a día
+## Conservación de la frecuencia agrícola
 
 Interpolar un rendimiento semestral a 181 o 184 días produciría muchos valores
 artificiales y no agregaría información. La unión con clima se hace en la
@@ -135,3 +135,7 @@ original del target.
 
 La especificación física de cada archivo está en
 [`../data_artifacts.md`](../data_artifacts.md).
+
+La presentación incluye mapas reproducibles de los diez cultivos principales,
+el agregado municipal de papa y su producción anual en
+[`../presentation/RESULTADOS_PROCESO_DATOS_2026.md`](../presentation/RESULTADOS_PROCESO_DATOS_2026.md).

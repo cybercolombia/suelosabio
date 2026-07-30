@@ -1,27 +1,37 @@
-# Del dato crudo al pronóstico de rendimiento de papa 2026
+# Análisis del proceso de datos climáticos, agrícolas y del pronóstico de papa para 2026
 
 **Documento para presentación**
 **Actualizado:** 30 de julio de 2026
 **Territorio:** Boyacá y Cundinamarca
 
-## 1. Resultado en una mirada
+El documento incorpora cinco mapas dentro de las secciones donde se interpretan
+sus resultados:
 
-El proyecto construyó tres productos compatibles sin falsear la frecuencia de
-las fuentes:
+| Tema geográfico | Contenido del mapa | Sección |
+|---|---|---:|
+| Estaciones climáticas | Ubicación y cantidad de variables disponibles por estación | 7 |
+| Cultivos principales | Cultivo dominante por área sembrada en cada municipio | 9 |
+| Agregado municipal de papa | Área sembrada, área cosechada, producción y rendimiento | 11 |
+| Producción de papa por año | Distribución municipal y cinco productores principales de 2022 a 2024 | 11 |
+| Pronóstico 2026 | Rendimiento pronosticado por municipio, departamento y semestre | 16 |
+
+## 1. Resumen de resultados
+
+El proyecto generó tres productos que conservan la frecuencia de sus fuentes:
 
 1. clima histórico de estaciones, desde observaciones subdiarias hasta
    municipio-día para seis variables;
 2. cultivos, desde registros anuales o semestrales hasta
    municipio × cultivo × período;
-3. un dataset de pronóstico de papa, con historia agrícola 2019–2025, clima
+3. un conjunto de datos de pronóstico de papa, con historia agrícola 2019–2025, clima
    diario agregado por semestre, geografía y 40 filas objetivo para 2026.
 
 El modelo que mejor redujo el error absoluto reciente fue una referencia simple:
 usar el último rendimiento conocido del mismo municipio y semestre. Su error
-absoluto medio fue 2,302 toneladas por hectárea en las pruebas 2024–2025. Esta
-decisión surgió de comparar métodos, no de asumir que lo simple siempre gana.
+absoluto medio fue 2,302 toneladas por hectárea en las pruebas 2024–2025. La
+selección se basó en la comparación temporal de los métodos evaluados.
 
-## 2. Dos relojes distintos
+## 2. Frecuencias de los datos climáticos y agrícolas
 
 El clima y los cultivos no llegan con la misma frecuencia.
 
@@ -31,9 +41,9 @@ El clima y los cultivos no llegan con la misma frecuencia.
 | NASA POWER | Día por celda | Día por municipio | Semestre |
 | Cultivos EVA | Semestre A, semestre B o año | Municipio × cultivo × período | Semestre |
 
-La solución no fue inventar días para los cultivos. Se mantuvo el clima diario,
-se resumió dentro de cada período agrícola y se unió con la observación EVA del
-mismo municipio, año y semestre.
+Los registros agrícolas conservaron su frecuencia anual o semestral. El clima
+se mantuvo diario, se resumió dentro de cada período agrícola y se unió con la
+observación EVA del mismo municipio, año y semestre.
 
 ```mermaid
 flowchart LR
@@ -42,7 +52,7 @@ flowchart LR
     C --> D[Municipio × día]
     D --> E[Indicadores municipio × semestre]
     F[EVA anual o semestral] --> G[Municipio × cultivo × período]
-    E --> H[Dataset municipio × papa × semestre]
+    E --> H[Conjunto municipio × papa × semestre]
     G --> H
     H --> I[Validación temporal y pronóstico 2026]
 ```
@@ -55,7 +65,7 @@ particular ni imputa municipios sin dato.
 
 ![Clima municipal durante enero de 2025](assets/01_clima_un_mes.png)
 
-Lectura pedagógica:
+Interpretación:
 
 - la precipitación es intermitente y predominan días con mediana cero;
 - las temperaturas ambiente, mínima y máxima conservan unidades y estadísticos
@@ -75,7 +85,7 @@ medianas diarias.
 
 ![Comportamiento climático mensual 2024–2025](assets/02_clima_varios_meses.png)
 
-Esta vista permite:
+La serie mensual permite:
 
 - observar meses secos y húmedos sin confundir suma con promedio;
 - comparar la amplitud de temperatura mínima y máxima;
@@ -85,10 +95,9 @@ Esta vista permite:
 No representa la climatología completa de cada departamento: resume únicamente
 municipios que cuentan con dato municipal válido en la red de estaciones.
 
-## 5. Qué se auditó en cada serie climática
+## 5. Controles aplicados a las series climáticas
 
-La auditoría no se limitó a preguntar si un archivo abría. En cada etapa se
-respondió una pregunta distinta.
+La auditoría aplicó controles distintos en cada etapa.
 
 | Etapa | Pregunta | Decisión |
 |---|---|---|
@@ -122,7 +131,7 @@ como una compuerta, no como una ausencia de código que pudiera ignorarse.
 ### Brecha transversal de febrero de 2025
 
 Entre el 5 y el 25 de febrero la fuente no ofrece observaciones válidas para el
-alcance. La franja roja no significa clima cero: significa falta de evidencia.
+alcance. La franja roja representa ausencia de observaciones, no clima cero.
 
 ![Cobertura municipal en febrero de 2025](assets/03_brecha_febrero_2025.png)
 
@@ -140,7 +149,7 @@ alcance. La franja roja no significa clima cero: significa falta de evidencia.
 | Municipio sin estación | 155 municipios sin estación utilizable en precipitación | `NaN`, nunca cero |
 | Cobertura insuficiente | 92 municipio-días en precipitación | Bandera y compuerta científica |
 
-## 7. De observación subdiaria a municipio-día
+## 7. Agregación climática a escala municipal diaria
 
 ### Paso 1: estación × sensor × día
 
@@ -167,9 +176,20 @@ tenían fila y cuántas aportaron un valor válido. La mediana de estaciones es 
 valor principal; media, extremos, desviación y rango permiten auditarlo.
 
 La capa diaria se mantuvo porque precipitación, extremos térmicos y rachas
-dependen del orden de los días. Resumir demasiado pronto destruiría esa señal.
+dependen del orden de los días. Una agregación temporal anterior al cálculo de
+estos indicadores eliminaría esa información.
 
-## 8. Cultivos: la fuente ya venía por períodos
+### Distribución de las estaciones climáticas
+
+El mapa reúne 127 estaciones con asignación municipal canónica en al menos una
+de las seis variables procesadas. El tamaño y el color de cada punto indican
+cuántas variables aportó la estación. La distribución no es uniforme: varios
+municipios carecen de una estación utilizable, mientras que otros concentran
+estaciones con cobertura multivariable.
+
+![Ubicación de estaciones climáticas](assets/10_mapa_estaciones_climaticas.png)
+
+## 8. Frecuencia original de los datos agrícolas
 
 El artefacto municipal Socrata contiene años 2022–2024 y tres tipos de período.
 La gráfica muestra filas consolidadas, no hectáreas.
@@ -185,7 +205,7 @@ Los períodos significan:
 No se compara A con B ni semestral con anual. Cada comparación interanual
 empareja el mismo municipio, cultivo y tipo de período.
 
-## 9. Cómo se obtuvo municipio × cultivo × período
+## 9. Agregación por municipio, cultivo y período
 
 La fuente puede traer varias filas de un mismo cultivo por ciclo, estado físico
 o componente. El agregado:
@@ -212,10 +232,32 @@ Resultados de `cultivo_municipio_periodo_v1`:
 independientes. No se descarta un área sembrada válida porque la cosecha sea
 cero.
 
-## 10. Cómo se logró una llave semejante para clima
+### Distribución municipal de los diez cultivos principales
 
-Clima sí llegó a municipio × día. Para unirlo con EVA se parte el calendario en
-semestres A y B y se calculan indicadores por municipio:
+Los diez cultivos se seleccionaron por área sembrada acumulada entre 2022 y
+2024, incluyendo períodos semestrales y anuales. El mapa asigna a cada municipio
+el cultivo con mayor área dentro de ese grupo. Esta clasificación representa
+predominio por área sembrada; no implica mayor rendimiento ni mayor producción.
+
+![Distribución municipal de los diez cultivos principales](assets/11_mapa_cultivos_principales.png)
+
+| Posición | Cultivo | Área sembrada acumulada (ha) |
+|---:|---|---:|
+| 1 | Papa | 373.478,17 |
+| 2 | Caña | 189.489,60 |
+| 3 | Café | 119.874,96 |
+| 4 | Maíz | 75.073,81 |
+| 5 | Frijol | 44.732,61 |
+| 6 | Plátano | 40.666,05 |
+| 7 | Cacao | 38.708,90 |
+| 8 | Arveja | 31.453,69 |
+| 9 | Mango | 30.793,28 |
+| 10 | Cebolla de bulbo | 23.171,49 |
+
+## 10. Integración temporal de clima y cultivos
+
+Los datos climáticos se consolidaron a municipio × día. Para unirlos con EVA se
+parte el calendario en semestres A y B y se calculan indicadores por municipio:
 
 - precipitación total, promedio diario y máximo de un día;
 - días húmedos y mayor racha seca;
@@ -233,7 +275,7 @@ codigo_municipio + anio + tipo_periodo
 
 Al agregar `cultivo`, puede unirse uno a uno con la fila agrícola.
 
-## 11. Por qué se eligió papa
+## 11. Selección del cultivo
 
 Entre los cultivos semestrales 2022–2024, papa acumuló 373.478 hectáreas
 sembradas en 155 municipios. Maíz, segundo en el ranking, acumuló 75.074.
@@ -243,6 +285,32 @@ sembradas en 155 municipios. Maíz, segundo en el ranking, acumuló 75.074.
 La elección combina importancia territorial y disponibilidad de historia. Para
 el pronóstico se usó el Excel oficial UPRA 2019–2025, más amplio que el
 artefacto Socrata 2022–2024.
+
+### Agregado municipal de papa
+
+Los siguientes mapas presentan área sembrada, área cosechada, producción y
+rendimiento ponderado acumulados para 2022–2024. Las escalas logarítmicas de
+área y producción permiten distinguir municipios con valores pequeños sin
+ocultar la concentración de los valores mayores.
+
+![Agregado municipal de papa](assets/12_mapa_agregado_municipal_papa.png)
+
+### Producción municipal por año
+
+La comparación anual utiliza la misma escala en 2022, 2023 y 2024. Las etiquetas
+identifican los cinco municipios con mayor producción de papa en cada año. La
+concentración principal se mantiene alrededor de Tausa, Villapinzón, Siachoque,
+Ventaquemada y Saboyá, aunque el orden puede cambiar entre períodos.
+
+![Producción municipal de papa por año](assets/13_mapa_produccion_papa_por_anio.png)
+
+| Posición | 2022 | Producción (t) | 2023 | Producción (t) | 2024 | Producción (t) |
+|---:|---|---:|---|---:|---|---:|
+| 1 | Villapinzón | 295.757,0 | Villapinzón | 306.905,4 | Villapinzón | 465.060,0 |
+| 2 | Tausa | 273.321,0 | Tausa | 268.160,0 | Tausa | 323.180,0 |
+| 3 | Siachoque | 122.308,0 | Siachoque | 125.540,0 | Siachoque | 168.760,0 |
+| 4 | Ventaquemada | 113.390,0 | Saboyá | 100.170,0 | Ventaquemada | 80.595,0 |
+| 5 | Saboyá | 99.210,0 | Ventaquemada | 98.742,0 | Saboyá | 75.100,0 |
 
 ## 12. Historia del rendimiento seleccionada
 
@@ -256,12 +324,12 @@ Siete años por municipio y semestre son suficientes para una validación tempor
 básica, pero insuficientes para ajustar de manera estable modelos temporales
 complejos separados por municipio.
 
-## 13. Dataset definitivo
+## 13. Conjunto de datos definitivo
 
-El dataset tiene 2.366 filas y 56 columnas. Su llave es municipio, año, semestre
-y cultivo.
+El conjunto de datos tiene 2.366 filas y 56 columnas. Su llave es municipio,
+año, semestre y cultivo.
 
-![Estructura del dataset definitivo](assets/07_dataset_pronostico.png)
+![Estructura del conjunto de datos definitivo](assets/07_dataset_pronostico.png)
 
 Los predictores candidatos se reparten en:
 
@@ -290,16 +358,16 @@ El segundo semestre es por tanto un escenario condicionado a la fecha de corte.
 ## 14. Métodos probados y representaciones
 
 Se compararon dos referencias simples, regresión lineal regularizada, bosques de
-árboles, árboles extra, gradient boosting y una red neuronal multicapa.
+árboles, árboles extra, potenciación por gradiente y una red neuronal multicapa.
 
 Las categorías binarias crean columnas 0/1 por entidad. La representación
 geografía + historia evita una identidad neuronal del municipio y usa
-coordenadas, rezagos, departamento y semestre. No se usaron embeddings de texto
-porque no existe texto libre.
+coordenadas, rezagos, departamento y semestre. No se usaron representaciones
+vectoriales semánticas porque no existe texto libre.
 
 ![Comparación de métricas de los métodos](assets/08_metricas_modelos.png)
 
-### Cómo leer las métricas
+### Definición de las métricas
 
 - **Error absoluto medio:** distancia promedio entre real y pronosticado. Está
   en toneladas por hectárea. Menor es mejor.
@@ -315,31 +383,36 @@ rendimiento obtuvo 2,302 t/ha, frente a 2,680 de Ridge con categorías binarias.
 Ridge tuvo una raíz del error cuadrático medio algo menor, pero no ganó la
 métrica acordada.
 
-## 15. Por qué no se forzó un modelo temporal más robusto
+## 15. Justificación del modelo seleccionado
 
 ARIMA, Prophet o redes recurrentes pueden ser apropiados con series largas,
 regulares y comparables. Aquí cada municipio-semestre aporta como máximo siete
-targets históricos, existe un cambio metodológico en EVA y 2026B aún contiene
-climatología.
+observaciones históricas de rendimiento, existe un cambio metodológico en EVA y
+2026B aún contiene climatología.
 
-Tres riesgos dominarían un modelo más complejo:
+Los riesgos identificados para un modelo más complejo son:
 
 1. demasiados parámetros para pocos puntos por municipio;
 2. sobreajuste a cambios metodológicos o años particulares;
 3. falsa precisión al tratar clima futuro climatológico como observado.
 
-La validación año por año mostró que la persistencia local contiene una señal
-fuerte. Por eso se eligió el método que produjo menor error fuera de muestra,
-aunque fuera más sencillo.
+La validación año por año mostró que la persistencia local obtuvo el menor error
+fuera de muestra. Este resultado determinó la selección del modelo.
 
-## 16. Período y resultado a pronosticar
+## 16. Alcance del pronóstico
 
-El objetivo final son los semestres 2026A y 2026B para diez municipios de cada
+El alcance son los semestres 2026A y 2026B para diez municipios de cada
 departamento. Los puntos son pronósticos y las líneas representan el percentil
-90 del error absoluto observado en el backtesting. No son intervalos
+90 del error absoluto observado en la validación retrospectiva. No son intervalos
 probabilísticos calibrados.
 
 ![Pronóstico municipal de papa 2026](assets/09_pronostico_papa_2026.png)
+
+El mapa localiza los 20 municipios objetivo y utiliza una escala común para
+comparar los rendimientos pronosticados entre departamentos y semestres. Los
+municipios sin color no pertenecen al conjunto objetivo del pronóstico.
+
+![Mapa del pronóstico municipal de rendimiento de papa](assets/14_mapa_pronostico_rendimiento_2026.png)
 
 | Departamento | Semestre | Media | Mediana | Mínimo | Máximo |
 |---|---|---:|---:|---:|---:|
@@ -348,8 +421,8 @@ probabilísticos calibrados.
 | Cundinamarca | A | 26,43 | 24,73 | 19,82 | 35,00 |
 | Cundinamarca | B | 25,58 | 24,86 | 17,00 | 32,79 |
 
-En el backtesting global 2021–2025 hubo 200 observaciones. El error absoluto
-medio fue 2,422 t/ha, la raíz del error cuadrático medio 3,991 t/ha, el
+En la validación retrospectiva global 2021–2025 hubo 200 observaciones. El error
+absoluto medio fue 2,422 t/ha, la raíz del error cuadrático medio 3,991 t/ha, el
 coeficiente de determinación 0,276 y el error porcentual absoluto simétrico
 10,12 %.
 
@@ -357,14 +430,14 @@ El segmento más débil fue Cundinamarca-B: error absoluto medio 3,261 t/ha y
 coeficiente de determinación −0,221. Esa limitación debe acompañar siempre la
 presentación del promedio global.
 
-## 17. Qué está concluido y qué sigue abierto
+## 17. Estado de ejecución y tareas pendientes
 
 Concluido:
 
 - seis variables IDEAM hasta municipio-día;
 - agregado agrícola municipio × cultivo × período;
 - cruce geográfico por código DANE;
-- dataset de papa 2019–2026;
+- conjunto de datos de papa 2019–2026;
 - comparación temporal de nueve candidatos;
 - 40 pronósticos para 2026.
 
@@ -374,7 +447,8 @@ Abierto:
 - aprobación científica de cobertura municipal de precipitación;
 - indicadores de período desde la capa IDEAM;
 - sustitución progresiva de climatología 2026B por días reales;
-- validación del pronóstico cuando EVA publique el target 2026.
+- validación del pronóstico cuando EVA publique el rendimiento observado de
+  2026.
 
 ## 18. Reproducibilidad
 
@@ -386,5 +460,6 @@ python docs/presentation/generate_presentation_charts.py
 ```
 
 En otra máquina se puede definir `ECO2026_PROCESSED_ROOT` con la ruta de
-`eco2026_processed`. El script solo lee artefactos y escribe PNG dentro de
+`eco2026_processed` y `ECO2026_SHARED_ROOT` con la carpeta que contiene el
+GeoPackage municipal. El script solo lee artefactos y escribe PNG dentro de
 `docs/presentation/assets/`.
