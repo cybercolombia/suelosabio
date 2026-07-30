@@ -1,6 +1,6 @@
 # Estado del pipeline: precipitacion
 
-**Actualizado:** 24 de julio de 2026
+**Actualizado:** 28 de julio de 2026
 **Estado:** en proceso  
 **Fuente:** `s54a-sgyg`  
 **Alcance objetivo:** Boyaca y Cundinamarca, enero de 2024 a diciembre de 2025
@@ -144,7 +144,7 @@ Contrato y evidencia:
 
 ## 06. Geografia de estaciones
 
-**Estado de etapa:** `[P]` auditoria implementada; asignacion canonica pendiente.
+**Estado de etapa:** `[X]` cierre espacial v3 verificado.
 
 - [X] Implementado `06_ClimateGeographyAudit.ipynb` con ejecucion protegida.
 - [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
@@ -153,10 +153,17 @@ Contrato y evidencia:
 - [X] Ejecutado y persistido el cierre geografico
   `estaciones_precipitacion_2024_2025_v1`.
 - [X] Verificadas 126 estaciones unicas: 111 verdes y 15 para revision.
-- [ ] Resolver 15 estaciones candidatas a revision.
-- [ ] Conseguir `.dbf` y `.prj` compatibles con `Div_Pol.shp`, o un GeoPackage,
-  GeoJSON o GeoParquet equivalente.
-- [ ] Validar puntos contra poligonos y aprobar la asignacion canonica.
+- [X] Conseguido y validado `DivipolaGeo.gpkg`: 239 poligonos validos en
+  `EPSG:4326`, concordantes con DIVIPOLA.
+- [X] Implementado punto-en-poligono y salida canonica separada.
+- [X] Ejecutado y persistido `estaciones_precipitacion_2024_2025_v2` en Drive:
+  116 asignaciones canonicas y 10 estaciones no canonicas.
+- [X] Confirmado que Bogota no entra al catalogo canonico.
+- [X] Implementada v3 para separar una exclusion de alcance de las revisiones.
+- [X] Ejecutado y persistido `estaciones_precipitacion_2024_2025_v3` en Drive:
+  116 asignaciones canonicas, 9 revisiones y 1 exclusion.
+- [P] Resolver o documentar las 9 estaciones en revision geografica en
+  paralelo; no ingresan al paso 07 mientras sigan pendientes.
 
 Contrato:
 
@@ -165,26 +172,60 @@ Contrato:
 
 ## 07. Municipio diario
 
-**Estado de etapa:** `[ ]` bloqueado por la compuerta geografica.
+**Estado de etapa:** `[P]` producto oficial completo; compuerta cientifica de
+cobertura pendiente.
 
-- [ ] Definir la agregacion de estaciones a municipio sin ponderar la frecuencia subdiaria.
-- [ ] Producir precipitacion municipio-dia con cobertura y numero de estaciones.
-- [ ] Conservar estaciones esperadas, observadas, dispersion y calidad.
-- [ ] Mantener `NaN` cuando no exista evidencia suficiente.
+- [X] Definida mediana no ponderada como estadistica principal del piloto.
+- [X] Implementado calendario de 239 municipios para 2024-2025.
+- [X] Implementada cobertura contra estaciones esperadas en cada fecha.
+- [X] Conservadas media, mediana, extremos, desviacion, IQR, rango y codigos de
+  estaciones contribuyentes.
+- [X] Mantenido `NaN` sin imputacion cuando no existe evidencia suficiente.
+- [X] Prevalidada persistencia local: 48 particiones y 174.709 filas.
+- [X] Ejecutada la corrida oficial en Colab con 48 particiones y 174.709 filas.
+- [X] Verificadas llaves unicas y semantica de valores validos y `NaN`.
+- [X] Cuantificada cobertura espacial: 84 municipios con estacion canonica
+  utilizable y 155 sin ella.
+- [X] Cuantificada cobertura temporal agregada: 25.856 de 37.651 municipio-dias
+  con estacion esperada fueron validos (68,67 %).
+- [X] Identificados 11.703 municipio-dias sin datos aceptados, 92 con cobertura
+  insuficiente y 5.096 validos con multiples estaciones.
+- [X] Implementada auditoria reproducible de los 92 dias con cobertura
+  insuficiente y los 5.096 dias multiestacion.
+- [X] Prevalidada localmente la dispersion, diferencias media-mediana,
+  sensibilidad de umbrales y cobertura por periodo.
+- [P] Ejecutar y persistir la auditoria municipal oficial en Colab.
+- [ ] Revisar Aquitania y Puerto Salgar, donde la sensibilidad anual
+  media-mediana es material.
+- [ ] Definir el umbral minimo de cobertura temporal para construir
+  indicadores por periodo.
+- [ ] Cruzar cobertura municipal con EVA y clasificar municipios utilizables,
+  insuficientes y sin evidencia climatica.
+- [ ] Decidir la estrategia frente a municipios sin cobertura. Hasta entonces
+  permanecen en `NaN`: no se imputan ni se eliminan en silencio.
+
+Contrato:
+
+- [`../climate_municipal_aggregation.md`](../climate_municipal_aggregation.md)
+- [`../climate_municipal_audit.md`](../climate_municipal_audit.md)
+- [`../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md`](../climate_audits/07_municipio_diario/auditoria_municipal_precipitacion_2024_2025.md)
 
 ## 08. Indicadores por periodo
 
-**Estado de etapa:** `[ ]` pendiente de 07.
+**Estado de etapa:** `[ ]` pendiente de la compuerta cientifica de 07.
 
 - [ ] Definir indicadores por periodo agricola: acumulado, dias con lluvia, intensidad y brechas.
 - [ ] Conservar `NaN` cuando la cobertura sea insuficiente; no extrapolar acumulados.
 
 ## Siguiente bloque recomendado
 
-1. Pausar precipitacion antes de 07 mientras se consiguen poligonos completos.
-2. Resolver los cuatro alias DIVIPOLA con una tabla explicita y trazable.
-3. Revisar espacialmente los municipios multiples y diferencias de coordenadas.
-4. Avanzar en paralelo con el piloto de temperatura sin copiar reglas de lluvia.
+1. Ejecutar `07_ClimateMunicipalAudit.ipynb` en Colab y persistir su salida.
+2. Revisar Aquitania y Puerto Salgar, comparar media y mediana y decidir si la
+   regla v1 se mantiene.
+3. Definir cobertura minima por periodo y cruzar los municipios con EVA.
+4. Solo despues habilitar 08 para acumulados, dias de lluvia, extremos y rachas.
+5. Resolver en paralelo las nueve estaciones con revision geografica pendiente.
+6. Avanzar en paralelo con temperatura sin copiar reglas de precipitacion.
 
 ## Plan de ejecucion del paso 03
 

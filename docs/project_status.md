@@ -1,6 +1,6 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 25 de julio de 2026
+**Actualizado:** 28 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
@@ -36,8 +36,8 @@ historicas de descarga y rendimiento de la API.
   una sola; cada variable debe justificar utilidad, cobertura y calidad.
 - Confirmar el archivo EVA compartido, su hoja, granularidad y reglas de
   consolidacion.
-- Conseguir los componentes completos de los poligonos municipales y cerrar la
-  asignacion geografica canonica de estaciones.
+- Resolver en paralelo las nueve estaciones geograficas no canonicas; no
+  ingresan al agregado municipal mientras sigan pendientes.
 - Definir periodos climaticos compatibles con EVA y con el ciclo de cada cultivo.
 - Definir baseline, modelos, validacion temporal y metricas.
 
@@ -64,7 +64,7 @@ garantiza cobertura interna, calidad ni continuidad temporal.
 | Dominio | Evidencia actual | Estado vigente |
 |---|---|---|
 | Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
-| Geografia | Catalogos IDEAM y DIVIPOLA auditados por el paso 06 | Cierre tabular y mapa completos para precipitacion; 15 revisiones y poligonos pendientes |
+| Geografia | Catalogos IDEAM, DIVIPOLA y 239 poligonos municipales validados | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
 | Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
 | Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
 
@@ -81,10 +81,10 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 04 Auditoria diaria | `auditorias_clima_diario` | Precipitacion validada; piloto v1 de temperatura ambiente auditado y v2 pendiente de corrida |
 | 05 Consolidacion | `clima_diario_curado` | Precipitacion 2024-2025 completa y reconciliada |
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
-| 06 Geografia | `geografia_curada` | Precipitacion ejecutada: 111 candidatos sin alertas y 15 revisiones; poligonos pendientes |
-| 07 Municipio diario | `clima_municipal` | No implementado |
+| 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
+| 07 Municipio diario | `clima_municipal` | Precipitacion oficial completa; auditoria de cobertura y sensibilidad implementada, corrida Colab pendiente |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
-| 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
+| 09 EVA | Agricultura curada y municipal | Auditorías y agregados ejecutados; 13.692 targets, 9.377 comparaciones y geografía completa; revisión taxonómica pendiente |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
 
 ## Regla para nuevas variables
@@ -106,11 +106,11 @@ umbrales y criterios de calidad.
    termino 03-05 y 2021-2023 quedan como ampliacion posterior.
 3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
    equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Resolver las revisiones del paso 06 y conseguir el conjunto completo de
-   poligonos municipales sin escribir en la carpeta compartida.
+4. Ejecutar y auditar en Colab el piloto 07 ya implementado; resolver en
+   paralelo las nueve revisiones espaciales.
 5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
    ventanas climaticas.
-6. Implementar 07 y 08 solo despues de cerrar la asignacion geografica canonica.
+6. Cerrar la auditoria de 07 antes de implementar indicadores del paso 08.
 
 El orden completo y sus compuertas se mantienen en
 [`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre

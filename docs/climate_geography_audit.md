@@ -1,7 +1,7 @@
 # Auditoria geografica climatica
 
-**Actualizado:** 24 de julio de 2026
-**Estado:** cierre tabular y mapa ejecutados; poligonos pendientes
+**Actualizado:** 29 de julio de 2026
+**Estado:** corrida espacial v3 verificada; cierre operativo aprobado
 **Alcance:** estaciones de precipitacion de Boyaca y Cundinamarca, 2024-2025
 
 `06_ClimateGeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
@@ -18,6 +18,7 @@ Entradas de solo lectura:
   Divipola_Municipios.json
 
 /content/drive/MyDrive/eco2026_processed/
+  geografia_fuente/DivipolaGeo.gpkg
   clima_diario_curado/variable=precipitacion/.../cierre_precipitacion_2024_2025_v2/
 ```
 
@@ -25,7 +26,7 @@ Salida personal:
 
 ```text
 /content/drive/MyDrive/eco2026_processed/
-  geografia_curada/ejecucion=estaciones_precipitacion_2024_2025_v1/
+  geografia_curada/canonica=estaciones_precipitacion_2024_2025_v3/
 ```
 
 El notebook comprueba que la ruta de salida no pertenezca a `eco2026`.
@@ -41,15 +42,41 @@ El notebook comprueba que la ruta de salida no pertenezca a `eco2026`.
 
 ## Contrato actual
 
-`climate_station_geography_v1` conserva codigo de estacion como texto, compara
-departamento, municipio y coordenadas, resuelve un candidato DIVIPOLA y genera
-un mapa de puntos. El estado esperado es `COMPLETA_SIN_POLIGONOS`.
+`climate_station_geography_v3` conserva codigo de estacion como texto, valida
+los 239 poligonos contra DIVIPOLA y ejecuta punto-en-poligono con las
+coordenadas oficiales IDEAM.
 
-Los archivos `estaciones_municipio_candidato.parquet` y
-`estaciones_revision.parquet` son evidencia preliminar. La columna
-`asignacion_canonica` permanece en `False` para todas las filas.
+Una estacion se declara canonica solamente cuando intersecta un unico poligono,
+el departamento esta en alcance y el codigo espacial no contradice un codigo
+de catalogo conocido. Los conflictos permanecen en
+`estaciones_revision.parquet`. Las estaciones fuera de Boyaca y Cundinamarca,
+incluida Bogota D.C. aunque la descarga la haya agrupado bajo Cundinamarca,
+quedan en `estaciones_excluidas.parquet` y no cuentan como revisiones
+pendientes.
 
-## Cierre ejecutado
+## Cierre espacial v2
+
+El GeoPackage contiene una capa `Boyaca_Cundinamarca_Municipios` con CRS
+`EPSG:4326`, 239 `MultiPolygon` validos y 239 codigos compuestos unicos:
+123 municipios de Boyaca y 116 de Cundinamarca. Los codigos concuerdan
+exactamente con DIVIPOLA.
+
+La corrida persistida el 29 de julio de 2026 sobre las 126 estaciones produjo:
+
+- 112 puntos donde poligono y catalogo coinciden.
+- 4 nombres no resueltos por catalogo que el poligono resuelve.
+- 7 conflictos entre municipio de catalogo y municipio espacial.
+- 3 puntos sin poligono contenedor, incluido uno fuera del alcance.
+- 116 asignaciones canonicas y 10 estaciones no canonicas.
+- 84 municipios representados por al menos una estacion canonica.
+- Ninguna estacion de Bogota dentro del catalogo canonico.
+
+Los diez casos no canonicos se componen de siete conflictos catalogo-poligono,
+dos puntos cercanos a limites sin poligono contenedor y una estacion de Bogota
+D.C. fuera del alcance. Esta ultima motivó el contrato v3: deja de contarse como
+revision y se conserva como exclusion explicita.
+
+## Cierre historico sin poligonos
 
 La ejecucion `estaciones_precipitacion_2024_2025_v1` termino el 24 de julio de
 2026 con estado `COMPLETA_SIN_POLIGONOS`:
@@ -67,12 +94,8 @@ La evidencia resumida esta en
 
 ## Compuerta antes de 07
 
-La capa `Div_Pol.shp` encontrada carece de componentes esenciales del formato.
-Antes de agregar clima por municipio se necesita:
-
-1. Conseguir una capa municipal completa con geometria, atributos y CRS.
-2. Filtrar Boyaca y Cundinamarca.
-3. Ejecutar punto-en-poligono para cada estacion.
-4. Resolver estaciones fuera del alcance, municipios multiples y coordenadas
-   discrepantes.
-5. Publicar `estaciones_municipio.parquet` como catalogo canonico versionado.
+La corrida v3 persistida confirmo 116 asignaciones canonicas, 9 revisiones y
+1 exclusion de alcance. El paso 07 puede consumir exclusivamente
+las filas de `estaciones_municipio.parquet`, que contienen
+`asignacion_canonica=True`. Las nueve estaciones en revision y la exclusion de
+Bogota no se eliminan, pero tampoco se agregan silenciosamente a un municipio.

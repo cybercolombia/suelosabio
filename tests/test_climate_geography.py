@@ -12,6 +12,7 @@ sys.path.insert(0, str(PIPELINE_DIR))
 
 from ClimateGeography import (  # noqa: E402
     auditar_geografia,
+    incorporar_asignaciones_espaciales,
     preparar_tabla_serializable,
     validar_catalogo_ideam,
 )
@@ -156,6 +157,15 @@ class ClimateGeographyTest(unittest.TestCase):
             "DEPARTAMENTO_DISCREPANTE",
             fila["motivos_revision_geografica"],
         )
+        self.assertTrue(fila["excluida_alcance"])
+        self.assertFalse(fila["requiere_revision_geografica"])
+        self.assertEqual(
+            fila["motivo_exclusion_alcance"],
+            "BOGOTA_D_C_EXCLUIDA_DEL_ALCANCE",
+        )
+        self.assertEqual(fila["estado_asignacion"], "EXCLUIDA_FUERA_ALCANCE")
+        self.assertEqual(len(resultado.estaciones_revision), 0)
+        self.assertEqual(len(resultado.estaciones_excluidas), 1)
 
     def test_catalogo_ideam_rechaza_codigos_repetidos(self):
         ideam = pd.DataFrame(
@@ -167,6 +177,72 @@ class ClimateGeographyTest(unittest.TestCase):
 
         with self.assertRaisesRegex(ValueError, "repetidos"):
             validar_catalogo_ideam(ideam)
+
+    def test_cruce_espacial_confirma_resuelve_y_conserva_conflictos(self):
+        candidatos = pd.DataFrame(
+            {
+                "codigoestacion": ["S1", "S2", "S3", "S4"],
+                "codigo_municipio": ["25001", pd.NA, "25003", "11001"],
+                "departamento_ideam_norm": [
+                    "CUNDINAMARCA",
+                    "CUNDINAMARCA",
+                    "CUNDINAMARCA",
+                    "BOGOTA D C",
+                ],
+                "departamento_ideam_en_alcance": [True, True, True, False],
+                "motivos_revision_geografica": [
+                    "",
+                    "DIVIPOLA_NO_RESUELTA",
+                    "",
+                    "FUERA_ALCANCE_GEOGRAFICO",
+                ],
+                "asignacion_metodo": ["CATALOGO"] * 4,
+                "asignacion_canonica": [False] * 4,
+                "estado_asignacion": ["CANDIDATO"] * 4,
+                "requiere_revision_geografica": [False, True, False, True],
+            }
+        )
+        coincidencias = pd.DataFrame(
+            {
+                "codigoestacion": ["S1", "S2", "S3"],
+                "codigo_departamento_poligono": ["25", "25", "25"],
+                "codigo_municipio_poligono": ["25001", "25002", "25004"],
+                "departamento_poligono": ["CUNDINAMARCA"] * 3,
+                "municipio_poligono": ["UNO", "DOS", "CUATRO"],
+            }
+        )
+
+        resultado = incorporar_asignaciones_espaciales(
+            candidatos,
+            coincidencias,
+        ).set_index("codigoestacion")
+
+        self.assertTrue(resultado.loc["S1", "asignacion_canonica"])
+        self.assertEqual(
+            resultado.loc["S1", "asignacion_metodo"],
+            "PUNTO_EN_POLIGONO_CONFIRMA_CATALOGO",
+        )
+        self.assertTrue(resultado.loc["S2", "asignacion_canonica"])
+        self.assertEqual(
+            resultado.loc["S2", "codigo_municipio_canonico"],
+            "25002",
+        )
+        self.assertFalse(resultado.loc["S3", "asignacion_canonica"])
+        self.assertIn(
+            "CATALOGO_POLIGONO_DISCREPAN",
+            resultado.loc["S3", "motivos_revision_geografica"],
+        )
+        self.assertFalse(resultado.loc["S4", "asignacion_canonica"])
+        self.assertTrue(resultado.loc["S4", "excluida_alcance"])
+        self.assertFalse(resultado.loc["S4", "requiere_revision_geografica"])
+        self.assertEqual(
+            resultado.loc["S4", "estado_asignacion"],
+            "EXCLUIDA_FUERA_ALCANCE",
+        )
+        self.assertIn(
+            "SIN_POLIGONO_CONTENEDOR",
+            resultado.loc["S4", "motivos_revision_geografica"],
+        )
 
     def test_notebook_run_all_permanece_protegido_y_fuera_de_compartida(self):
         notebook_path = PIPELINE_DIR / "06_ClimateGeographyAudit.ipynb"

@@ -1,6 +1,6 @@
 # Guia del repositorio
 
-**Actualizado:** 23 de julio de 2026
+**Actualizado:** 29 de julio de 2026
 **Estado:** inventario vigente; revision de codigo pendiente
 
 Esta guia orienta a personas y asistentes de IA. Clasifica los archivos por su
@@ -16,7 +16,9 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 | `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
 | `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
-| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Auditar estaciones, DIVIPOLA y mapa de puntos | Activo; poligonos pendientes |
+| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
+| `ClimatePipeline/07_ClimateMunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Corrida oficial completa; revision cientifica pendiente |
+| `ClimatePipeline/07_ClimateMunicipalAudit.ipynb` | Auditar cobertura y sensibilidad municipio-dia | Implementado; corrida Colab pendiente |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
@@ -31,6 +33,8 @@ un nombre en configuracion.
 | `PrecipitationDailyAudit.py` | Calendario y diagnostico diario de precipitacion |
 | `PrecipitationDailyConsolidation.py` | Contrato estacion-dia de precipitacion |
 | `ClimateGeography.py` | Cruce trazable de estaciones, catalogo IDEAM y DIVIPOLA |
+| `PrecipitationMunicipalAggregation.py` | Contrato estacion-dia a municipio-dia de precipitacion |
+| `PrecipitationMunicipalAudit.py` | Cobertura por periodo y sensibilidad media-mediana municipal |
 | `TemperatureRules.py` | Contratos diarios de temperatura ambiente, minima y maxima |
 | `TemperatureDailyAudit.py` | Calendario y diagnostico diario de temperatura |
 | `HumidityRules.py` | Marcador bloqueante hasta definir reglas de humedad |
@@ -43,9 +47,26 @@ un nombre en configuracion.
 | `tests/test_precipitation_daily_audit.py` | Auditoria diaria |
 | `tests/test_precipitation_daily_consolidation.py` | Consolidacion y proteccion del notebook 05 |
 | `tests/test_climate_geography.py` | Cruce geografico y proteccion del notebook 06 |
+| `tests/test_precipitation_municipal_aggregation.py` | Agregacion municipal y proteccion del notebook 07 |
+| `tests/test_precipitation_municipal_audit.py` | Auditoria municipal y proteccion de su notebook |
 | `tests/test_temperature_processing.py` | Contratos y despacho de temperatura |
 | `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
 | `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |
+
+## Pipeline agrícola
+
+| Archivo | Responsabilidad | Estado |
+|---|---|---|
+| `ClimatePipeline/01_2_CropYieldDataDownloader.ipynb` | Descargar EVA Socrata por departamento, año y período | Implementado |
+| `ClimatePipeline/02_2_CropYieldDataAudit.ipynb` | Auditar esquema, cobertura, llaves, períodos y medidas crudas | Implementado y ejecutado |
+| `ClimatePipeline/09_EvaCurator.ipynb` | Consolidar taxonomías compatibles y recalcular el target | Implementado y ejecutado |
+| `ClimatePipeline/09_2_EvaCuratedAudit.ipynb` | Validar llave, fórmula y cobertura del producto curado | Implementado y ejecutado |
+| `ClimatePipeline/CropYieldProcessing.py` | Contratos puros de auditoría y curación EVA | Probado |
+| `ClimatePipeline/CropYieldAuditRunner.py` | Ejecutar y reanudar las tres etapas agrícolas | Ejecutado |
+| `ClimatePipeline/CropMunicipalChange.py` | Agregar por municipio-período y calcular cambios interanuales | Probado |
+| `ClimatePipeline/CropMunicipalChangeRunner.py` | Materializar el agregado y auditar su enlace DIVIPOLA | Ejecutado |
+| `tests/test_crop_yield_processing.py` | Normalización, banderas, consolidación y compuerta final | Activo |
+| `tests/test_crop_municipal_change.py` | Universos por métrica, períodos y geografía | Activo |
 
 Las reglas futuras deben seguir el mismo principio de separacion, no
 necesariamente copiar la misma implementacion.

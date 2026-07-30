@@ -12,6 +12,7 @@ una auditoria.
 | [`04_series_diarias/`](04_series_diarias/) | `clima_diario_sensor` | `04_ClimateDailyAudit.ipynb` | La transformacion produjo una serie diaria defendible |
 | [`05_clima_curado/`](05_clima_curado/) | `clima_diario_curado` | Reconciliacion del paso 05 | La capa curada respeta manifiesto, calidad y trazabilidad |
 | [`06_geografia/`](06_geografia/) | Estaciones, IDEAM y DIVIPOLA | `06_ClimateGeographyAudit.ipynb` | La asignacion estacion-municipio es trazable y que falta para hacerla canonica |
+| [`07_municipio_diario/`](07_municipio_diario/) | `clima_municipal` | `07_ClimateMunicipalAggregator.ipynb` | La agregacion conserva llaves, cobertura, calidad y ausencias |
 | [`transversales/`](transversales/) | Varias etapas o variables | Sintesis documental | El hallazgo se repite o conecta varios productos |
 
 La numeracion de las carpetas coincide con el paso del pipeline que genera la
@@ -28,6 +29,8 @@ una unica etapa.
   05, va en `05_clima_curado`.
 - Si compara estaciones curadas con catalogos IDEAM, DIVIPOLA o poligonos, va en
   `06_geografia`.
+- Si verifica el calendario, cobertura o agregacion de estacion-dia a
+  municipio-dia, va en `07_municipio_diario`.
 - Si combina evidencia cruda, diaria o de varias variables, va en
   `transversales`.
 

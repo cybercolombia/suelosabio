@@ -25,7 +25,7 @@ project_status
   -> auditorias_clima_diario
   -> clima_diario_curado
   -> geografia_curada
-  -> clima_municipal -> indicadores_climaticos
+  -> clima_municipal -> auditorias_clima_municipal -> indicadores_climaticos
   + agricultura_curada
   -> dataset_maestro
   -> model_runs -> artifacts -> aplicacion
@@ -184,6 +184,8 @@ geografia_curada/ejecucion=<version>/
 
 geografia_curada/canonica=<version>/
   estaciones_municipio.parquet
+  estaciones_revision.parquet
+  estaciones_excluidas.parquet
   divipola_municipios_geometria.parquet
   manifest.json
 ```
@@ -193,30 +195,71 @@ geografia_curada/canonica=<version>/
 | Productor | `06_ClimateGeographyAudit.ipynb` |
 | Granularidad | Estacion; municipio |
 | Consumidor | Paso 07 |
-| Estado | Auditoria de puntos implementada; punto-en-poligono pendiente |
+| Estado | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
 
-La primera salida contiene candidatos de catalogo y nunca los llama canonicos.
-La segunda requiere una capa completa de poligonos, punto-en-poligono y revision
-de excepciones. Ambas conservan codigo DANE, coordenadas, fuente, periodo,
-metodo y evidencia.
+La primera salida conserva la auditoria historica de candidatos. La segunda
+valida 239 poligonos y contiene solamente estaciones con asignacion espacial
+canonica; los conflictos permanecen en revision y Bogota D.C. queda en una
+tabla de exclusiones. Ambas conservan
+codigo DANE, coordenadas, fuente, periodo, metodo y evidencia.
 
 ### 07. Clima municipal diario
 
 ```text
-clima_municipal/variable=<variable>/municipio_dia.parquet
-clima_municipal/variable=<variable>/quality_report.md
-clima_municipal/variable=<variable>/manifest.json
+clima_municipal/
+  variable=precipitacion/
+    fuente=s54a-sgyg/
+      agregacion=precipitacion_municipio_dia_2024_2025_v1/
+        departamento=<departamento>/anio=<anio>/mes=<mes>/
+          precipitacion_municipio_dia.parquet
+        resumen_municipios.parquet
+        cobertura_municipal_diaria.html
+        AgregacionMunicipal_precipitacion_2024_2025.md
+        manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `07_ClimateMunicipalAggregator.ipynb` |
+| Productor | `07_ClimateMunicipalAggregator.ipynb` |
 | Granularidad | Municipio + dia |
 | Consumidor | Paso 08 |
-| Estado | Planeado |
+| Estado | Corrida oficial completa: 48 particiones y 174.709 filas; revision cientifica pendiente |
 
 Conserva estaciones esperadas, observadas y validas, cobertura, dispersion,
-calidad y metodo. Las estaciones nunca se suman para construir precipitacion.
+calidad y metodo. La mediana no ponderada es el valor piloto; media y extremos
+permanecen disponibles. Las estaciones nunca se suman para construir
+precipitacion.
+
+### 07.1 Auditoria municipal diaria
+
+```text
+auditorias_clima_municipal/
+  variable=precipitacion/
+    fuente=s54a-sgyg/
+      auditoria=cierre_precipitacion_municipal_2024_2025_v1/
+        cobertura_municipios.parquet
+        cobertura_periodos.parquet
+        cobertura_insuficiente.parquet
+        multiestacion_dias.parquet
+        resumen_multiestacion.parquet
+        sensibilidad_media_mediana_anual.parquet
+        sensibilidad_umbrales_lluvia.parquet
+        *.html
+        AuditoriaMunicipal_precipitacion_2024_2025.md
+        manifest.json
+```
+
+| Propiedad | Valor |
+|---|---|
+| Productor | `07_ClimateMunicipalAudit.ipynb` |
+| Granularidad | Municipio, municipio-periodo y municipio-dia multiestacion |
+| Consumidor | Decision humana y paso 08 |
+| Estado | Implementado y prevalidado localmente; corrida Colab pendiente |
+
+Es una auditoria de solo lectura. Los acumulados de media y mediana usan los
+mismos dias validos y no extrapolan ausencias. Un estado
+`COMPLETA_CON_REVISION_PENDIENTE` confirma que la auditoria termino, no que la
+regla municipal ya fue aprobada.
 
 ### 08. Indicadores climaticos por periodo
 
@@ -240,19 +283,66 @@ dependen de variable y periodo agricola; no se reducen todos a una media.
 ### 09. Agricultura curada
 
 ```text
-agricultura_curada/eva_curada.parquet
-agricultura_curada/data_dictionary.md
-agricultura_curada/quality_report.md
+auditorias_agricultura/capa=eva_cruda/fuente=<dataset_id>/auditoria=<version>/
+  resumen_auditoria.parquet
+  nulos_columnas.parquet
+  llaves_duplicadas.parquet
+  banderas_calidad.parquet
+  cobertura_eva.parquet
+  manifest.json
+
+agricultura_curada/version=<version>/
+  eva_curada.parquet
+  exclusiones.parquet
+  reconciliacion.parquet
+  resumen_cobertura.parquet
+  data_dictionary.md
+  manifest.json
+
+auditorias_agricultura/capa=eva_curada/auditoria=<version>/
+  summary.parquet
+  row_checks.parquet
+  duplicate_keys.parquet
+  coverage.parquet
+  manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `09_EvaCurator.ipynb` |
+| Productor | `02_2_CropYieldDataAudit.ipynb`, `09_EvaCurator.ipynb` y `09_2_EvaCuratedAudit.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
 | Consumidor | Paso 10 |
-| Estado | Planeado |
+| Estado | Implementado y ejecutado; revisión humana pendiente |
 
 El nombre no incluye papa porque el conjunto puede contener uno o dos cultivos.
+Las taxonomias incompatibles se excluyen con motivo trazable. Produccion y area
+cosechada se conservan para auditar el target, pero el manifiesto las declara
+columnas no predictoras.
+
+### 09.1 Agricultura municipal y cambios
+
+```text
+agricultura_municipal/version=cultivo_municipio_periodo_v1/
+  cultivo_municipio_periodo.parquet
+  cambios_interanuales.parquet
+  incidencias_agregacion.parquet
+  resumen_agregacion.parquet
+  auditoria_geografica.parquet
+  diferencias_nombres_divipola.parquet
+  manifest.json
+```
+
+| Propiedad | Valor |
+|---|---|
+| Productor | `CropMunicipalChangeRunner.py` |
+| Granularidad | Municipio + año + período + cultivo; cambios por par de años |
+| Consumidor | Mapas agrícolas y paso 10 |
+| Estado | Ejecutado: 13.692 targets, 9.377 comparaciones y 239 municipios con geometría |
+
+Las áreas sembrada y cosechada tienen universos de validez independientes del
+rendimiento. Las comparaciones emparejan solamente A con A, B con B y anual con
+anual. La geometría permanece como dimensión canónica separada y se enlaza por
+código DANE, evitando repetir polígonos en cada fila temporal.
 
 ### 10. Dataset maestro
 

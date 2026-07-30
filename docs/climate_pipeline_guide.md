@@ -281,14 +281,17 @@ solo precipitacion tiene consolidacion implementada. Temperatura no debe usar
 ### 06. Auditar la geografia de estaciones
 
 **Entrada:** historia `clima_diario_curado`, catalogo IDEAM y DIVIPOLA.
-**Salida:** catalogo de estaciones, asignaciones candidatas, revisiones, mapa y
-manifiesto en `geografia_curada`.
+**Salida:** catalogo de estaciones, asignaciones candidatas, revisiones,
+exclusiones de alcance, mapa y manifiesto en `geografia_curada`.
 
-El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes. Puede
-producir puntos y candidatos con los catalogos tabulares disponibles, pero no
-declara una asignacion canonica solo por coincidencia de texto. La compuerta
-antes de 07 exige resolver las revisiones y validar espacialmente con poligonos
-municipales completos. El contrato operativo se detalla en
+El paso 06 compara codigos, nombres y coordenadas sin alterar las fuentes y
+valida los puntos IDEAM contra poligonos municipales. No declara una asignacion
+canonica solo por coincidencia de texto: exige un unico poligono y ausencia de
+contradiccion con un codigo conocido. El paso 07 consume solo asignaciones
+canonicas; las revisiones y exclusiones permanecen separadas y trazables.
+Bogota D.C. queda fuera del alcance aun si la fuente la agrupa bajo
+Cundinamarca. El contrato
+operativo se detalla en
 [`climate_geography_audit.md`](climate_geography_audit.md).
 
 ### 07. Agregar a municipio-dia
@@ -299,6 +302,18 @@ municipales completos. El contrato operativo se detalla en
 Este paso combina estaciones despues de la reduccion diaria. Conserva numero de
 estaciones esperadas y observadas, dispersion, calidad y ausencias; no convierte
 `NaN` en cero ni usa estaciones en revision como si estuvieran confirmadas.
+
+Para precipitacion, el contrato piloto construye los 239 municipios y usa la
+mediana no ponderada cuando al menos 50 % de las estaciones esperadas en esa
+fecha tienen valor aceptado. Conserva tambien media, extremos, desviacion, IQR y
+rango. Los municipios sin red permanecen en el calendario con `NaN`; esto hace
+visible la cobertura espacial antes del cruce con EVA. El contrato se detalla en
+[`climate_municipal_aggregation.md`](climate_municipal_aggregation.md).
+
+Antes del paso 08, `07_ClimateMunicipalAudit.ipynb` revisa cobertura por mes,
+semestre y ano, brechas sin valor, dias con cobertura insuficiente y
+sensibilidad media-mediana. Es una auditoria de solo lectura y su contrato se
+detalla en [`climate_municipal_audit.md`](climate_municipal_audit.md).
 
 ### 08. Construir indicadores municipio-periodo
 

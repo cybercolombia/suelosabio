@@ -1,6 +1,6 @@
 # Estado del pipeline: temperatura ambiente
 
-**Actualizado:** 25 de julio de 2026
+**Actualizado:** 29 de julio de 2026
 **Estado:** piloto v2 pendiente de repeticion
 **Fuente:** `sbwg-7ju4`  
 **Alcance objetivo:** Boyaca y Cundinamarca, 2024-2025
@@ -19,3 +19,40 @@
 Referencias:
 [`../temperature_daily_processing.md`](../temperature_daily_processing.md) y
 [`../climate_audits/04_series_diarias/auditoria_piloto_temperatura_ambiente_2025.md`](../climate_audits/04_series_diarias/auditoria_piloto_temperatura_ambiente_2025.md).
+
+## Siguiente paso exacto
+
+Repetir en 03 las cuatro particiones de enero-febrero de 2025:
+
+```python
+VARIABLE_NOMBRE = 'temperatura_ambiente'
+DATASET_ID = 'sbwg-7ju4'
+PROCESAR_DEPARTAMENTOS = ['BOYACÁ', 'CUNDINAMARCA']
+PROCESAR_ANIOS = [2025]
+PROCESAR_MESES = [1, 2]
+MAX_PARTICIONES = None
+SOBRESCRIBIR_RESULTADOS = True
+EJECUTAR_PROCESAMIENTO = True
+```
+
+`SOBRESCRIBIR_RESULTADOS=True` se limita a esas cuatro salidas piloto y es
+necesario porque reemplazan artefactos v1. Antes de ejecutar, el plan debe
+mostrar cuatro particiones y `temperatura_diaria_v2`; al terminar, los cuatro
+manifiestos deben quedar `COMPLETA`.
+
+Luego ejecutar 04 con:
+
+```python
+VARIABLE_NOMBRE = 'temperatura_ambiente'
+DATASET_ID = 'sbwg-7ju4'
+AUDITAR_DEPARTAMENTOS = ['BOYACÁ', 'CUNDINAMARCA']
+AUDITAR_ANIOS = [2025]
+AUDITAR_MESES = [1, 2]
+AUDITORIA_NOMBRE = 'piloto_temperatura_ambiente_2025_01_02_v2'
+SOBRESCRIBIR_AUDITORIA = False
+EJECUTAR_AUDITORIA_DIARIA = True
+```
+
+Detenerse despues de exportar 04. La siguiente tarea de desarrollo es analizar
+esa evidencia y crear una consolidacion termica 05; no escalar ni usar la
+consolidacion de precipitacion.
