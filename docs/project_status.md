@@ -1,28 +1,33 @@
 # Estado vigente del proyecto RAIZ
 
-**Actualizado:** 28 de julio de 2026
+**Actualizado:** 30 de julio de 2026
 **Estado:** vigente
 **Proposito:** fuente de verdad para alcance, datos disponibles y prioridades
 
 Este documento debe leerse antes de planes anteriores, conversaciones o
 recomendaciones preparadas para fechas limite ya vencidas.
 
-## Objetivo en descubrimiento
+## Objetivo vigente
 
-RAIZ busca estudiar y eventualmente predecir rendimiento agricola municipal a
-partir de datos abiertos agricolas, climaticos y geograficos. La pregunta final,
-el conjunto de predictores y el modelo aun no estan cerrados.
+RAIZ pronostica el rendimiento municipal de papa para los semestres A y B de
+2026. El alcance de SCRUM-17 usa los diez municipios con mayor area sembrada
+2024-2025 en Boyaca y los diez de Cundinamarca. El modelo se selecciona por MAE
+en backtesting temporal y se documenta en
+[`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md).
 
 ## Alcance confirmado
 
 | Dimension | Decision vigente |
 |---|---|
 | Departamentos | Boyaca y Cundinamarca |
-| Periodo climatico disponible | 2021-2025 |
-| Periodo operativo a curar ahora | 2024-2025 completos para las variables aprobadas |
-| Fuente agricola candidata principal | EVA UPRA 2019-2025 |
-| Unidad candidata | Municipio + ano + periodo + cultivo |
-| Target candidato | Rendimiento en toneladas por hectarea |
+| Cultivo de pronostico | Papa |
+| Horizonte | 2026A y 2026B |
+| Periodo climatico predictivo | NASA POWER 2019-2026-07-30 |
+| Periodo climatico IDEAM curado | 2024-2025 |
+| Fuente agricola principal | EVA UPRA 2019-2025 |
+| Unidad | Municipio + ano + semestre + cultivo |
+| Target | Rendimiento en toneladas por hectarea |
+| Modelo final v1 | Persistencia por municipio-semestre (`rendimiento_lag_1`) |
 | Principio de datos | Crudos inmutables y productos derivados versionados |
 
 Antioquia no forma parte del alcance. Sus resultados anteriores son pruebas
@@ -30,16 +35,12 @@ historicas de descarga y rendimiento de la API.
 
 ## Decisiones pendientes
 
-- Escoger uno o dos cultivos. Papa y maiz son los candidatos mejor sustentados,
-  pero no constituyen todavia una seleccion definitiva.
-- Escoger las variables climaticas del modelo. Ya no se presupone que deba ser
-  una sola; cada variable debe justificar utilidad, cobertura y calidad.
-- Confirmar el archivo EVA compartido, su hoja, granularidad y reglas de
-  consolidacion.
+- Validar el pronostico 2026 cuando UPRA publique el target observado.
+- Decidir si una version futura incorpora maiz u otros cultivos.
+- Reentrenar cuando EVA 2026 este disponible y recalibrar los intervalos.
 - Resolver en paralelo las nueve estaciones geograficas no canonicas; no
   ingresan al agregado municipal mientras sigan pendientes.
-- Definir periodos climaticos compatibles con EVA y con el ciclo de cada cultivo.
-- Definir baseline, modelos, validacion temporal y metricas.
+- Revisar el desempeno mas debil detectado en Cundinamarca-B.
 
 ## Datos climaticos disponibles
 
@@ -63,7 +64,7 @@ garantiza cobertura interna, calidad ni continuidad temporal.
 
 | Dominio | Evidencia actual | Estado vigente |
 |---|---|---|
-| Agricultura | `CropData.ipynb`, EVA historica 2006-2018 y fuente UPRA 2019-2025 identificada | La fuente reciente debe curarse en un pipeline nuevo |
+| Agricultura | EVA UPRA 2019-2025 descargada, agregada y auditada para papa | Integrada en `notebooks/CropForecasting/` |
 | Geografia | Catalogos IDEAM, DIVIPOLA y 239 poligonos municipales validados | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
 | Suelos | `SoilData.ipynb` y cobertura 2020-2024 reportada | Exploratorio; no integrado al alcance analitico actual |
 | Meteorologia heredada | `MeteoData.ipynb` | Exploratorio; el pipeline activo esta en `ClimatePipeline/` |
@@ -83,9 +84,9 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | Escala operativa | Variables aprobadas 2024-2025 | Precipitacion completa; otras pendientes |
 | 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
 | 07 Municipio diario | `clima_municipal` | Precipitacion oficial completa; auditoria de cobertura y sensibilidad implementada, corrida Colab pendiente |
-| 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
+| 08 Indicadores por periodo | `indicadores_climaticos` | Implementado para NASA POWER dentro de CropForecasting |
 | 09 EVA | Agricultura curada y municipal | Auditorías y agregados ejecutados; 13.692 targets, 9.377 comparaciones y geografía completa; revisión taxonómica pendiente |
-| Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
+| Dataset maestro y modelo | Tabla analitica y artefactos | Completo v1: 2.366 filas, 20 municipios objetivo y 40 pronósticos 2026 |
 
 ## Regla para nuevas variables
 
@@ -100,17 +101,11 @@ umbrales y criterios de calidad.
 
 ## Prioridades actuales
 
-1. Repetir con los contratos v2 las cuatro particiones piloto de temperatura
-   ambiente de enero-febrero de 2025 antes de definir su consolidacion.
-2. Curar las variables adicionales aprobadas para 2024-2025; precipitacion ya
-   termino 03-05 y 2021-2023 quedan como ampliacion posterior.
-3. Ejecutar auditorias 02 suficientes para las variables adicionales que el
-   equipo quiera evaluar y decidir si justifican su incorporacion.
-4. Ejecutar y auditar en Colab el piloto 07 ya implementado; resolver en
-   paralelo las nueve revisiones espaciales.
-5. Definir uno o dos cultivos y la correspondencia entre periodo agricola y
-   ventanas climaticas.
-6. Cerrar la auditoria de 07 antes de implementar indicadores del paso 08.
+1. Revisar en Colab los tres notebooks de `notebooks/CropForecasting/`.
+2. Validar el resultado de Cundinamarca-B y la incertidumbre empirica.
+3. Repetir el pronostico cuando NASA POWER publique mas dias de 2026-B.
+4. Validar contra EVA 2026 cuando UPRA publique las cifras oficiales.
+5. Mantener en paralelo las auditorias IDEAM y las revisiones espaciales.
 
 El orden completo y sus compuertas se mantienen en
 [`project_roadmap.md`](project_roadmap.md). Las rutas y dependencias entre

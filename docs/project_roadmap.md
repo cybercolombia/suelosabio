@@ -1,6 +1,6 @@
 # Roadmap de extremo a extremo de RAIZ
 
-**Actualizado:** 28 de julio de 2026
+**Actualizado:** 30 de julio de 2026
 **Estado:** vigente
 **Alcance territorial:** Boyaca y Cundinamarca
 
@@ -43,10 +43,10 @@ persistido, una validacion y una entrada utilizable por la siguiente fase.
 | 5.1 Escala operativa | Historia diaria 2024-2025 por variable | Particiones y manifiestos completos | Precipitacion completa; otras pendientes |
 | 6. Geografia | Catalogo estacion-municipio y mapa | Asignacion espacial trazable | V3 verificada; cierre operativo |
 | 7. Municipio diario | `clima_municipal` y auditoria | Llaves, cobertura y sensibilidad visibles | Agregacion completa; auditoria implementada, corrida Colab pendiente |
-| 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Pendiente |
+| 8. Indicadores climaticos | `indicadores_climaticos` | Cobertura temporal y semantica verificadas | Completo para NASA POWER 2019-2026 |
 | 9. Agricultura | EVA curada y agregado municipal | Target, granularidad y geografía verificadas | Corridas completas; revisión taxonómica pendiente |
-| 10. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Pendiente |
-| 11. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Pendiente |
+| 10. Integracion | Dataset maestro | Cruce, perdidas y fuga auditados | Completo v1 para papa |
+| 11. Analitica y modelo | Metricas, predicciones y modelo | Superar o explicar baseline temporal | Completo; baseline temporal fue superior por MAE |
 | 12. Publicacion | Artefactos versionados | Contrato de consumo validado | Pendiente |
 | 13. Aplicacion | Demo y narrativa | No procesa crudos al iniciar | Pendiente |
 

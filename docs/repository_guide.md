@@ -1,6 +1,6 @@
 # Guia del repositorio
 
-**Actualizado:** 29 de julio de 2026
+**Actualizado:** 30 de julio de 2026
 **Estado:** inventario vigente; revision de codigo pendiente
 
 Esta guia orienta a personas y asistentes de IA. Clasifica los archivos por su
@@ -71,6 +71,21 @@ un nombre en configuracion.
 Las reglas futuras deben seguir el mismo principio de separacion, no
 necesariamente copiar la misma implementacion.
 
+## Pronóstico agrícola
+
+Todo el código predictivo está aislado en `notebooks/CropForecasting/`.
+
+| Archivo | Responsabilidad | Estado |
+|---|---|---|
+| `CropForecasting/01_Dataset_Definitivo_2026.ipynb` | Construir y auditar el dataset 2019-2026 | Implementado |
+| `CropForecasting/02_Entrenamiento_Evaluacion_2026.ipynb` | Backtesting, selección y pronóstico final | Implementado y ejecutado |
+| `CropForecasting/03_Graficas_Features_y_Pronostico_2026.ipynb` | Graficar cada feature, categorías y resultado 2026 | Implementado y verificado |
+| `CropForecasting/climate.py` | NASA POWER diario, climatología y escenarios as-of | Probado |
+| `CropForecasting/dataset.py` | Rezagos, unión y compuertas contra fuga | Probado |
+| `CropForecasting/modeling.py` | Modelos, métricas y backtesting expansivo | Probado |
+| `CropForecasting/visualization.py` | 45 gráficas numéricas, categorías y paneles finales | Verificado |
+| `CropForecasting/RESULTS.md` | Métricas y pronóstico resumido | Vigente |
+
 ## Utilidades exploratorias
 
 | Notebook | Uso recomendado | Cautela |
@@ -98,10 +113,6 @@ Los nombres son contratos de roadmap, no archivos existentes:
 | Componente | Producto esperado |
 |---|---|
 | `07_Climate_Precipitation_MunicipalAggregator.ipynb` | Clima municipio-dia con cobertura espacial |
-| `08_ClimatePeriodFeatures.ipynb` | Indicadores climaticos municipio-periodo |
-| `09_EvaCurator.ipynb` | EVA curada y target validado |
-| `10_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |
-| `11_ModelingPipeline.ipynb` | EDA, baselines, modelos y evaluacion temporal |
 | `12_ArtifactsPublisher.ipynb` | Contrato pequeno para aplicacion y sustentacion |
 
 ## Donde buscar cada respuesta
@@ -115,4 +126,5 @@ Los nombres son contratos de roadmap, no archivos existentes:
 | Que revelo una corrida | `docs/climate_audits/` y manifiesto en Drive |
 | Que fuentes climaticas existen | `docs/climate_dataset_candidates.md` |
 | Que fuente EVA y cultivos tienen cobertura | `docs/eva_dataset_research.md` |
+| Que modelo ganó y cuáles son los pronósticos 2026 | `notebooks/CropForecasting/RESULTS.md` |
 | Como colaborar con Git y Colab | `CONTRIBUTING.md` |

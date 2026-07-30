@@ -21,7 +21,9 @@ estado vigente del proyecto.
 8. [`climate_data_strategy.md`](climate_data_strategy.md): arquitectura climatica
    y principios metodologicos.
 9. El documento operativo de la etapa que se vaya a ejecutar.
-10. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
+10. [`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md):
+    evaluación temporal y pronósticos 2026.
+11. Las auditorias relacionadas, como evidencia y no como instrucciones vigentes.
 
 ## Documentos vigentes
 
@@ -43,6 +45,7 @@ estado vigente del proyecto.
 | [`climate_municipal_audit.md`](climate_municipal_audit.md) | Paso 07: cobertura y sensibilidad municipal | Operacion y compuerta cientifica |
 | [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 04 de temperatura | Operacion y limites |
 | [`crop_yield_pipeline.md`](crop_yield_pipeline.md) | Auditoría cruda, curación y auditoría del target EVA | Operación agrícola |
+| [`../notebooks/CropForecasting/RESULTS.md`](../notebooks/CropForecasting/RESULTS.md) | Modelo final, métricas y pronósticos de papa 2026 | Resultado predictivo vigente |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
 
 ## Investigacion y catalogos
