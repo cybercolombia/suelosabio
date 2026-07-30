@@ -5,6 +5,21 @@ geográficos, y pronosticar el rendimiento de cultivos. La primera versión se
 concentra en papa, en los diez municipios con mayor área sembrada de Boyacá y
 los diez de Cundinamarca, para los semestres A y B de 2026.
 
+## Ruta de lectura del resultado
+
+Los tres elementos principales de la solución están enlazados directamente:
+
+| Pregunta | Documento |
+|---|---|
+| ¿Qué problema se resolvió y qué proceso se siguió? | [Proceso completo: fuentes, auditoría, integración temporal y geografía](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md) |
+| ¿Qué modelo se eligió y por qué? | [Modelo seleccionado y comparación con los demás métodos](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md#7-modelo-utilizado-y-razón-de-la-elección) |
+| ¿Cuáles fueron los resultados? | [Pronóstico municipal para 2026 y conclusiones](docs/presentation/RESULTADOS_PROCESO_DATOS_2026.md#8-resultado-del-pronóstico-para-2026) |
+
+El detalle reproducible de las variables, representaciones, modelos y métricas
+está en
+[Dataset y pronóstico](docs/data_pipeline/forecast.md) y
+[Resultados técnicos](notebooks/CropForecasting/RESULTS.md).
+
 ## Estado del proyecto
 
 El flujo vigente cubre:
@@ -64,8 +79,8 @@ geografía se explican en el
 Se compararon referencias temporales, regresión lineal regularizada, bosques de
 árboles, árboles extra, potenciación por gradiente y una red neuronal multicapa.
 El modelo final usa el último rendimiento conocido del mismo municipio y
-semestre. Aunque es una referencia simple, obtuvo el menor error absoluto medio en la
-validación reciente y evitó sobreajustar una serie de solo siete años por
+semestre. Aunque es una referencia simple, obtuvo el menor error absoluto medio
+en la validación reciente y evitó sobreajustar una serie de solo siete años por
 municipio y semestre.
 
 | Evaluación del modelo final | Resultado |
