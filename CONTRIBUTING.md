@@ -1,4 +1,4 @@
-# Colaboracion en RAIZ
+# Colaboración en RAIZ
 
 ## Antes de trabajar
 
@@ -15,15 +15,16 @@ git pull
 git switch -c feature/mi-cambio
 ```
 
-Se prefieren commits pequenos y archivos seleccionados explicitamente:
+Se prefieren commits pequeños y archivos seleccionados explícitamente:
 
 ```bash
 git add ruta/del/archivo
 git commit -m "Describe el cambio"
 ```
 
-Antes del Pull Request se incorporan cambios recientes de `dev`. Para un equipo
-pequeno con notebooks, `merge` evita reescribir historial compartido:
+Antes de la solicitud de integración (pull request) se incorporan cambios
+recientes de `dev`. Para un equipo pequeño con notebooks, `merge` evita
+reescribir el historial compartido:
 
 ```bash
 git switch dev
@@ -33,23 +34,34 @@ git merge dev
 git push -u origin feature/mi-cambio
 ```
 
-El Pull Request se abre hacia `dev`. La promocion de `dev` a `main` se realiza
-cuando el equipo considera estable la integracion.
+La solicitud de integración se abre hacia `dev`. La promoción de `dev` a `main`
+se realiza cuando el equipo considera estable la integración.
 
 ## Notebooks y Drive
 
 - No versionar datos grandes, credenciales ni rutas personales.
-- Dejar banderas de ejecucion peligrosa en `False` antes de guardar.
-- Evitar que dos personas editen el mismo notebook o escriban la misma particion.
-- No usar outputs guardados como unica evidencia; conservar manifiestos y reportes.
+- Dejar banderas de ejecución peligrosa en `False` antes de guardar.
+- Evitar que dos personas editen el mismo notebook o escriban la misma partición.
+- No usar salidas guardadas como única evidencia; conservar manifiestos y
+  reportes.
 - Ejecutar primero con un subconjunto y verificar entradas y salidas.
 - Los crudos de Drive son inmutables; toda limpieza crea una capa nueva.
 
-## Documentacion
+## Documentación
 
 - Actualizar `docs/project_status.md` cuando cambie alcance o estado.
 - Actualizar `docs/data_artifacts.md` cuando cambie una salida.
 - Guardar procedimientos reproducibles en `docs/` y conversaciones en
   `local_docs/`.
-- Marcar como historica una recomendacion vencida o retirarla despues de fusionar
+- Marcar como histórica una recomendación vencida o retirarla después de fusionar
   su conocimiento vigente.
+
+## Lenguaje documental
+
+- Escribir en español claro y conservar tildes, signos y nombres oficiales.
+- Definir una sigla o métrica la primera vez que aparezca.
+- Distinguir entre un proceso implementado, uno ejecutado y uno aprobado.
+- Usar **pronóstico** para resultados futuros y **predicción** como concepto
+  general del modelo.
+- Indicar fecha de corte, fuente y unidad junto a cada resultado cuantitativo.
+- Presentar las limitaciones junto a los resultados, no como una nota aislada.
