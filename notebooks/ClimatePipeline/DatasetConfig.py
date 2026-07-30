@@ -47,6 +47,14 @@ class DatasetConfig:
     def geography_source_root(self) -> Path:
         return self.processed_root / "geografia_fuente"
 
+    @property
+    def canonical_geography_root(self) -> Path:
+        return (
+            self.processed_root
+            / "geografia_curada"
+            / "canonica=estaciones_precipitacion_2024_2025_v3"
+        )
+
 
 def detectar_colab() -> bool:
     """Indica si el proceso se ejecuta dentro de Google Colab."""

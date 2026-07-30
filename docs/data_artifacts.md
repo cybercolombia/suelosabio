@@ -283,19 +283,66 @@ dependen de variable y periodo agricola; no se reducen todos a una media.
 ### 09. Agricultura curada
 
 ```text
-agricultura_curada/eva_curada.parquet
-agricultura_curada/data_dictionary.md
-agricultura_curada/quality_report.md
+auditorias_agricultura/capa=eva_cruda/fuente=<dataset_id>/auditoria=<version>/
+  resumen_auditoria.parquet
+  nulos_columnas.parquet
+  llaves_duplicadas.parquet
+  banderas_calidad.parquet
+  cobertura_eva.parquet
+  manifest.json
+
+agricultura_curada/version=<version>/
+  eva_curada.parquet
+  exclusiones.parquet
+  reconciliacion.parquet
+  resumen_cobertura.parquet
+  data_dictionary.md
+  manifest.json
+
+auditorias_agricultura/capa=eva_curada/auditoria=<version>/
+  summary.parquet
+  row_checks.parquet
+  duplicate_keys.parquet
+  coverage.parquet
+  manifest.json
 ```
 
 | Propiedad | Valor |
 |---|---|
-| Productor | Futuro `09_EvaCurator.ipynb` |
+| Productor | `02_2_CropYieldDataAudit.ipynb`, `09_EvaCurator.ipynb` y `09_2_EvaCuratedAudit.ipynb` |
 | Granularidad | Municipio + ano + periodo + cultivo |
 | Consumidor | Paso 10 |
-| Estado | Planeado |
+| Estado | Implementado y ejecutado; revisión humana pendiente |
 
 El nombre no incluye papa porque el conjunto puede contener uno o dos cultivos.
+Las taxonomias incompatibles se excluyen con motivo trazable. Produccion y area
+cosechada se conservan para auditar el target, pero el manifiesto las declara
+columnas no predictoras.
+
+### 09.1 Agricultura municipal y cambios
+
+```text
+agricultura_municipal/version=cultivo_municipio_periodo_v1/
+  cultivo_municipio_periodo.parquet
+  cambios_interanuales.parquet
+  incidencias_agregacion.parquet
+  resumen_agregacion.parquet
+  auditoria_geografica.parquet
+  diferencias_nombres_divipola.parquet
+  manifest.json
+```
+
+| Propiedad | Valor |
+|---|---|
+| Productor | `CropMunicipalChangeRunner.py` |
+| Granularidad | Municipio + año + período + cultivo; cambios por par de años |
+| Consumidor | Mapas agrícolas y paso 10 |
+| Estado | Ejecutado: 13.692 targets, 9.377 comparaciones y 239 municipios con geometría |
+
+Las áreas sembrada y cosechada tienen universos de validez independientes del
+rendimiento. Las comparaciones emparejan solamente A con A, B con B y anual con
+anual. La geometría permanece como dimensión canónica separada y se enlaza por
+código DANE, evitando repetir polígonos en cada fila temporal.
 
 ### 10. Dataset maestro
 

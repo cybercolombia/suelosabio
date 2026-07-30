@@ -53,6 +53,21 @@ un nombre en configuracion.
 | `tests/test_temperature_daily_audit.py` | Calendario, extremos y sensores de temperatura |
 | `tests/test_pending_climate_rules.py` | Bloqueo explicito de variables sin contrato |
 
+## Pipeline agrícola
+
+| Archivo | Responsabilidad | Estado |
+|---|---|---|
+| `ClimatePipeline/01_2_CropYieldDataDownloader.ipynb` | Descargar EVA Socrata por departamento, año y período | Implementado |
+| `ClimatePipeline/02_2_CropYieldDataAudit.ipynb` | Auditar esquema, cobertura, llaves, períodos y medidas crudas | Implementado y ejecutado |
+| `ClimatePipeline/09_EvaCurator.ipynb` | Consolidar taxonomías compatibles y recalcular el target | Implementado y ejecutado |
+| `ClimatePipeline/09_2_EvaCuratedAudit.ipynb` | Validar llave, fórmula y cobertura del producto curado | Implementado y ejecutado |
+| `ClimatePipeline/CropYieldProcessing.py` | Contratos puros de auditoría y curación EVA | Probado |
+| `ClimatePipeline/CropYieldAuditRunner.py` | Ejecutar y reanudar las tres etapas agrícolas | Ejecutado |
+| `ClimatePipeline/CropMunicipalChange.py` | Agregar por municipio-período y calcular cambios interanuales | Probado |
+| `ClimatePipeline/CropMunicipalChangeRunner.py` | Materializar el agregado y auditar su enlace DIVIPOLA | Ejecutado |
+| `tests/test_crop_yield_processing.py` | Normalización, banderas, consolidación y compuerta final | Activo |
+| `tests/test_crop_municipal_change.py` | Universos por métrica, períodos y geografía | Activo |
+
 Las reglas futuras deben seguir el mismo principio de separacion, no
 necesariamente copiar la misma implementacion.
 

@@ -39,6 +39,7 @@ estado vigente del proyecto.
 | [`climate_municipal_aggregation.md`](climate_municipal_aggregation.md) | Paso 07: precipitacion municipio-dia | Contrato piloto y operacion |
 | [`climate_municipal_audit.md`](climate_municipal_audit.md) | Paso 07: cobertura y sensibilidad municipal | Operacion y compuerta cientifica |
 | [`temperature_daily_processing.md`](temperature_daily_processing.md) | Pasos 03 y 04 de temperatura | Operacion y limites |
+| [`crop_yield_pipeline.md`](crop_yield_pipeline.md) | Auditoría cruda, curación y auditoría del target EVA | Operación agrícola |
 | [`climate_audits/README.md`](climate_audits/README.md) | Indice de auditorias exportadas | Navegacion de evidencia |
 
 ## Investigacion y catalogos

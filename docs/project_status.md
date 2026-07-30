@@ -84,7 +84,7 @@ lista para integracion. Estos archivos se revisaran antes de reutilizarlos.
 | 06 Geografia | `geografia_curada` | V3 cerrada operativamente; 9 revisiones trazables y Bogota excluida |
 | 07 Municipio diario | `clima_municipal` | Precipitacion oficial completa; auditoria de cobertura y sensibilidad implementada, corrida Colab pendiente |
 | 08 Indicadores por periodo | `indicadores_climaticos` | No implementado |
-| 09 EVA | Agricultura curada | Pendiente de acceso y validacion |
+| 09 EVA | Agricultura curada y municipal | Auditorías y agregados ejecutados; 13.692 targets, 9.377 comparaciones y geografía completa; revisión taxonómica pendiente |
 | Dataset maestro y modelo | Tabla analitica y artefactos | No iniciado |
 
 ## Regla para nuevas variables
