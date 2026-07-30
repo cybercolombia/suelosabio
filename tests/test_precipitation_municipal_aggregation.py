@@ -208,7 +208,10 @@ class PrecipitationMunicipalAggregationTest(unittest.TestCase):
 
 class ClimateMunicipalAggregatorNotebookTest(unittest.TestCase):
     def test_run_all_permanece_protegido_y_versionado(self):
-        notebook_path = PIPELINE_DIR / "07_ClimateMunicipalAggregator.ipynb"
+        notebook_path = (
+            PIPELINE_DIR
+            / "07_Climate_Precipitation_MunicipalAggregator.ipynb"
+        )
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__municipal_aggregator_notebook_test__"}
 

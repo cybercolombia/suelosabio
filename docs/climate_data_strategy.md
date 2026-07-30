@@ -238,21 +238,21 @@ durante el modelado.
             -> 07 agregado municipal -> 08 indicadores por periodo
 ```
 
-- `01_ClimateDataDownloader.ipynb` conserva las observaciones crudas
+- `01_Climate_Precipitation_DataDownloader.ipynb` conserva las observaciones crudas
   particionadas por departamento, ano y mes.
-- `02_ClimateDataAudit.ipynb` diagnostica la fuente cruda. Sus hallazgos sobre
+- `02_Climate_Precipitation_DataAudit.ipynb` diagnostica la fuente cruda. Sus hallazgos sobre
   unidad, cadencia, duplicados, conflictos, geografia y rangos permiten proponer
   un contrato distinto para cada variable; no modifica los datos.
-- `03_ClimateDailyProcessor.ipynb` aplica las reglas preliminares de la variable
+- `03_Climate_Precipitation_DailyProcessor.ipynb` aplica las reglas preliminares de la variable
   y produce una fila por estacion, sensor y dia.
-- `04_ClimateDailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
+- `04_Climate_Precipitation_DailyAudit.ipynb` revisa el resultado diario preliminar. Evalua
   ausencias, cobertura, extremos y sensores paralelos para confirmar o ajustar
   el contrato.
-- `05_ClimateDailyConsolidator.ipynb` aplica el contrato versionado y produce
+- `05_Climate_Precipitation_DailyConsolidator.ipynb` aplica el contrato versionado y produce
   una fila canonica por estacion y dia.
-- `06_ClimateGeographyAudit.ipynb` audita estaciones y DIVIPOLA, produce el mapa
+- `06_Climate_Precipitation_GeographyAudit.ipynb` audita estaciones y DIVIPOLA, produce el mapa
   de puntos y deja explicitas las asignaciones que requieren poligonos.
-- El futuro `07_ClimateMunicipalAggregator.ipynb` solo debe ejecutarse cuando el
+- El futuro `07_Climate_Precipitation_MunicipalAggregator.ipynb` solo debe ejecutarse cuando el
   historico diario consolidado y la asignacion estacion-municipio esten
   validados.
 - El futuro paso 08 construira indicadores municipio-periodo sin reemplazar las

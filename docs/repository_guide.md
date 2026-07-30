@@ -11,14 +11,14 @@ principio a fin. La futura revision de scripts debe actualizar este documento.
 
 | Archivo | Responsabilidad | Estado |
 |---|---|---|
-| `ClimatePipeline/01_ClimateDataDownloader.ipynb` | Descargar Socrata por departamento, ano y mes | Activo y generico |
-| `ClimatePipeline/02_ClimateDataAudit.ipynb` | Auditar crudos y generar evidencia | Activo y generico |
-| `ClimatePipeline/03_ClimateDailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/04_ClimateDailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
-| `ClimatePipeline/05_ClimateDailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
-| `ClimatePipeline/06_ClimateGeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
-| `ClimatePipeline/07_ClimateMunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Corrida oficial completa; revision cientifica pendiente |
-| `ClimatePipeline/07_ClimateMunicipalAudit.ipynb` | Auditar cobertura y sensibilidad municipio-dia | Implementado; corrida Colab pendiente |
+| `ClimatePipeline/01_Climate_Precipitation_DataDownloader.ipynb` | Descargar Socrata por departamento, ano y mes | Activo y generico |
+| `ClimatePipeline/02_Climate_Precipitation_DataAudit.ipynb` | Auditar crudos y generar evidencia | Activo y generico |
+| `ClimatePipeline/03_Climate_Precipitation_DailyProcessor.ipynb` | Producir estacion-sensor-dia | Precipitacion validada; temperatura en piloto |
+| `ClimatePipeline/04_Climate_Precipitation_DailyAudit.ipynb` | Auditar la capa diaria preliminar | Precipitacion validada; temperatura en piloto |
+| `ClimatePipeline/05_Climate_Precipitation_DailyConsolidator.ipynb` | Producir estacion-dia canonico | Activo solo para precipitacion |
+| `ClimatePipeline/06_Climate_Precipitation_GeographyAudit.ipynb` | Validar estaciones contra DIVIPOLA y poligonos | V3 verificada; 116 asignaciones canonicas |
+| `ClimatePipeline/07_Climate_Precipitation_MunicipalAggregator.ipynb` | Producir precipitacion municipio-dia | Corrida oficial completa; revision cientifica pendiente |
+| `ClimatePipeline/07_2_Climate_Precipitation_MunicipalAudit.ipynb` | Auditar cobertura y sensibilidad municipio-dia | Implementado; corrida Colab pendiente |
 
 Todos quedan protegidos por banderas `EJECUTAR_*` en `False` dentro de Git. Los
 pasos 03-05 dependen de contratos por variable; no se vuelven genericos cambiando
@@ -97,7 +97,7 @@ Los nombres son contratos de roadmap, no archivos existentes:
 
 | Componente | Producto esperado |
 |---|---|
-| `07_ClimateMunicipalAggregator.ipynb` | Clima municipio-dia con cobertura espacial |
+| `07_Climate_Precipitation_MunicipalAggregator.ipynb` | Clima municipio-dia con cobertura espacial |
 | `08_ClimatePeriodFeatures.ipynb` | Indicadores climaticos municipio-periodo |
 | `09_EvaCurator.ipynb` | EVA curada y target validado |
 | `10_MasterDatasetBuilder.ipynb` | Dataset maestro, diccionario y reporte de cruce |

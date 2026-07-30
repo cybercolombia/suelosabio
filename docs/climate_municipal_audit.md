@@ -4,8 +4,8 @@
 **Estado:** implementada y prevalidada localmente; corrida oficial en Colab pendiente
 **Alcance:** Boyaca y Cundinamarca, 2024-2025
 
-`07_ClimateMunicipalAudit.ipynb` audita la salida de
-`07_ClimateMunicipalAggregator.ipynb` sin recalcularla, modificarla ni imputar
+`07_2_Climate_Precipitation_MunicipalAudit.ipynb` audita la salida de
+`07_Climate_Precipitation_MunicipalAggregator.ipynb` sin recalcularla, modificarla ni imputar
 ausencias. La logica de precipitacion vive en
 `PrecipitationMunicipalAudit.py`; otras variables deben definir su propio
 contrato de auditoria municipal.
@@ -86,7 +86,7 @@ dispersion y las estaciones contribuyentes.
 
 ## Ejecucion segura
 
-1. Abrir `07_ClimateMunicipalAudit.ipynb` desde `feature/SCRUM-14`.
+1. Abrir `07_2_Climate_Precipitation_MunicipalAudit.ipynb` desde `feature/SCRUM-14`.
 2. Ejecutar con `EJECUTAR_AUDITORIA_MUNICIPAL=False`.
 3. Confirmar entrada `COMPLETA`, version municipal v1, 48 particiones y 174.709
    filas en el manifiesto.

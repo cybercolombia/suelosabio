@@ -9,7 +9,7 @@
 
 ## Ejecucion
 
-`05_ClimateDailyConsolidator.ipynb` consumio la auditoria
+`05_Climate_Precipitation_DailyConsolidator.ipynb` consumio la auditoria
 `cierre_precipitacion_2024_2025_v1`, version
 `auditoria_precipitacion_diaria_v2`. La corrida en Colab duro 380,64 segundos
 y genero 48 particiones mensuales.

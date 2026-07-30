@@ -1,7 +1,7 @@
 # Auditorias de datos climaticos crudos
 
 Estos reportes se producen a partir de `clima_crudo` con
-`02_ClimateDataAudit.ipynb`. Evaluan estructura, particiones, tipos, unidades,
+`02_Climate_Precipitation_DataAudit.ipynb`. Evaluan estructura, particiones, tipos, unidades,
 nulos, conversiones, duplicados, conflictos, cadencias y geografia antes de
 transformar observaciones subdiarias.
 

@@ -8,11 +8,11 @@ una auditoria.
 
 | Carpeta | Entrada auditada | Productor | Pregunta principal |
 |---|---|---|---|
-| [`02_datos_crudos/`](02_datos_crudos/) | `clima_crudo` | `02_ClimateDataAudit.ipynb` | La fuente puede transformarse y con que reglas |
-| [`04_series_diarias/`](04_series_diarias/) | `clima_diario_sensor` | `04_ClimateDailyAudit.ipynb` | La transformacion produjo una serie diaria defendible |
+| [`02_datos_crudos/`](02_datos_crudos/) | `clima_crudo` | `02_Climate_Precipitation_DataAudit.ipynb` | La fuente puede transformarse y con que reglas |
+| [`04_series_diarias/`](04_series_diarias/) | `clima_diario_sensor` | `04_Climate_Precipitation_DailyAudit.ipynb` | La transformacion produjo una serie diaria defendible |
 | [`05_clima_curado/`](05_clima_curado/) | `clima_diario_curado` | Reconciliacion del paso 05 | La capa curada respeta manifiesto, calidad y trazabilidad |
-| [`06_geografia/`](06_geografia/) | Estaciones, IDEAM y DIVIPOLA | `06_ClimateGeographyAudit.ipynb` | La asignacion estacion-municipio es trazable y que falta para hacerla canonica |
-| [`07_municipio_diario/`](07_municipio_diario/) | `clima_municipal` | `07_ClimateMunicipalAggregator.ipynb` | La agregacion conserva llaves, cobertura, calidad y ausencias |
+| [`06_geografia/`](06_geografia/) | Estaciones, IDEAM y DIVIPOLA | `06_Climate_Precipitation_GeographyAudit.ipynb` | La asignacion estacion-municipio es trazable y que falta para hacerla canonica |
+| [`07_municipio_diario/`](07_municipio_diario/) | `clima_municipal` | `07_Climate_Precipitation_MunicipalAggregator.ipynb` | La agregacion conserva llaves, cobertura, calidad y ausencias |
 | [`transversales/`](transversales/) | Varias etapas o variables | Sintesis documental | El hallazgo se repite o conecta varios productos |
 
 La numeracion de las carpetas coincide con el paso del pipeline que genera la

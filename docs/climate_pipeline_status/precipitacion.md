@@ -146,14 +146,14 @@ Contrato y evidencia:
 
 **Estado de etapa:** `[X]` cierre espacial v3 verificado.
 
-- [X] Implementado `06_ClimateGeographyAudit.ipynb` con ejecucion protegida.
+- [X] Implementado `06_Climate_Precipitation_GeographyAudit.ipynb` con ejecucion protegida.
 - [X] Validado el cruce exacto de 126 estaciones climaticas con el catalogo IDEAM.
 - [X] Implementado el mapa de puntos y la exportacion en una carpeta propia.
 - [X] Las coincidencias por catalogo se etiquetan como candidatas, no canonicas.
 - [X] Ejecutado y persistido el cierre geografico
   `estaciones_precipitacion_2024_2025_v1`.
 - [X] Verificadas 126 estaciones unicas: 111 verdes y 15 para revision.
-- [X] Conseguido y validado `DivipolaGeo.gpkg`: 239 poligonos validos en
+- [X] Conseguido y validado `Boyaca_Cundinamarca_Municipios.gpkg`: 239 poligonos validos en
   `EPSG:4326`, concordantes con DIVIPOLA.
 - [X] Implementado punto-en-poligono y salida canonica separada.
 - [X] Ejecutado y persistido `estaciones_precipitacion_2024_2025_v2` en Drive:
@@ -219,7 +219,7 @@ Contrato:
 
 ## Siguiente bloque recomendado
 
-1. Ejecutar `07_ClimateMunicipalAudit.ipynb` en Colab y persistir su salida.
+1. Ejecutar `07_2_Climate_Precipitation_MunicipalAudit.ipynb` en Colab y persistir su salida.
 2. Revisar Aquitania y Puerto Salgar, comparar media y mediana y decidir si la
    regla v1 se mantiene.
 3. Definir cobertura minima por periodo y cruzar los municipios con EVA.

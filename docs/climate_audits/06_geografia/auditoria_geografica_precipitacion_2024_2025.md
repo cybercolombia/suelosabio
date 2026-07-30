@@ -10,7 +10,8 @@
 
 La corrida leyo las 48 particiones y 53.128 filas estacion-dia del cierre
 `cierre_precipitacion_2024_2025_v2`. Valido la capa
-`Boyaca_Cundinamarca_Municipios` de `DivipolaGeo.gpkg` y escribio fuera de la
+`Boyaca_Cundinamarca_Municipios` de
+`Boyaca_Cundinamarca_Municipios.gpkg` y escribio fuera de la
 carpeta compartida.
 
 Productos persistidos:

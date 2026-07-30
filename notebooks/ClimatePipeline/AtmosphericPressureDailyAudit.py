@@ -1,24 +1,18 @@
-"""Marcador preventivo para la futura auditoria diaria de presion."""
+"""Auditoría diaria de presión atmosférica."""
 
-from __future__ import annotations
-
-from typing import NoReturn
-
+from ScalarDailyAudit import AUDIT_VERSION, auditar_escalar_diario
 
 VARIABLE_NAME = "presion_atmosferica"
 DATASET_ID = "62tk-nxj5"
-AUDIT_STATUS = "PENDIENTE_EVIDENCIA_DIARIA_Y_CONTRATO"
+AUDIT_STATUS = "IMPLEMENTADA_PILOTO_PENDIENTE"
 
 
-def detener_auditoria_pendiente() -> NoReturn:
-    mensaje = (
-        "⚠️ La auditoría diaria de presión atmosférica todavía no está implementada. "
-        "Complete y revise un piloto del paso 03; luego defina cobertura, rangos, "
-        "efecto de altitud, continuidad y sensores antes de habilitarla en 04."
+def auditar_presion_atmosferica_diaria(diario, **kwargs):
+    return auditar_escalar_diario(
+        diario,
+        umbral_minimo=500.0,
+        umbral_maximo=1050.0,
+        umbral_amplitud=100.0,
+        tolerancia_sensores=2.0,
+        **kwargs,
     )
-    print(mensaje)
-    raise NotImplementedError(mensaje)
-
-
-def auditar_presion_atmosferica_diaria(*_args, **_kwargs) -> NoReturn:
-    detener_auditoria_pendiente()

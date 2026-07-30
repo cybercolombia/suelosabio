@@ -6,7 +6,7 @@
 > contrato vigente y sus resultados.
 
 Este reporte compara las cuatro particiones piloto producidas por
-`03_ClimateDailyProcessor.ipynb`. Los resultados locales provienen del commit
+`03_Climate_Precipitation_DailyProcessor.ipynb`. Los resultados locales provienen del commit
 `75b24d9` y de tres workers independientes. Todos los manifiestos terminaron en
 estado `COMPLETA`.
 
@@ -107,7 +107,7 @@ que elimine toda precipitacion alta.
 - Una particion completa puede identificarse y reanudarse por manifiesto.
 - La reduccion de filas supera 99,4 % en las cuatro particiones.
 
-## Ejecucion de `04_ClimateDailyAudit.ipynb`
+## Ejecucion de `04_Climate_Precipitation_DailyAudit.ipynb`
 
 La auditoria diaria se ejecuto con el commit `8b63e88` y termino en 1,79
 segundos. El manifiesto quedo en estado `COMPLETA`.

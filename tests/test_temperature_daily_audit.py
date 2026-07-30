@@ -125,10 +125,23 @@ class TemperatureDailyAuditTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "incoherentes"):
             validar_capa_diaria(incoherente)
 
+    def test_tolera_ruido_de_punto_flotante_en_estadisticos(self):
+        casi_igual = self.diario.iloc[[0]].copy()
+        casi_igual["temperatura_minima_observada_c"] = 15.0
+        casi_igual["temperatura_media_observada_c"] = 15.0 - 1e-12
+        casi_igual["temperatura_maxima_observada_c"] = 15.0
+
+        validada = validar_capa_diaria(casi_igual)
+
+        self.assertEqual(len(validada), 1)
+
 
 class TemperatureDailyAuditNotebookTest(unittest.TestCase):
     def test_run_all_temperatura_permanece_protegido(self):
-        notebook_path = PIPELINE_DIR / "04_ClimateDailyAudit.ipynb"
+        notebook_path = (
+            PIPELINE_DIR
+            / "04_Climate_TemperaturaAmbiente_DailyAudit.ipynb"
+        )
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__temperature_daily_audit_notebook_test__"}
 
@@ -136,13 +149,6 @@ class TemperatureDailyAuditNotebookTest(unittest.TestCase):
             if cell["cell_type"] != "code":
                 continue
             source = "".join(cell["source"])
-            source = source.replace(
-                "VARIABLE_NOMBRE = 'precipitacion'",
-                "VARIABLE_NOMBRE = 'temperatura_ambiente'",
-            ).replace(
-                "DATASET_ID = 's54a-sgyg'",
-                "DATASET_ID = 'sbwg-7ju4'",
-            )
             ast.parse(source, filename=f"cell_{index}")
             exec(compile(source, f"cell_{index}", "exec"), namespace)
 

@@ -4,7 +4,7 @@
 **Estado:** corrida espacial v3 verificada; cierre operativo aprobado
 **Alcance:** estaciones de precipitacion de Boyaca y Cundinamarca, 2024-2025
 
-`06_ClimateGeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
+`06_Climate_Precipitation_GeographyAudit.ipynb` conecta la capa estacion-dia con los catalogos
 IDEAM y DIVIPOLA sin modificar las fuentes compartidas.
 
 ## Entradas y escritura
@@ -16,9 +16,9 @@ Entradas de solo lectura:
   Estaciones_IDEAM_20260527.csv
   Divipola.csv
   Divipola_Municipios.json
+  Boyaca_Cundinamarca_Municipios.gpkg
 
 /content/drive/MyDrive/eco2026_processed/
-  geografia_fuente/DivipolaGeo.gpkg
   clima_diario_curado/variable=precipitacion/.../cierre_precipitacion_2024_2025_v2/
 ```
 
