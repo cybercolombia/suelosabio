@@ -46,7 +46,7 @@ clima_crudo/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `01_ClimateDataDownloader.ipynb` |
+| Productor | `01_Climate_Precipitation_DataDownloader.ipynb` |
 | Granularidad | Observacion subdiaria por estacion-sensor |
 | Consumidores | Pasos 02 y 03 |
 | Regla | Inmutable; nunca se corrige en sitio |
@@ -66,7 +66,7 @@ auditorias_climaticas/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `02_ClimateDataAudit.ipynb` |
+| Productor | `02_Climate_Precipitation_DataAudit.ipynb` |
 | Granularidad | Resumen por corrida y tablas diagnosticas |
 | Consumidores | Reglas, alcance y documentacion |
 | Estado | Precipitacion amplia; temperatura 2024-2025 parcial; humedad Cundinamarca 2025; otras pendientes |
@@ -107,7 +107,7 @@ clima_diario_sensor/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `03_ClimateDailyProcessor.ipynb` |
+| Productor | `03_Climate_Precipitation_DailyProcessor.ipynb` |
 | Granularidad | Estacion + sensor + dia |
 | Consumidor | Paso 04 |
 | Estado | Piloto de precipitacion validado; temperatura implementada sin salida real valida aun |
@@ -135,7 +135,7 @@ auditorias_clima_diario/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `04_ClimateDailyAudit.ipynb` |
+| Productor | `04_Climate_Precipitation_DailyAudit.ipynb` |
 | Granularidad | Calendario estacion-sensor-dia y resumen |
 | Consumidores | Paso 05 y revision humana |
 | Estado | Precipitacion validada; temperatura implementada y pendiente de corrida; las demas variables tienen bloqueadores explicitos |
@@ -161,7 +161,7 @@ clima_diario_curado/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `05_ClimateDailyConsolidator.ipynb` |
+| Productor | `05_Climate_Precipitation_DailyConsolidator.ipynb` |
 | Granularidad | Estacion + dia |
 | Consumidor | Paso 06 |
 | Estado | Precipitacion 2024-2025 v2 completa y reconciliada |
@@ -192,7 +192,7 @@ geografia_curada/canonica=<version>/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `06_ClimateGeographyAudit.ipynb` |
+| Productor | `06_Climate_Precipitation_GeographyAudit.ipynb` |
 | Granularidad | Estacion; municipio |
 | Consumidor | Paso 07 |
 | Estado | V3 verificada: 116 canonicas, 9 revisiones y 1 exclusion |
@@ -220,7 +220,7 @@ clima_municipal/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `07_ClimateMunicipalAggregator.ipynb` |
+| Productor | `07_Climate_Precipitation_MunicipalAggregator.ipynb` |
 | Granularidad | Municipio + dia |
 | Consumidor | Paso 08 |
 | Estado | Corrida oficial completa: 48 particiones y 174.709 filas; revision cientifica pendiente |
@@ -251,7 +251,7 @@ auditorias_clima_municipal/
 
 | Propiedad | Valor |
 |---|---|
-| Productor | `07_ClimateMunicipalAudit.ipynb` |
+| Productor | `07_2_Climate_Precipitation_MunicipalAudit.ipynb` |
 | Granularidad | Municipio, municipio-periodo y municipio-dia multiestacion |
 | Consumidor | Decision humana y paso 08 |
 | Estado | Implementado y prevalidado localmente; corrida Colab pendiente |

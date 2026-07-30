@@ -231,16 +231,13 @@ class TemperatureRulesTest(unittest.TestCase):
 
 class TemperatureNotebookIntegrationTest(unittest.TestCase):
     def test_procesador_despacha_temperatura_ambiente(self):
-        notebook_path = PIPELINE_DIR / "03_ClimateDailyProcessor.ipynb"
+        notebook_path = (
+            PIPELINE_DIR
+            / "03_Climate_TemperaturaAmbiente_DailyProcessor.ipynb"
+        )
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         celdas = {cell.get("id"): "".join(cell["source"]) for cell in notebook["cells"]}
-        config = celdas["daily_config"].replace(
-            "VARIABLE_NOMBRE = 'precipitacion'",
-            "VARIABLE_NOMBRE = 'temperatura_ambiente'",
-        ).replace(
-            "DATASET_ID = 's54a-sgyg'",
-            "DATASET_ID = 'sbwg-7ju4'",
-        )
+        config = celdas["daily_config"]
         namespace = {"__name__": "__temperature_notebook_test__"}
         for nombre, codigo in (
             ("daily_bootstrap", celdas["daily_bootstrap"]),

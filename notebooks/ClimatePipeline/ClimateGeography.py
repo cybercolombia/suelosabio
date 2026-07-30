@@ -36,18 +36,18 @@ COLUMNAS_DIVIPOLA_REQUERIDAS = (
     "longitud",
     "Latitud",
 )
-COLUMNAS_DIARIAS_REQUERIDAS = (
+COLUMNAS_DIARIAS_BASE_REQUERIDAS = (
     "variable",
     "dataset_id",
     "departamento",
     "codigoestacion",
     "fecha",
-    "precipitacion_diaria_mm",
     "municipios_observados",
     "nombres_estacion_observados",
     "latitud_mediana",
     "longitud_mediana",
 )
+COLUMNAS_VALOR_DIARIO = ("precipitacion_diaria_mm", "valor_diario")
 COLUMNAS_POLIGONOS_REQUERIDAS = (
     "DPTO_CCDGO",
     "MPIO_CCDGO",
@@ -555,9 +555,20 @@ def cruzar_estaciones_poligonos(
 
 
 def construir_catalogo_climatico(diario: pd.DataFrame) -> pd.DataFrame:
-    faltantes = sorted(set(COLUMNAS_DIARIAS_REQUERIDAS) - set(diario.columns))
+    faltantes = sorted(
+        set(COLUMNAS_DIARIAS_BASE_REQUERIDAS) - set(diario.columns)
+    )
     if faltantes:
         raise ValueError(f"Faltan columnas del clima diario curado: {faltantes}.")
+    columnas_valor = [
+        columna for columna in COLUMNAS_VALOR_DIARIO if columna in diario.columns
+    ]
+    if len(columnas_valor) != 1:
+        raise ValueError(
+            "El clima diario debe contener exactamente una columna de valor: "
+            f"{COLUMNAS_VALOR_DIARIO}."
+        )
+    columna_valor = columnas_valor[0]
 
     tabla = diario.copy()
     tabla["fecha"] = pd.to_datetime(tabla["fecha"], errors="coerce")
@@ -578,7 +589,7 @@ def construir_catalogo_climatico(diario: pd.DataFrame) -> pd.DataFrame:
             fecha_inicio_clima=("fecha", "min"),
             fecha_fin_clima=("fecha", "max"),
             filas_estacion_dia=("fecha", "size"),
-            dias_clima_aceptado=("precipitacion_diaria_mm", "count"),
+            dias_clima_aceptado=(columna_valor, "count"),
             municipios_reportados=("municipios_observados", _unir_etiquetas),
             nombres_estacion_reportados=(
                 "nombres_estacion_observados",
@@ -610,6 +621,72 @@ def construir_catalogo_climatico(diario: pd.DataFrame) -> pd.DataFrame:
     if catalogo["codigoestacion"].duplicated().any():
         raise RuntimeError("El catalogo climatico produjo estaciones repetidas.")
     return catalogo
+
+
+def construir_catalogo_ideam_de_referencia(
+    diario: pd.DataFrame,
+    estaciones_referencia: pd.DataFrame,
+) -> pd.DataFrame:
+    """Completa el catálogo IDEAM desde una auditoría previa y el clima.
+
+    Esta ruta de contingencia permite reutilizar las columnas IDEAM conservadas
+    por una geografía canónica previa cuando el CSV fuente no está montado. Las
+    estaciones nuevas conservan explícitamente ``Estado=DESCONOCIDO`` y usan
+    sus metadatos climáticos; no se inventan altitud ni fechas administrativas.
+    """
+    catalogo = construir_catalogo_climatico(diario)
+    codigos = set(catalogo["codigoestacion"].astype(str))
+    columnas = list(COLUMNAS_ESTACIONES_REQUERIDAS) + [
+        "Categoria",
+        "Tecnologia",
+        "Entidad",
+    ]
+    referencia = estaciones_referencia.copy()
+    if "Altitud" not in referencia and "altitud_ideam_m" in referencia:
+        referencia["Altitud"] = referencia["altitud_ideam_m"]
+    faltantes_referencia = sorted(set(columnas) - set(referencia.columns))
+    if faltantes_referencia:
+        raise ValueError(
+            "La geografía de referencia no conserva el catálogo IDEAM: "
+            f"{faltantes_referencia}."
+        )
+    referencia = referencia.loc[
+        referencia["Codigo"].astype("string").isin(codigos),
+        columnas,
+    ].drop_duplicates("Codigo")
+    conocidos = set(referencia["Codigo"].dropna().astype(str))
+    nuevos = catalogo.loc[
+        ~catalogo["codigoestacion"].astype(str).isin(conocidos)
+    ].copy()
+    if not nuevos.empty:
+        nuevos_ideam = pd.DataFrame(
+            {
+                "Codigo": nuevos["codigoestacion"],
+                "Nombre": nuevos["nombres_estacion_reportados"],
+                "Estado": "DESCONOCIDO",
+                "Departamento": nuevos["departamento"],
+                "Municipio": nuevos["municipios_reportados"].map(
+                    lambda value: str(value).split(" | ")[0]
+                ),
+                "Altitud": pd.NA,
+                "LONGITUD": nuevos["longitud_clima"],
+                "LATITUD": nuevos["latitud_clima"],
+                "Fecha_instalacion": pd.NA,
+                "Fecha_suspension": pd.NA,
+                "Categoria": pd.NA,
+                "Tecnologia": pd.NA,
+                "Entidad": pd.NA,
+            }
+        )
+        referencia = pd.concat(
+            [referencia, nuevos_ideam[columnas]],
+            ignore_index=True,
+        )
+    if set(referencia["Codigo"].dropna().astype(str)) != codigos:
+        raise RuntimeError(
+            "No fue posible reconstruir el catálogo de todas las estaciones."
+        )
+    return referencia.sort_values("Codigo").reset_index(drop=True)
 
 
 def _municipio_catalogo_en_reportados(fila: pd.Series) -> bool:

@@ -4,7 +4,7 @@
 **Estado:** corrida oficial completa y validada; revision cientifica de cobertura pendiente
 **Alcance:** Boyaca y Cundinamarca, 2024-2025
 
-`07_ClimateMunicipalAggregator.ipynb` transforma la capa de precipitacion
+`07_Climate_Precipitation_MunicipalAggregator.ipynb` transforma la capa de precipitacion
 estacion-dia en un calendario municipio-dia auditable. No modifica los
 artefactos de los pasos 05 y 06.
 
@@ -115,7 +115,7 @@ interpretarse como `municipios_con_serie_completa`.
 
 ## Ejecucion segura
 
-1. Abrir `07_ClimateMunicipalAggregator.ipynb` desde `feature/SCRUM-14`.
+1. Abrir `07_Climate_Precipitation_MunicipalAggregator.ipynb` desde `feature/SCRUM-14`.
 2. Ejecutar con `EJECUTAR_AGREGACION_MUNICIPAL=False`.
 3. Confirmar clima `COMPLETA`, 48 particiones, geografia v3 y 116 estaciones.
 4. Mantener `GUARDAR_RESULTADOS=True` y
@@ -137,7 +137,7 @@ Antes de construir indicadores se deben revisar:
 - la sensibilidad de media frente a mediana;
 - la cobertura temporal por municipio que finalmente aparezca en EVA.
 
-Estas revisiones se ejecutan con `07_ClimateMunicipalAudit.ipynb` y se
+Estas revisiones se ejecutan con `07_2_Climate_Precipitation_MunicipalAudit.ipynb` y se
 documentan en [`climate_municipal_audit.md`](climate_municipal_audit.md).
 
 Solo despues se definen acumulados, dias de lluvia, extremos, rachas y ventanas

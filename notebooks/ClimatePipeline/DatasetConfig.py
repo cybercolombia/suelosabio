@@ -21,7 +21,10 @@ LOCAL_PROCESSED_ROOT = Path(
     "GoogleDrive-eshernan@gmail.com/.shortcut-targets-by-id/"
     "1aKoa_whG2LeZ05qCPObUHWR0-xZ95Qn7/eco2026_processed"
 )
-LOCAL_SHARED_ROOT = LOCAL_PROCESSED_ROOT.parent / "eco2026"
+LOCAL_SHARED_ROOT = Path(
+    "/Users/eshernan/Library/CloudStorage/"
+    "GoogleDrive-eshernan@gmail.com/My Drive/eco2026"
+)
 
 SHARED_ROOT_ENV = "SUELOSABIO_SHARED_ROOT"
 PROCESSED_ROOT_ENV = "SUELOSABIO_PROCESSED_ROOT"
@@ -45,14 +48,24 @@ class DatasetConfig:
 
     @property
     def geography_source_root(self) -> Path:
-        return self.processed_root / "geografia_fuente"
+        """Directorio compartido con los catálogos y polígonos oficiales."""
+        return self.shared_root
 
     @property
     def canonical_geography_root(self) -> Path:
+        """Ruta histórica de precipitación; conservar por compatibilidad."""
+        return self.canonical_geography_root_for("precipitacion")
+
+    def canonical_geography_root_for(self, variable: str) -> Path:
+        """Geografía canónica independiente para cada variable climática."""
+        slug = str(variable).strip().lower()
+        permitidos = set("abcdefghijklmnopqrstuvwxyz0123456789_")
+        if not slug or any(char not in permitidos for char in slug):
+            raise ValueError(f"Nombre de variable climática inválido: {variable!r}.")
         return (
             self.processed_root
             / "geografia_curada"
-            / "canonica=estaciones_precipitacion_2024_2025_v3"
+            / f"canonica=estaciones_{slug}_2024_2025_v3"
         )
 
 

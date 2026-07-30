@@ -64,12 +64,19 @@ def validar_capa_diaria(diario: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("La capa diaria contiene temperatura principal nula.")
     if tabla["observaciones_validas"].lt(0).any():
         raise ValueError("La capa diaria contiene conteos de observaciones negativos.")
+    tolerancia_flotante = 1e-9
     if (
-        tabla["temperatura_minima_observada_c"]
-        .gt(tabla["temperatura_media_observada_c"])
+        (
+            tabla["temperatura_minima_observada_c"]
+            - tabla["temperatura_media_observada_c"]
+        )
+        .gt(tolerancia_flotante)
         .any()
-        or tabla["temperatura_media_observada_c"]
-        .gt(tabla["temperatura_maxima_observada_c"])
+        or (
+            tabla["temperatura_media_observada_c"]
+            - tabla["temperatura_maxima_observada_c"]
+        )
+        .gt(tolerancia_flotante)
         .any()
     ):
         raise ValueError("La capa diaria contiene estadisticos termicos incoherentes.")

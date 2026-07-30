@@ -1,7 +1,7 @@
 # Auditorias de clima municipal diario
 
 Esta carpeta resume las verificaciones de los productos generados por
-`07_ClimateMunicipalAggregator.ipynb`.
+`07_Climate_Precipitation_MunicipalAggregator.ipynb`.
 
 | Reporte | Variable | Territorio | Periodo | Estado |
 |---|---|---|---|---|

@@ -1,20 +1,20 @@
 # Estado del pipeline: velocidad del viento
 
-**Actualizado:** 22 de julio de 2026  
-**Estado:** bloqueada antes de 03  
-**Fuente:** `sgfv-3yp8`  
-**Alcance objetivo:** Boyaca y Cundinamarca, 2024-2025
+**Actualizado:** 29 de julio de 2026
+**Estado:** ciclo 01–07 completo
+**Fuente:** `sgfv-3yp8`
+**Alcance:** Boyacá y Cundinamarca, 2024–2025
 
-- [P] **01 Crudo:** estructura 2021-2025 presente para ambos departamentos; falta reconciliacion integral.
-- [ ] **02 Auditoria cruda:** no existe una sintesis aprobada para definir reglas.
-- [ ] **Contrato:** `WindSpeedRules.py` es un marcador bloqueante.
-- [ ] **03 Diario por sensor:** bloqueado hasta confirmar unidad, rango, calma, cadencia, conflictos y estadisticos diarios.
-- [ ] **04 Auditoria diaria:** `WindSpeedDailyAudit.py` bloquea la ejecucion hasta contar con evidencia y contrato.
-- [ ] **05 Curado por estacion:** pendiente.
-- [ ] **Escala 2024-2025:** no autorizada.
-- [ ] **06 Geografia:** pendiente de una capa diaria curada para conocer sus estaciones.
-- [ ] **07 Municipio diario:** pendiente.
-- [ ] **08 Indicadores por periodo:** pendiente.
+- [X] **01 Crudo:** 48 de 48 particiones cerradas; no fue necesario descargar.
+- [X] **02 Auditoría cruda:** 4.901 archivos y 4.877.266 filas inventariadas; muestra contigua de 191.193 filas.
+- [X] **Contrato:** sensor `0103`, unidad m/s, rango operativo 0–100 y media diaria.
+- [X] **03 Diario por sensor:** 48 particiones completas con `escalar_meteorologico_diario_v1`.
+- [X] **04 Auditoría diaria:** 29.708 filas estación-sensor-día auditadas; extremos y amplitudes permanecen como alertas.
+- [X] **05 Curado por estación:** consolidación `cierre_velocidad_viento_2024_2025_v1`.
+- [X] **06 Geografía:** fuentes oficiales; 33 asignaciones canónicas en Boyacá y 46 en Cundinamarca.
+- [X] **07 Municipio diario:** calendario para los 239 municipios.
+- [ ] **08 Indicadores por periodo:** pendiente de definir productos analíticos.
 
-Siguiente paso: ejecutar 02 sobre meses contrastantes de 2024-2025 en ambos
-departamentos y convertir los hallazgos en un contrato con pruebas.
+La auditoría cruda identificó doce estaciones con movimiento superior a 100
+metros o variación de etiquetas. No se imputaron valores ni se promediaron
+sensores discrepantes.

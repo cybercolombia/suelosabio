@@ -6,7 +6,7 @@
 **Alcance:** Boyaca y Cundinamarca, enero-diciembre de 2024
 
 Esta sintesis compara las dos auditorias muestrales de cierre producidas por
-`02_ClimateDataAudit.ipynb`. El inventario de archivos, filas y esquemas es
+`02_Climate_Precipitation_DataAudit.ipynb`. El inventario de archivos, filas y esquemas es
 completo. Nulos, conversiones, valores, duplicados, conflictos, cadencias y
 geografia se evaluaron sobre una muestra estratificada de 48.000 filas por
 departamento.

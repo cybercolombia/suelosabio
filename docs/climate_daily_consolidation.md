@@ -1,6 +1,6 @@
 # Consolidacion diaria de precipitacion
 
-El notebook `05_ClimateDailyConsolidator.ipynb` transforma el calendario
+El notebook `05_Climate_Precipitation_DailyConsolidator.ipynb` transforma el calendario
 auditado en una capa canonica preliminar con una fila por estacion y dia. No
 modifica `clima_crudo`, `clima_diario_sensor` ni los productos de auditoria.
 

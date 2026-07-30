@@ -69,7 +69,7 @@ el codigo ya este implementado para todas las variables.
 
 | Variable | Siguiente accion exacta | Compuerta que desbloquea |
 |---|---|---|
-| Precipitacion | Ejecutar `07_ClimateMunicipalAudit.ipynb` y revisar Aquitania/Puerto Salgar | Decision de regla municipal y paso 08 |
+| Precipitacion | Ejecutar `07_2_Climate_Precipitation_MunicipalAudit.ipynb` y revisar Aquitania/Puerto Salgar | Decision de regla municipal y paso 08 |
 | Temperatura ambiente | Repetir las cuatro particiones piloto con 03 v2 y ejecutar 04 v2 | Diseno de consolidacion termica 05 |
 | Temperatura minima | Verificar crudo 2024 con 02 y ejecutar piloto 03 de enero-febrero de 2025 | Auditoria diaria 04 |
 | Temperatura maxima | Verificar crudo 2024, ejecutar piloto 03 y revisar conflictos exportados | Auditoria diaria 04 |

@@ -1,6 +1,6 @@
 # Procesamiento diario de temperatura
 
-El notebook `03_ClimateDailyProcessor.ipynb` admite tres contratos de
+El notebook `03_Climate_Precipitation_DailyProcessor.ipynb` admite tres contratos de
 temperatura independientes. Comparte infraestructura de rutas, manifiestos y
 escritura con precipitacion, pero no comparte sus reglas semanticas.
 

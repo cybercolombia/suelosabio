@@ -222,7 +222,9 @@ class PrecipitationRulesTest(unittest.TestCase):
 class ClimateDailyNotebookIntegrationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        notebook_path = PIPELINE_DIR / "03_ClimateDailyProcessor.ipynb"
+        notebook_path = (
+            PIPELINE_DIR / "03_Climate_Precipitation_DailyProcessor.ipynb"
+        )
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         cls.cells = {cell.get("id"): "".join(cell["source"]) for cell in notebook["cells"]}
 

@@ -1,7 +1,7 @@
 # Procesamiento diario de precipitacion
 
 Este documento describe el piloto del notebook
-`notebooks/ClimatePipeline/03_ClimateDailyProcessor.ipynb`. Su objetivo es
+`notebooks/ClimatePipeline/03_Climate_Precipitation_DailyProcessor.ipynb`. Su objetivo es
 transformar una particion mensual de precipitacion subdiaria en observaciones por
 estacion, sensor y dia, sin modificar `clima_crudo`.
 
@@ -104,7 +104,7 @@ por 04 y 05; esta tabla se conserva como trazabilidad del piloto.
 
 La compuerta de los cuatro pilotos ya fue superada. El historico 2021-2025 puede
 escalarse usando las reglas versionadas y conservando manifiestos por particion.
-La auditoria `04_ClimateDailyAudit.ipynb` definio cobertura minima,
+La auditoria `04_Climate_Precipitation_DailyAudit.ipynb` definio cobertura minima,
 tratamiento de sensores paralelos y criterios para valores sospechosos. Su
 configuracion y productos se describen en
 [`climate_daily_audit.md`](climate_daily_audit.md).

@@ -14,6 +14,7 @@ from ClimateGeography import (  # noqa: E402
     auditar_geografia,
     incorporar_asignaciones_espaciales,
     preparar_tabla_serializable,
+    construir_catalogo_ideam_de_referencia,
     validar_catalogo_ideam,
 )
 
@@ -83,6 +84,25 @@ class ClimateGeographyTest(unittest.TestCase):
         self.assertIsNone(resultado.loc[1, "codigo_municipio"])
         self.assertIsNone(resultado.loc[1, "fecha_suspension"])
         self.assertTrue(pd.isna(original.loc[1, "codigo_municipio"]))
+
+    def test_catalogo_fallback_conserva_referencia_y_agrega_estacion_nueva(self):
+        diario = pd.DataFrame(
+            [
+                fila_diaria("E1", "Tunja"),
+                fila_diaria("E2", "Chía", latitud=4.86, longitud=-74.06),
+            ]
+        )
+        referencia = pd.DataFrame([fila_ideam("E1", "Tunja")])
+
+        catalogo = construir_catalogo_ideam_de_referencia(
+            diario,
+            referencia,
+        ).set_index("Codigo")
+
+        self.assertEqual(set(catalogo.index), {"E1", "E2"})
+        self.assertEqual(catalogo.loc["E1", "Estado"], "Activa")
+        self.assertEqual(catalogo.loc["E2", "Estado"], "DESCONOCIDO")
+        self.assertAlmostEqual(float(catalogo.loc["E2", "LATITUD"]), 4.86)
 
     def test_cruce_exacto_conserva_codigo_y_no_declara_canonico(self):
         diario = pd.DataFrame([fila_diaria("0035060220", "UBALÁ")])
@@ -245,7 +265,9 @@ class ClimateGeographyTest(unittest.TestCase):
         )
 
     def test_notebook_run_all_permanece_protegido_y_fuera_de_compartida(self):
-        notebook_path = PIPELINE_DIR / "06_ClimateGeographyAudit.ipynb"
+        notebook_path = (
+            PIPELINE_DIR / "06_Climate_Precipitation_GeographyAudit.ipynb"
+        )
         notebook = json.loads(notebook_path.read_text(encoding="utf-8"))
         namespace = {"__name__": "__climate_geography_notebook_test__"}
         codigo = "\n".join(

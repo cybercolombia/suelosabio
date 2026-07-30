@@ -1,7 +1,7 @@
 # Auditorias de series climaticas diarias
 
 Estos reportes se producen a partir de `clima_diario_sensor` con
-`04_ClimateDailyAudit.ipynb`. Evaluan el calendario estacion-sensor-dia,
+`04_Climate_Precipitation_DailyAudit.ipynb`. Evaluan el calendario estacion-sensor-dia,
 cobertura, brechas, extremos y sensores paralelos despues de aplicar las reglas
 del paso 03.
 

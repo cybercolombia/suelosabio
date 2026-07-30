@@ -1,24 +1,18 @@
-"""Marcador preventivo para la futura auditoria diaria de velocidad del viento."""
+"""Auditoría diaria de velocidad del viento."""
 
-from __future__ import annotations
-
-from typing import NoReturn
-
+from ScalarDailyAudit import AUDIT_VERSION, auditar_escalar_diario
 
 VARIABLE_NAME = "velocidad_viento"
 DATASET_ID = "sgfv-3yp8"
-AUDIT_STATUS = "PENDIENTE_EVIDENCIA_DIARIA_Y_CONTRATO"
+AUDIT_STATUS = "IMPLEMENTADA_PILOTO_PENDIENTE"
 
 
-def detener_auditoria_pendiente() -> NoReturn:
-    mensaje = (
-        "⚠️ La auditoría diaria de velocidad del viento todavía no está implementada. "
-        "Complete y revise un piloto del paso 03; luego defina cobertura, calma, "
-        "ráfagas, continuidad y sensores antes de habilitarla en 04."
+def auditar_velocidad_viento_diaria(diario, **kwargs):
+    return auditar_escalar_diario(
+        diario,
+        umbral_minimo=0.0,
+        umbral_maximo=40.0,
+        umbral_amplitud=30.0,
+        tolerancia_sensores=1.0,
+        **kwargs,
     )
-    print(mensaje)
-    raise NotImplementedError(mensaje)
-
-
-def auditar_velocidad_viento_diaria(*_args, **_kwargs) -> NoReturn:
-    detener_auditoria_pendiente()
