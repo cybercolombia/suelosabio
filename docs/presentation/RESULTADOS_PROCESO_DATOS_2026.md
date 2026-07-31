@@ -1,456 +1,520 @@
-# Análisis del proceso de datos climáticos, agrícolas y del pronóstico de papa para 2026
+# Análisis del proceso de datos y pronóstico de rendimiento de papa para 2026
 
 **Documento para presentación**
+
 **Actualizado:** 30 de julio de 2026
+
 **Territorio:** Boyacá y Cundinamarca
 
-El documento incorpora cinco mapas dentro de las secciones donde se interpretan
-sus resultados:
+Este proyecto es la alternativa presentada por el **equipo 65** al concurso
+**“Datos al Ecosistema 2026: IA para Colombia”**, en la categoría avanzada
+**“Inteligencia Artificial aplicada a datos abiertos”**.
 
-| Tema geográfico | Contenido del mapa | Sección |
-|---|---|---:|
-| Estaciones climáticas | Ubicación y cantidad de variables disponibles por estación | 7 |
-| Cultivos principales | Cultivo dominante por área sembrada en cada municipio | 9 |
-| Agregado municipal de papa | Área sembrada, área cosechada, producción y rendimiento | 11 |
-| Producción de papa por año | Distribución municipal y cinco productores principales de 2022 a 2024 | 11 |
-| Pronóstico 2026 | Rendimiento pronosticado por municipio, departamento y semestre | 16 |
+**Pregunta central:** ¿qué rendimiento, medido en toneladas de papa por
+hectárea, puede esperarse en los semestres A y B de 2026 para los diez
+municipios con mayor área sembrada reciente de cada departamento?
 
-## 1. Resumen de resultados
+Este documento sigue el orden solicitado para presentar la solución: problema,
+fuentes, auditoría de calidad, conciliación temporal, geografía, conjunto de
+datos final, elección del modelo y resultado del pronóstico.
 
-El proyecto generó tres productos que conservan la frecuencia de sus fuentes:
+## 1. Descripción del problema
 
-1. clima histórico de estaciones, desde observaciones subdiarias hasta
-   municipio-día para seis variables;
-2. cultivos, desde registros anuales o semestrales hasta
-   municipio × cultivo × período;
-3. un conjunto de datos de pronóstico de papa, con historia agrícola 2019–2025, clima
-   diario agregado por semestre, geografía y 40 filas objetivo para 2026.
+El rendimiento agrícola relaciona la producción obtenida con el área
+cosechada. Anticiparlo puede ayudar a orientar revisiones de abastecimiento,
+asistencia técnica y seguimiento territorial. El reto no consiste solamente en
+entrenar un modelo: primero hay que demostrar que los datos de clima, cultivos y
+geografía pueden compararse sin crear información artificial.
 
-El modelo que mejor redujo el error absoluto reciente fue una referencia simple:
-usar el último rendimiento conocido del mismo municipio y semestre. Su error
-absoluto medio fue 2,302 toneladas por hectárea en las pruebas 2024–2025. La
-selección se basó en la comparación temporal de los métodos evaluados.
+La primera versión se concentra en papa por tres razones:
 
-## 2. Frecuencias de los datos climáticos y agrícolas
+1. fue el cultivo semestral con mayor área sembrada acumulada entre 2022 y 2024;
+2. aparece en 155 municipios del territorio estudiado;
+3. la fuente oficial ofrece historia municipal para 2019–2025, suficiente para
+   hacer una validación temporal básica.
 
-El clima y los cultivos no llegan con la misma frecuencia.
+![Comparación del área sembrada de papa con otros cultivos](assets/05_seleccion_cultivo_papa.png)
 
-| Dominio | Frecuencia original | Frecuencia curada | Frecuencia de unión |
-|---|---|---|---|
-| Estaciones climáticas | 1 a 60 minutos, irregular | Día por estación; día por municipio | Semestre cuando se cruza con EVA |
-| NASA POWER | Día por celda | Día por municipio | Semestre |
-| Cultivos EVA | Semestre A, semestre B o año | Municipio × cultivo × período | Semestre |
+El resultado esperado son 40 pronósticos:
 
-Los registros agrícolas conservaron su frecuencia anual o semestral. El clima
-se mantuvo diario, se resumió dentro de cada período agrícola y se unió con la
-observación EVA del mismo municipio, año y semestre.
+```text
+2 departamentos
+× 10 municipios por departamento
+× 2 semestres de 2026
+= 40 pronósticos municipales
+```
+
+El proceso completo fue:
 
 ```mermaid
 flowchart LR
-    A[Clima subdiario] --> B[Estación × sensor × día]
-    B --> C[Estación × día]
-    C --> D[Municipio × día]
-    D --> E[Indicadores municipio × semestre]
-    F[EVA anual o semestral] --> G[Municipio × cultivo × período]
-    E --> H[Conjunto municipio × papa × semestre]
+    A[Fuentes climáticas] --> B[Auditoría y resumen diario]
+    C[EVA agrícola] --> D[Municipio × cultivo × semestre]
+    E[DIVIPOLA y polígonos] --> F[Identidad territorial]
+    B --> G[Indicadores municipio × semestre]
+    D --> H[Conjunto de datos final]
+    F --> H
     G --> H
-    H --> I[Validación temporal y pronóstico 2026]
+    H --> I[Validación temporal de modelos]
+    I --> J[Pronóstico de papa 2026]
 ```
 
-## 3. Clima: comportamiento durante un mes
+## 2. Conjuntos de datos utilizados y origen
 
-La siguiente figura toma enero de 2025. Para cada día calcula la mediana entre
-los municipios con dato válido en cada departamento. No muestra una estación
-particular ni imputa municipios sin dato.
+Se usaron fuentes diferentes porque ninguna cubre por sí sola el problema
+completo. Las Evaluaciones Agropecuarias Municipales (EVA) describen cultivos;
+el Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM) aporta
+mediciones de estaciones; la Unidad de Planificación Rural Agropecuaria (UPRA)
+publica la base agrícola consolidada; y el Departamento Administrativo Nacional
+de Estadística (DANE) mantiene la codificación territorial.
 
-![Clima municipal durante enero de 2025](assets/01_clima_un_mes.png)
-
-Interpretación:
-
-- la precipitación es intermitente y predominan días con mediana cero;
-- las temperaturas ambiente, mínima y máxima conservan unidades y estadísticos
-  distintos;
-- viento y presión no deben ponerse en el mismo eje que la temperatura;
-- las diferencias persistentes entre departamentos reflejan composición
-  territorial y red observada, no una corrección aplicada por el pipeline.
-
-Un solo mes sirve para verificar continuidad, saltos y coherencia diaria, pero
-no alcanza para describir estacionalidad.
-
-## 4. Clima: comportamiento durante varios meses
-
-La vista 2024–2025 conserva un panel y una escala por variable. La precipitación
-mensual suma la mediana diaria regional; las demás variables promedian esas
-medianas diarias.
-
-![Comportamiento climático mensual 2024–2025](assets/02_clima_varios_meses.png)
-
-La serie mensual permite:
-
-- observar meses secos y húmedos sin confundir suma con promedio;
-- comparar la amplitud de temperatura mínima y máxima;
-- identificar cambios persistentes de viento o presión;
-- reconocer interrupciones comunes a varias variables.
-
-No representa la climatología completa de cada departamento: resume únicamente
-municipios que cuentan con dato municipal válido en la red de estaciones.
-
-## 5. Controles aplicados a las series climáticas
-
-La auditoría aplicó controles distintos en cada etapa.
-
-| Etapa | Pregunta | Decisión |
-|---|---|---|
-| Descarga | ¿Están las 48 combinaciones de departamento, año y mes? | Conservar partes y manifiestos; no sobrescribir crudo |
-| Esquema | ¿Fecha, estación, sensor, unidad y valor son interpretables? | Rechazar filas incompatibles con motivo |
-| Llave | ¿Una estación-sensor-fecha tiene un solo valor? | Eliminar duplicado exacto; aislar contradicción |
-| Tiempo | ¿Qué cadencia existe dentro del día? | Inferirla por día y medir cobertura |
-| Rango | ¿El valor cabe en el contrato físico-operativo? | Marcar o rechazar; no recortar |
-| Día | ¿Cómo se resume cada variable? | Suma para precipitación; media, mínimo o máximo según contrato |
-| Estación | ¿Hay sensores paralelos coherentes? | Selección trazable; no sumar ni promediar discrepancias |
-| Geografía | ¿La estación pertenece realmente al municipio? | Punto-en-polígono y catálogo oficial |
-| Municipio | ¿Cuántas estaciones aportaron y cuánto discrepan? | Mediana principal más diagnósticos |
-
-### Contratos individuales
-
-| Variable | Regla diaria | Unidad | Alcance ejecutado |
+| Fuente | Proveedor y origen | Período utilizado | Función en la solución |
 |---|---|---|---|
-| Precipitación | Suma de incrementos válidos | mm | 01–07; revisión científica municipal pendiente |
-| Temperatura ambiente | Media diaria | °C | 01–07 completo |
-| Temperatura mínima | Mínimo diario | °C | 01–07 completo |
-| Temperatura máxima | Máximo diario | °C | 01–07 completo |
-| Velocidad del viento | Media diaria | m/s | 01–07 completo |
-| Presión atmosférica | Media diaria | hPa | 01–07 completo |
-| Humedad | Sin regla aprobada | — | Bloqueada antes de 03 |
+| Catálogo nacional de estaciones climáticas | IDEAM, dataset Socrata [`hp9r-jxuu`](https://www.datos.gov.co/d/hp9r-jxuu) | catálogo consultado en 2026; mediciones analizadas de 2024–2025 | Identificar y localizar las estaciones usadas en la auditoría climática |
+| EVA municipal de exploración | API Socrata [`uejq-wxrr`](https://www.datos.gov.co/d/uejq-wxrr) | 2022–2024 | Auditar cultivos, agregados, cambios y mapas |
+| Base Agrícola EVA | [UPRA](https://upra.gov.co/es-co/eva), archivo oficial `20260526_BaseAgricola20192025.xlsx` | 2019–2025 | Variable de rendimiento usada para entrenar y evaluar |
+| NASA POWER Daily API | [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/daily/) | 2019–30 de julio de 2026 | Historia climática continua para todos los municipios del modelo |
+| DIVIPOLA | [DANE](https://www.dane.gov.co/index.php/sistema-estadistico-nacional-sen/normas-y-estandares/nomenclaturas-y-clasificaciones/nomenclaturas/codificacion-de-la-division-politica-administrativa-de-colombia-divipola) | catálogo vigente usado por el proyecto | Código único de departamento y municipio |
+| Límites político-administrativos (alternativa trazable) | [IGAC - Colombia en Mapas](https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer) | servicio vigente consultado en 2026 | Polígonos oficiales de municipios y departamentos |
+| Polígonos municipales | Archivo compartido `Boyaca_Cundinamarca_Municipios.gpkg` | 239 municipios | Validación punto-en-polígono y elaboración de mapas |
 
-Humedad no se procesó por analogía. La falta de contrato confiable fue tratada
-como una compuerta, no como una ausencia de código que pudiera ignorarse.
+### Identificadores y URL de acceso
 
-## 6. Principales problemas encontrados
+Los identificadores de los datasets climáticos publicados en Datos Abiertos son:
 
-### Brecha transversal de febrero de 2025
-
-Entre el 5 y el 25 de febrero la fuente no ofrece observaciones válidas para el
-alcance. La franja roja representa ausencia de observaciones, no clima cero.
-
-![Cobertura municipal en febrero de 2025](assets/03_brecha_febrero_2025.png)
-
-### Otros hallazgos
-
-| Problema | Ejemplo | Tratamiento |
+| Dataset | ID | URL de Datos Abiertos |
 |---|---|---|
-| Cadencias mezcladas | Registros cada 1, 2, 5, 10 o 60 minutos | Inferencia dentro de cada día |
-| Duplicados exactos | Misma estación, sensor, fecha y valor | Una copia se conserva; el conteo queda auditado |
-| Valores contradictorios | Cuatro claves en temperatura máxima | Se excluyen; no se promedian |
-| Sensores paralelos | Más de un sensor para estación-día | Se mide diferencia y se selecciona con regla |
-| Cambio de escala | Precipitación `3505500121/0240` | Factor 0,1 solo en intervalo probado |
-| Patrón instrumental | Precipitación `0035215030/0240` | Cuarentena limitada al intervalo con evidencia |
-| Coordenadas variables | 11–12 estaciones según variable | Revisión geográfica; no corrección silenciosa |
-| Municipio sin estación | 155 municipios sin estación utilizable en precipitación | `NaN`, nunca cero |
-| Cobertura insuficiente | 92 municipio-días en precipitación | Bandera y compuerta científica |
+| Catálogo Nacional de Estaciones del IDEAM | `hp9r-jxuu` | [Catálogo oficial de estaciones](https://datos.gov.co/es/Ambiente-y-Desarrollo-Sostenible/Cat-logo-Nacional-de-Estaciones-del-IDEAM/hp9r-jxuu) |
+| Precipitación | `s54a-sgyg` | [Dataset](https://www.datos.gov.co/d/s54a-sgyg) |
+| Temperatura ambiente | `sbwg-7ju4` | [Dataset](https://www.datos.gov.co/d/sbwg-7ju4) |
+| Temperatura mínima | `afdg-3zpb` | [Dataset](https://www.datos.gov.co/d/afdg-3zpb) |
+| Temperatura máxima | `ccvq-rp9s` | [Dataset](https://www.datos.gov.co/d/ccvq-rp9s) |
+| Velocidad del viento | `sgfv-3yp8` | [Dataset](https://www.datos.gov.co/d/sgfv-3yp8) |
+| Presión atmosférica | `62tk-nxj5` | [Dataset](https://www.datos.gov.co/d/62tk-nxj5) |
 
-## 7. Agregación climática a escala municipal diaria
+Las URL principales usadas o documentadas por el pipeline son:
 
-### Paso 1: estación × sensor × día
+- **Catálogo Nacional de Estaciones del IDEAM:** dataset Socrata
+  `hp9r-jxuu`, disponible en
+  <https://www.datos.gov.co/d/hp9r-jxuu> y mediante la API
+  <https://www.datos.gov.co/resource/hp9r-jxuu.json>.
+- **UPRA:** página de EVA en <https://upra.gov.co/es-co/eva> y archivo exacto
+  utilizado por `run_pipeline.py`:
+  <https://upra.gov.co/sites/default/files/2026-05/20260526_BaseAgricola20192025.xlsx>.
+- **NASA POWER Daily:** documentación en
+  <https://power.larc.nasa.gov/docs/services/api/temporal/daily/> y endpoint
+  de puntos utilizado por el pipeline:
+  <https://power.larc.nasa.gov/api/temporal/daily/point>.
+- **DIVIPOLA DANE:** página oficial de codificación en
+  <https://www.dane.gov.co/index.php/sistema-estadistico-nacional-sen/normas-y-estandares/nomenclaturas-y-clasificaciones/nomenclaturas/codificacion-de-la-division-politica-administrativa-de-colombia-divipola>.
+- **IGAC / Colombia en Mapas:** el servicio [Líneas Limítrofes y Entidades
+  Territoriales](https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer)
+  contiene las dos capas necesarias: [municipios (capa
+  1)](https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer/1)
+  y [departamentos (capa
+  2)](https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer/2).
+  El identificador del servicio MapServer es `6d3ab67f9c534086adda070b5a3e0d9b`.
+  Ambas son geometrías poligonales, exponen el código DANE y admiten consulta
+  en JSON, GeoJSON y PBF. Las solicitudes reproducibles pueden usar:
 
-Cada variable aplica su estadístico. Antes se eliminan duplicados exactos, se
-excluyen claves contradictorias y se calculan observaciones esperadas según
-cadencia. La salida conserva cobertura, rechazados y conflictos.
+  ```text
+  https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer/1/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson
+  https://mapas2.igac.gov.co/server/rest/services/limites/limites/MapServer/2/query?where=1%3D1&outFields=*&returnGeometry=true&outSR=4326&f=geojson
+  ```
 
-### Paso 2: estación × día
+  El servicio publica los datos en el sistema espacial EPSG:9377; el parámetro
+  `outSR=4326` permite obtenerlos en latitud/longitud, que es el sistema usado
+  por `GeoData.ipynb`. El límite de 2.000 registros por consulta cubre la capa
+  municipal completa en una solicitud.
+- **Polígonos usados en `GeoData.ipynb`:** el notebook contiene la descarga de
+  ArcGIS Open Data mediante
+  <https://opendata.arcgis.com/api/v3/datasets/623a71c7f5c94bada0416879df0effe4_0/downloads/data?format=shp&spatialRefId=4326&where=1%3D1>.
 
-Si hay sensores paralelos, la consolidación evita contarlos como estaciones
-independientes. El producto conserva sensor seleccionado, sensores observados,
-diferencia, calidad y motivo de revisión.
+  El identificador `ar93-k8h7` que aparece en algunas visualizaciones públicas
+  corresponde a una vista derivada; para la procedencia de estaciones se usa el
+  catálogo base de IDEAM (`hp9r-jxuu`) indicado en la tabla anterior.
 
-### Paso 3: geografía canónica
+`GeoData.ipynb` no descarga desde una URL los archivos `Divipola.csv`,
+`Divipola_Municipios.json` ni `DivipolaGeo.gpkg`: los lee desde
+`/content/drive/MyDrive/eco2026/`. Por ello, esos archivos deben considerarse
+entradas compartidas de Drive y no descargas reproducibles del notebook. El
+proveedor y la fecha original del GeoPackage final
+`Boyaca_Cundinamarca_Municipios.gpkg` tampoco quedaron registrados; esa es una
+pendiente de trazabilidad distinta de la validación de sus códigos y geometrías.
 
-El código de estación se contrasta con el catálogo oficial y luego con los 239
-polígonos DIVIPOLA. Una coincidencia de nombre es solo candidata. Los casos en
-revisión no entran al agregado municipal.
+### Variables climáticas de estaciones
 
-### Paso 4: municipio × día
+| Variable | Identificador en Datos Abiertos | Resumen diario |
+|---|---|---|
+| Precipitación | [`s54a-sgyg`](https://www.datos.gov.co/d/s54a-sgyg) | Suma de incrementos válidos |
+| Temperatura ambiente | [`sbwg-7ju4`](https://www.datos.gov.co/d/sbwg-7ju4) | Media |
+| Temperatura mínima | [`afdg-3zpb`](https://www.datos.gov.co/d/afdg-3zpb) | Mínimo |
+| Temperatura máxima | [`ccvq-rp9s`](https://www.datos.gov.co/d/ccvq-rp9s) | Máximo |
+| Velocidad del viento | [`sgfv-3yp8`](https://www.datos.gov.co/d/sgfv-3yp8) | Media |
+| Presión atmosférica | [`62tk-nxj5`](https://www.datos.gov.co/d/62tk-nxj5) | Media |
 
-Para cada municipio-fecha se cuenta cuántas estaciones se esperaban, cuántas
-tenían fila y cuántas aportaron un valor válido. La mediana de estaciones es el
-valor principal; media, extremos, desviación y rango permiten auditarlo.
+Las estaciones IDEAM permiten estudiar la calidad y la disponibilidad local,
+pero no ofrecen historia completa para todos los municipios desde 2019. Por
+eso se usó [NASA POWER](https://power.larc.nasa.gov/docs/services/api/temporal/daily/)
+en el conjunto de datos predictivo. Esta decisión mejora la comparabilidad
+histórica, aunque la malla de NASA no sustituye el valor observacional de una
+estación cercana.
 
-La capa diaria se mantuvo porque precipitación, extremos térmicos y rachas
-dependen del orden de los días. Una agregación temporal anterior al cálculo de
-estos indicadores eliminaría esa información.
+La variable agrícola final proviene de la
+[Base EVA de UPRA](https://upra.gov.co/es-co/eva). El rendimiento se
+recalculó como producción total dividida por área cosechada total; no se
+promediaron rendimientos de filas con tamaños diferentes.
 
-### Distribución de las estaciones climáticas
+## 3. Problemas de completitud y calidad de los datos
 
-El mapa reúne 127 estaciones con asignación municipal canónica en al menos una
-de las seis variables procesadas. El tamaño y el color de cada punto indican
-cuántas variables aportó la estación. La distribución no es uniforme: varios
-municipios carecen de una estación utilizable, mientras que otros concentran
-estaciones con cobertura multivariable.
+La auditoría separó dos preguntas:
 
-![Ubicación de estaciones climáticas](assets/10_mapa_estaciones_climaticas.png)
+- **completitud:** ¿existe la observación esperada?;
+- **calidad:** si existe, ¿su esquema, valor, unidad y contexto son confiables?
 
-## 8. Frecuencia original de los datos agrícolas
+### Completitud climática
 
-El artefacto municipal Socrata contiene años 2022–2024 y tres tipos de período.
-La gráfica muestra filas consolidadas, no hectáreas.
+La red de estaciones no tiene la misma cobertura en todos los municipios ni en
+todos los días. El caso más visible fue una brecha común entre el 5 y el 25 de
+febrero de 2025. Esa ausencia ya estaba en la fuente y no fue creada durante el
+procesamiento.
 
-![Registros agrícolas por tipo de período](assets/04_agricultura_periodos.png)
+![Brecha de observaciones climáticas en febrero de 2025](assets/03_brecha_febrero_2025.png)
 
-Los períodos significan:
+Para precipitación se obtuvieron 116 estaciones con asignación municipal
+canónica. Solo 84 de los 239 municipios contaban con una estación utilizable;
+los otros 155 conservaron ausencia. En ningún caso se reemplazó “sin dato” por
+cero, porque cero significaría que se observó un día sin lluvia.
 
-- `A`: primer semestre;
-- `B`: segundo semestre;
-- `ANUAL`: reporte o cultivo anual.
+### Calidad climática
 
-No se compara A con B ni semestral con anual. Cada comparación interanual
-empareja el mismo municipio, cultivo y tipo de período.
+| Problema | Qué podía causar | Tratamiento |
+|---|---|---|
+| Cadencias de 1, 2, 5, 10 o 60 minutos | Coberturas diarias incomparables | Inferir frecuencia dentro de cada día |
+| Duplicados exactos | Contar dos veces una lectura | Conservar una copia y registrar el conteo |
+| Misma llave con valores distintos | Promedio sin significado físico | Excluir el conflicto |
+| Sensores paralelos | Tratar sensores como estaciones independientes | Compararlos y seleccionar con regla trazable |
+| Valores fuera de rango | Distorsionar agregados | Marcar o rechazar; nunca recortar silenciosamente |
+| Cambios de escala | Saltos artificiales | Corregir solo el intervalo demostrado y conservar el original |
+| Coordenadas o etiquetas variables | Asignar una estación al municipio equivocado | Enviar a revisión geográfica |
 
-## 9. Agregación por municipio, cultivo y período
+La vista de un mes ayuda a distinguir comportamiento real, interrupciones y
+diferencias de escala entre variables.
 
-La fuente puede traer varias filas de un mismo cultivo por ciclo, estado físico
-o componente. El agregado:
+![Comportamiento climático municipal durante enero de 2025](assets/01_clima_un_mes.png)
 
-1. normaliza departamento, municipio, cultivo y período;
-2. valida código DANE y compatibilidad ciclo-período;
-3. suma áreas y producción compatibles;
-4. recalcula rendimiento ponderado como producción total dividida por área
-   cosechada total;
-5. exporta incompatibilidades, en vez de sumarlas;
-6. conserva una llave única
-   `codigo_municipio + año + tipo_periodo + cultivo`.
+### Calidad agrícola
 
-Resultados de `cultivo_municipio_periodo_v1`:
+EVA puede contener varias filas para el mismo municipio, cultivo y período por
+ciclo, estado físico o desagregación. También se encontraron:
 
-- 14.962 filas de entrada;
-- 13.692 filas consolidadas;
-- 9.377 comparaciones interanuales;
-- 239 municipios enlazados con geometría;
-- 43 incidencias ciclo-período fuera del agregado;
-- 1.159 llaves con múltiples desagregaciones marcadas para revisión.
+- valores nulos, negativos o no finitos;
+- área cosechada superior al área sembrada;
+- producción con área cosechada no positiva;
+- diferencias entre el rendimiento publicado y
+  `producción / área cosechada`;
+- 43 combinaciones incompatibles entre ciclo y período;
+- 1.159 llaves con múltiples desagregaciones que debían conservar trazabilidad.
 
-Área sembrada, área cosechada y rendimiento conservan universos de validez
-independientes. No se descarta un área sembrada válida porque la cosecha sea
-cero.
-
-### Distribución municipal de los diez cultivos principales
-
-Los diez cultivos se seleccionaron por área sembrada acumulada entre 2022 y
-2024, incluyendo períodos semestrales y anuales. El mapa asigna a cada municipio
-el cultivo con mayor área dentro de ese grupo. Esta clasificación representa
-predominio por área sembrada; no implica mayor rendimiento ni mayor producción.
-
-![Distribución municipal de los diez cultivos principales](assets/11_mapa_cultivos_principales.png)
-
-| Posición | Cultivo | Área sembrada acumulada (ha) |
-|---:|---|---:|
-| 1 | Papa | 373.478,17 |
-| 2 | Caña | 189.489,60 |
-| 3 | Café | 119.874,96 |
-| 4 | Maíz | 75.073,81 |
-| 5 | Frijol | 44.732,61 |
-| 6 | Plátano | 40.666,05 |
-| 7 | Cacao | 38.708,90 |
-| 8 | Arveja | 31.453,69 |
-| 9 | Mango | 30.793,28 |
-| 10 | Cebolla de bulbo | 23.171,49 |
-
-## 10. Integración temporal de clima y cultivos
-
-Los datos climáticos se consolidaron a municipio × día. Para unirlos con EVA se
-parte el calendario en semestres A y B y se calculan indicadores por municipio:
-
-- precipitación total, promedio diario y máximo de un día;
-- días húmedos y mayor racha seca;
-- temperatura media, mínima y máxima;
-- rango térmico y días cálidos o fríos;
-- humedad, viento y presión;
-- cobertura y días con todas las variables;
-- tres bloques dentro del semestre para conservar parte de la evolución.
-
-El resultado climático usa la misma llave territorial y temporal:
+La consolidación produjo 13.692 filas municipio × cultivo × período a partir de
+14.962 filas. El rendimiento agregado se calculó así:
 
 ```text
-codigo_municipio + anio + tipo_periodo
+rendimiento_t_ha =
+    producción_total_compatible_t
+    / área_cosechada_total_compatible_ha
 ```
 
-Al agregar `cultivo`, puede unirse uno a uno con la fila agrícola.
+No se usaron producción ni área cosechada como predictores del modelo, porque
+juntas revelarían directamente la respuesta y producirían una evaluación
+artificialmente buena.
 
-## 11. Selección del cultivo
+## 4. Diferencias entre las series climáticas y las series EVA
 
-Entre los cultivos semestrales 2022–2024, papa acumuló 373.478 hectáreas
-sembradas en 155 municipios. Maíz, segundo en el ranking, acumuló 75.074.
+El clima y EVA funcionan con relojes diferentes.
 
-![Selección del cultivo papa](assets/05_seleccion_cultivo_papa.png)
+| Dominio | Frecuencia original | Frecuencia conservada | Historia disponible |
+|---|---|---|---|
+| Estaciones IDEAM | Subdiaria e irregular | Estación-día y municipio-día | 2024–2025 |
+| NASA POWER | Diaria por celda | Municipio-día | 2019–2026 |
+| EVA | Semestre A, semestre B o año | Municipio × cultivo × período | 2019–2025 para el modelo |
 
-La elección combina importancia territorial y disponibilidad de historia. Para
-el pronóstico se usó el Excel oficial UPRA 2019–2025, más amplio que el
-artefacto Socrata 2022–2024.
+![Frecuencias agrícolas presentes en EVA](assets/04_agricultura_periodos.png)
 
-### Agregado municipal de papa
+Convertir un rendimiento semestral en 181 o 184 valores diarios repetiría la
+misma cifra y daría una falsa impresión de abundancia. La solución siguió la
+dirección contraria:
 
-Los siguientes mapas presentan área sembrada, área cosechada, producción y
-rendimiento ponderado acumulados para 2022–2024. Las escalas logarítmicas de
-área y producción permiten distinguir municipios con valores pequeños sin
-ocultar la concentración de los valores mayores.
+1. conservar el clima diario;
+2. calcular indicadores dentro de cada semestre;
+3. unir esos indicadores con el rendimiento EVA del mismo municipio, año y
+   semestre.
 
-![Agregado municipal de papa](assets/12_mapa_agregado_municipal_papa.png)
+Los indicadores incluyen precipitación acumulada, extremos, días húmedos,
+racha seca, temperaturas, humedad, viento, presión, cobertura y tres bloques
+temporales dentro del semestre.
 
-### Producción municipal por año
+![Comportamiento climático mensual durante 2024–2025](assets/02_clima_varios_meses.png)
 
-La comparación anual utiliza la misma escala en 2022, 2023 y 2024. Las etiquetas
-identifican los cinco municipios con mayor producción de papa en cada año. La
-concentración principal se mantiene alrededor de Tausa, Villapinzón, Siachoque,
-Ventaquemada y Saboyá, aunque el orden puede cambiar entre períodos.
+### Longitud y quiebres de la historia
 
-![Producción municipal de papa por año](assets/13_mapa_produccion_papa_por_anio.png)
+Cada municipio-semestre aporta como máximo siete rendimientos, uno por año entre
+2019 y 2025. Son catorce observaciones si se cuentan ambos semestres, pero no
+forman una única serie homogénea porque A y B representan ciclos distintos.
 
-| Posición | 2022 | Producción (t) | 2023 | Producción (t) | 2024 | Producción (t) |
-|---:|---|---:|---|---:|---|---:|
-| 1 | Villapinzón | 295.757,0 | Villapinzón | 306.905,4 | Villapinzón | 465.060,0 |
-| 2 | Tausa | 273.321,0 | Tausa | 268.160,0 | Tausa | 323.180,0 |
-| 3 | Siachoque | 122.308,0 | Siachoque | 125.540,0 | Siachoque | 168.760,0 |
-| 4 | Ventaquemada | 113.390,0 | Saboyá | 100.170,0 | Ventaquemada | 80.595,0 |
-| 5 | Saboyá | 99.210,0 | Ventaquemada | 98.742,0 | Saboyá | 75.100,0 |
+![Historia semestral del rendimiento de papa](assets/06_rendimiento_historico_papa.png)
 
-## 12. Historia del rendimiento seleccionada
+Además, UPRA advierte un cambio metodológico desde 2022: para cultivos
+transitorios, área cosechada, producción y rendimiento pasaron a corresponder a
+cosechas efectivas del período; antes se relacionaban con las siembras del
+período de referencia. Un modelo puede confundir ese cambio con una señal
+productiva o climática.
 
-La línea muestra la mediana municipal y la banda el rango entre los percentiles
-25 y 75. Los semestres se presentan separados porque pueden responder a
-condiciones climáticas y productivas distintas.
+Para 2026 también hay una diferencia:
 
-![Historia del rendimiento de papa](assets/06_rendimiento_historico_papa.png)
+- 2026-A usa 181 días climáticos observados;
+- 2026-B usa 27 días observados y 157 días completados con climatología
+  2019–2025.
 
-Siete años por municipio y semestre son suficientes para una validación temporal
-básica, pero insuficientes para ajustar de manera estable modelos temporales
-complejos separados por municipio.
+La climatología asigna a cada fecha futura el comportamiento típico de ese día
+del calendario según los años anteriores; no intenta afirmar cuál será el clima
+real.
 
-## 13. Conjunto de datos definitivo
+Por tanto, 2026-B es un escenario condicionado a la fecha de corte, no un
+semestre climático ya observado.
 
-El conjunto de datos tiene 2.366 filas y 56 columnas. Su llave es municipio,
-año, semestre y cultivo.
+## 5. Problemas de datos espaciales
+
+La palabra “municipio” no es una llave segura: puede haber tildes, abreviaturas,
+nombres repetidos o etiquetas desactualizadas. La llave territorial utilizada
+fue el código DANE definido por
+[DIVIPOLA](https://www.dane.gov.co/index.php/sistema-estadistico-nacional-sen/normas-y-estandares/nomenclaturas-y-clasificaciones/nomenclaturas/codificacion-de-la-division-politica-administrativa-de-colombia-divipola).
+
+### Proveedores y posibles discrepancias
+
+Se reconciliaron tres representaciones:
+
+1. el municipio declarado por el catálogo de estaciones IDEAM;
+2. el código oficial DIVIPOLA del DANE;
+3. el municipio espacial obtenido al ubicar las coordenadas de la estación
+   dentro de un polígono.
+
+El GeoPackage compartido contiene 239 polígonos válidos en EPSG:4326, el sistema
+habitual de latitud y longitud: 123 de Boyacá y 116 de Cundinamarca. Sus códigos
+coinciden con el catálogo DIVIPOLA usado en el proyecto. Sin embargo, el
+repositorio no conserva la referencia al proveedor original ni la fecha de
+descarga de esos polígonos. Esta ausencia de linaje debe corregirse en una
+próxima versión, aunque la consistencia geométrica y de códigos sí fue
+verificada. El servicio de límites del IGAC documentado arriba es una alternativa
+oficial para reemplazar ese archivo compartido en una ejecución futura; antes de
+adoptarlo se debe fijar la fecha de consulta y repetir la auditoría de códigos,
+geometrías y número de municipios.
+
+En la auditoría de 126 estaciones de precipitación:
+
+| Resultado espacial | Estaciones |
+|---|---:|
+| Catálogo IDEAM y polígono coinciden | 112 |
+| El polígono resolvió un nombre no resuelto por catálogo | 4 |
+| Conflicto entre catálogo y polígono | 7 |
+| Punto sin polígono contenedor | 3 |
+| Asignaciones canónicas finales | 116 |
+| Casos en revisión | 9 |
+| Exclusión por estar fuera del alcance | 1 |
+
+Una estación de Puente Aranda aparecía en una descarga asociada a Cundinamarca,
+pero geográficamente pertenece a Bogotá D.C.; fue excluida del alcance. Dos
+estaciones de Boyacá quedaron muy cerca de límites municipales sin un polígono
+contenedor. Los conflictos no entraron silenciosamente al agregado.
+
+![Ubicación de estaciones climáticas auditadas](assets/10_mapa_estaciones_climaticas.png)
+
+Los mapas agrícolas muestran que la producción y el cultivo dominante están
+concentrados territorialmente; un municipio sin color no equivale a valor cero.
+
+![Cultivo dominante entre los diez cultivos de mayor área](assets/11_mapa_cultivos_principales.png)
+
+![Área, producción y rendimiento de papa agregados por municipio](assets/12_mapa_agregado_municipal_papa.png)
+
+![Producción municipal de papa entre 2022 y 2024](assets/13_mapa_produccion_papa_por_anio.png)
+
+Para el modelo, NASA POWER aporta una celda climática diaria por municipio. Esto
+evita eliminar municipios sin estación, pero representa clima de malla y no una
+medición local equivalente a IDEAM.
+
+## 6. Esquema de datos final y representación o embedding
+
+El conjunto de datos final tiene 2.366 filas y 56 columnas. Cada fila representa
+una combinación única:
+
+```text
+codigo_municipio + año + semestre + cultivo
+```
 
 ![Estructura del conjunto de datos definitivo](assets/07_dataset_pronostico.png)
 
-Los predictores candidatos se reparten en:
+| Grupo | Cantidad | Ejemplos |
+|---|---:|---|
+| Historia agrícola | 9 | rendimiento anterior, promedio histórico, tendencia y área sembrada rezagada |
+| Geografía y tiempo | 3 | latitud, longitud e índice de año |
+| Clima por semestre | 33 | lluvia, temperatura, humedad, viento, presión, extremos y cobertura |
+| Identidad y período | 8 | municipio, departamento, año, semestre y cultivo |
+| Control | 2 | fila de pronóstico y municipio objetivo |
+| Variable a pronosticar | 1 | rendimiento en toneladas por hectárea |
 
-- 33 indicadores climáticos;
-- 9 variables de historia agrícola;
-- 3 variables geográficas o temporales;
-- categorías de municipio, departamento y semestre según representación.
+Las variables históricas se calculan solo con años anteriores. Por ejemplo,
+`rendimiento_lag_1` es el rendimiento conocido del mismo municipio y semestre
+en el año anterior. Las filas de 2026 no contienen el rendimiento real.
 
-Producción y área cosechada no entran al modelo porque revelarían directamente
-el rendimiento. El área sembrada solo entra rezagada.
+### Qué representación o embedding se utilizó
 
-### Fuente climática para el pronóstico
+Un **embedding** transforma una categoría en un vector numérico aprendido. Es
+útil cuando existen muchas entidades y abundantes observaciones para aprender
+relaciones entre ellas. Aquí solo hay 20 municipios objetivo y siete años de
+rendimiento.
 
-El modelo usa NASA POWER 2019–2026, no la capa IDEAM 2024–2025. La razón es de
-cobertura: la malla NASA ofrece un valor diario comparable para todos los
-municipios y años. La red IDEAM conserva mayor proximidad observacional, pero
-deja municipios sin estación y no cubre toda la historia de entrenamiento.
+Se evaluaron dos representaciones tabulares:
 
-En 2026:
+- **codificación binaria o one-hot:** crea una columna 0/1 por municipio,
+  departamento y semestre;
+- **geografía + historia:** representa el municipio mediante latitud, longitud,
+  rendimientos anteriores y área sembrada histórica; departamento y semestre
+  siguen como categorías binarias.
 
-- semestre A: 181 días reales;
-- semestre B: 27 días reales y 157 días de climatología 2019–2025.
+No se usó un embedding semántico porque no existe texto libre, ni un embedding
+neuronal de municipio porque hay muy pocos ejemplos por entidad. El modelo
+ganador tampoco necesita esas representaciones: usa únicamente el último
+rendimiento conocido del mismo municipio y semestre.
 
-El segundo semestre es por tanto un escenario condicionado a la fecha de corte.
+Esta decisión es importante: no se presenta como embedding una codificación que
+no lo es, y no se añade complejidad que los datos no pueden sostener.
 
-## 14. Métodos probados y representaciones
+## 7. Modelo utilizado y razón de la elección
 
-Se compararon dos referencias simples, regresión lineal regularizada, bosques de
-árboles, árboles extra, potenciación por gradiente y una red neuronal multicapa.
+Se compararon referencias temporales y modelos de aprendizaje automático:
 
-Las categorías binarias crean columnas 0/1 por entidad. La representación
-geografía + historia evita una identidad neuronal del municipio y usa
-coordenadas, rezagos, departamento y semestre. No se usaron representaciones
-vectoriales semánticas porque no existe texto libre.
+| Método | Explicación sencilla |
+|---|---|
+| Último rendimiento | Supone que el siguiente año será parecido al último conocido para ese municipio y semestre |
+| Promedio histórico | Usa el promedio de los años anteriores |
+| Regresión Ridge | Combina variables linealmente y limita coeficientes extremos |
+| Bosque aleatorio | Promedia muchos árboles entrenados con muestras distintas |
+| Árboles extra | Usa árboles con divisiones más aleatorias |
+| Potenciación por gradiente | Construye árboles que corrigen errores anteriores |
+| Red neuronal multicapa | Aprende relaciones no lineales después de escalar los datos |
 
-![Comparación de métricas de los métodos](assets/08_metricas_modelos.png)
+La evaluación fue temporal: para probar 2024, por ejemplo, el modelo solo pudo
+entrenarse con años anteriores. Se repitió para 2021–2025 y la selección se
+basó en los años recientes 2024–2025.
 
-### Definición de las métricas
+![Comparación de los métodos evaluados](assets/08_metricas_modelos.png)
 
-- **Error absoluto medio:** distancia promedio entre real y pronosticado. Está
-  en toneladas por hectárea. Menor es mejor.
-- **Raíz del error cuadrático medio:** da mayor castigo a errores grandes.
-  También está en toneladas por hectárea. Menor es mejor.
-- **Coeficiente de determinación:** mide qué fracción de la variación explica el
-  método. Uno es ideal; negativo significa peor que usar un promedio.
-- **Error porcentual absoluto simétrico:** expresa un error porcentual balanceado
-  entre sobrestimar y subestimar. Menor es mejor.
+### Métricas explicadas
 
-La selección priorizó el error absoluto medio sobre 2024–2025. El último
-rendimiento obtuvo 2,302 t/ha, frente a 2,680 de Ridge con categorías binarias.
-Ridge tuvo una raíz del error cuadrático medio algo menor, pero no ganó la
-métrica acordada.
+- **Error absoluto medio:** desviación promedio entre el rendimiento real y el
+  pronosticado, en toneladas por hectárea. Menor es mejor.
+- **Raíz del error cuadrático medio:** también mide error, pero castiga más los
+  fallos grandes. Menor es mejor.
+- **Coeficiente de determinación:** indica cuánto de la variación logra explicar
+  el método. Uno es ideal; un valor negativo es peor que usar un promedio.
+- **Error porcentual absoluto simétrico:** expresa el error relativo sin
+  favorecer sistemáticamente valores altos o bajos. Menor es mejor.
 
-## 15. Justificación del modelo seleccionado
+| Candidato | Error absoluto medio | Raíz del error cuadrático medio | Coeficiente de determinación | Error porcentual |
+|---|---:|---:|---:|---:|
+| Último rendimiento | **2,302** | 3,965 | 0,276 | **9,50 %** |
+| Ridge, categorías binarias | 2,680 | **3,856** | **0,323** | 10,91 % |
+| Ridge, geografía + historia | 2,739 | 3,973 | 0,289 | 11,20 % |
+| Bosque aleatorio, geografía + historia | 2,748 | 3,977 | 0,297 | 11,05 % |
+| Árboles extra, geografía + historia | 2,750 | 4,044 | 0,269 | 11,00 % |
+| Red neuronal, geografía + historia | 4,204 | 5,323 | −0,314 | 16,86 % |
 
-ARIMA, Prophet o redes recurrentes pueden ser apropiados con series largas,
-regulares y comparables. Aquí cada municipio-semestre aporta como máximo siete
-observaciones históricas de rendimiento, existe un cambio metodológico en EVA y
-2026B aún contiene climatología.
+### Modelo seleccionado
 
-Los riesgos identificados para un modelo más complejo son:
+Se eligió **último rendimiento**, también llamado persistencia por municipio y
+semestre. Fue el método con menor error absoluto medio reciente: en promedio se
+desvió 2,302 toneladas por hectárea en 2024–2025.
 
-1. demasiados parámetros para pocos puntos por municipio;
-2. sobreajuste a cambios metodológicos o años particulares;
-3. falsa precisión al tratar clima futuro climatológico como observado.
+El modelo final no es inteligencia artificial generativa ni aprendizaje
+profundo. Es una referencia estadística de pronóstico que formó parte de la
+comparación de aprendizaje supervisado. Se conservó porque la evaluación fuera
+de muestra mostró mayor precisión que los modelos de aprendizaje automático
+más complejos.
 
-La validación año por año mostró que la persistencia local obtuvo el menor error
-fuera de muestra. Este resultado determinó la selección del modelo.
+Ridge tuvo resultados ligeramente mejores en dos métricas secundarias, pero no
+ganó la métrica principal acordada. La red neuronal fue claramente inferior.
 
-## 16. Alcance del pronóstico
+Modelos de series de tiempo como ARIMA, Prophet o redes recurrentes suelen
+necesitar series largas y regulares. Aquí hay como máximo siete datos por
+municipio y semestre, un cambio metodológico en EVA y clima futuro parcialmente
+climatológico. Usar un método más complejo habría aumentado el riesgo de
+aprender ruido y ofrecer una precisión aparente que no se repite fuera de
+muestra.
 
-El alcance son los semestres 2026A y 2026B para diez municipios de cada
-departamento. Los puntos son pronósticos y las líneas representan el percentil
-90 del error absoluto observado en la validación retrospectiva. No son intervalos
-probabilísticos calibrados.
+## 8. Resultado del pronóstico para 2026
 
-![Pronóstico municipal de papa 2026](assets/09_pronostico_papa_2026.png)
+El pronóstico cubre los semestres A y B para diez municipios de Boyacá y diez de
+Cundinamarca.
 
-El mapa localiza los 20 municipios objetivo y utiliza una escala común para
-comparar los rendimientos pronosticados entre departamentos y semestres. Los
-municipios sin color no pertenecen al conjunto objetivo del pronóstico.
+![Pronóstico de rendimiento por municipio y semestre](assets/09_pronostico_papa_2026.png)
 
-![Mapa del pronóstico municipal de rendimiento de papa](assets/14_mapa_pronostico_rendimiento_2026.png)
+| Departamento | Semestre | Municipios | Media | Mediana | Mínimo | Máximo |
+|---|---|---:|---:|---:|---:|---:|
+| Boyacá | A | 10 | 22,58 | 20,21 | 18,45 | 35,00 |
+| Boyacá | B | 10 | 24,27 | 21,91 | 18,79 | 39,85 |
+| Cundinamarca | A | 10 | 26,43 | 24,73 | 19,82 | 35,00 |
+| Cundinamarca | B | 10 | 25,58 | 24,86 | 17,00 | 32,79 |
 
-| Departamento | Semestre | Media | Mediana | Mínimo | Máximo |
-|---|---|---:|---:|---:|---:|
-| Boyacá | A | 22,58 | 20,21 | 18,45 | 35,00 |
-| Boyacá | B | 24,27 | 21,91 | 18,79 | 39,85 |
-| Cundinamarca | A | 26,43 | 24,73 | 19,82 | 35,00 |
-| Cundinamarca | B | 25,58 | 24,86 | 17,00 | 32,79 |
+![Mapa del rendimiento de papa pronosticado para 2026](assets/14_mapa_pronostico_rendimiento_2026.png)
 
-En la validación retrospectiva global 2021–2025 hubo 200 observaciones. El error
+La validación retrospectiva global 2021–2025 incluyó 200 observaciones. El error
 absoluto medio fue 2,422 t/ha, la raíz del error cuadrático medio 3,991 t/ha, el
 coeficiente de determinación 0,276 y el error porcentual absoluto simétrico
 10,12 %.
 
-El segmento más débil fue Cundinamarca-B: error absoluto medio 3,261 t/ha y
-coeficiente de determinación −0,221. Esa limitación debe acompañar siempre la
-presentación del promedio global.
+El segmento más débil fue Cundinamarca-B, con error absoluto medio de
+3,261 t/ha y coeficiente de determinación de −0,221. Este resultado debe
+acompañar los promedios generales para no ocultar dónde existe mayor
+incertidumbre.
 
-## 17. Estado de ejecución y tareas pendientes
+Las bandas de la gráfica corresponden al percentil 90 del error absoluto
+histórico: nueve de cada diez errores observados fueron iguales o menores que
+ese umbral. Son una referencia empírica de error y no intervalos probabilísticos
+calibrados. Los rendimientos reales de 2026 todavía no han sido publicados por
+UPRA; por eso las métricas evalúan años pasados y no demuestran todavía el
+acierto sobre 2026.
 
-Concluido:
+## Conclusiones y valor de la solución
 
-- seis variables IDEAM hasta municipio-día;
-- agregado agrícola municipio × cultivo × período;
-- cruce geográfico por código DANE;
-- conjunto de datos de papa 2019–2026;
-- comparación temporal de nueve candidatos;
-- 40 pronósticos para 2026.
+1. **El principal resultado no es solo un número futuro.** La solución deja un
+   camino auditable desde la fuente hasta el pronóstico y permite explicar qué
+   se corrigió, qué se excluyó y qué sigue pendiente.
+2. **La frecuencia original se respeta.** No se inventaron rendimientos diarios
+   para aumentar artificialmente el volumen de datos. El clima se resumió al
+   período agrícola antes de unirlo con EVA.
+3. **La ausencia conserva su significado.** Un municipio sin estación o un día
+   sin lectura no se convirtió en cero. Esto evita conclusiones falsas sobre
+   lluvia o productividad.
+4. **La geografía hace visible la concentración territorial.** Los mapas
+   permiten ubicar estaciones, cultivos, producción y pronósticos, y exponen
+   municipios con cobertura limitada.
+5. **La selección del modelo se basó en evidencia fuera de muestra.** El método
+   más sencillo superó a modelos más complejos en la métrica principal. Elegirlo
+   reduce el riesgo de sobreajuste y facilita explicar el resultado.
+6. **El valor práctico está en priorizar seguimiento.** El pronóstico puede
+   orientar dónde revisar cambios de rendimiento, cobertura climática o
+   disponibilidad de datos. No reemplaza la evaluación agronómica local ni es
+   una garantía de producción.
+7. **La solución puede mejorar con nueva evidencia.** Más días observados de
+   2026-B, la publicación EVA 2026, el linaje del archivo de polígonos y series
+   históricas más largas permitirán recalibrar y volver a comparar los modelos.
 
-Abierto:
+## Reproducibilidad y detalle técnico
 
-- contrato diario de humedad IDEAM;
-- aprobación científica de cobertura municipal de precipitación;
-- indicadores de período desde la capa IDEAM;
-- sustitución progresiva de climatología 2026B por días reales;
-- validación del pronóstico cuando EVA publique el rendimiento observado de
-  2026.
-
-## 18. Reproducibilidad
+- [Ciclo completo de datos](../data_pipeline/README.md)
+- [Construcción del conjunto de datos y modelos](../data_pipeline/forecast.md)
+- [Métricas y resultados detallados](../../notebooks/CropForecasting/RESULTS.md)
+- [Reglas de las visualizaciones](../visualization_review_scrum20.md)
 
 Las figuras se regeneran con:
 
@@ -459,7 +523,5 @@ MPLCONFIGDIR=/tmp/suelosabio-matplotlib \
 python docs/presentation/generate_presentation_charts.py
 ```
 
-En otra máquina se puede definir `ECO2026_PROCESSED_ROOT` con la ruta de
-`eco2026_processed` y `ECO2026_SHARED_ROOT` con la carpeta que contiene el
-GeoPackage municipal. El script solo lee artefactos y escribe PNG dentro de
+El script solo lee los artefactos procesados y escribe imágenes dentro de
 `docs/presentation/assets/`.
